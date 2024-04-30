@@ -1,0 +1,54 @@
+version: "3.7"
+services:
+  db_service:
+    image: postgres:13.3
+    hostname: ${DB_HOST}
+    environment:
+      POSTGRES_DB: ${DB_NAME}
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASS}
+    ports:
+      - "${DB_PORT}:5432"
+    expose:
+      - ${DB_PORT}
+    networks:
+      - main_network
+    volumes:
+      - pgdata:/var/lib/postgresql/
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U ${DB_USER} -d ${DB_NAME}" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+    restart: unless-stopped
+
+  api_server:
+    build: backend
+    environment:
+      SERVER_ADDRESS: "0.0.0.0:${API_PORT}"
+      PG_NAME: ${DB_NAME}
+      PG_USER: ${DB_USER}
+      PG_PASS: ${DB_PASS}
+      PG_PORT: ${DB_PORT}
+      PG_HOST: ${DB_HOST}
+    ports:
+      - "${API_PORT}:${API_PORT}"
+    expose:
+      - ${API_PORT}
+    networks:
+      - main_network
+    depends_on:
+      db_service:
+        condition: service_healthy
+    links:
+      - db_service
+
+
+networks:
+  main_network:
+    driver: bridge
+
+
+volumes:
+  pgdata:
