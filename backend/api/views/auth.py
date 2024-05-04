@@ -14,12 +14,12 @@ class RegisterView(CreateAPIView):
     serializer_class = serializers.RegistrationSerializer
     permission_classes = (AllowAny,)
 
-    def perform_create(self, serializer):
+    def create(self, request, *args, **kwargs):
         try:
-            User.objects.get(username=serializer.validated_data["username"])
-            return Response({"error": "user already exists"}, 400)
+            User.objects.get(username=request.data.get("username"))
+            return Response({"error_message": "user already exists"}, 400)
         except:
-            super().perform_create(serializer)
+            return super().create(request, *args, **kwargs)
 
 
 class LoginView(TokenObtainPairView):
