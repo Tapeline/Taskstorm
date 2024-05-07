@@ -1,6 +1,8 @@
-from . import auth, profile
+from . import auth, profile, tasks, workspace
 
 __all__ = (
     "auth",
-    "profile"
+    "profile",
+    "tasks",
+    "workspace"
 )

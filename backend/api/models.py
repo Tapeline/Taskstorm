@@ -11,3 +11,51 @@ class IssuedToken(models.Model):
     user = models.ForeignKey(to=User, on_delete=models.CASCADE)
     date_of_issue = models.DateTimeField(auto_now_add=True, blank=True)
     is_invalidated = models.BooleanField(default=False)
+
+
+class Workspace(models.Model):
+    owner = models.ForeignKey(to=User, on_delete=models.CASCADE, related_name="owning_workspaces")
+    members = models.ManyToManyField(to=User, blank=True, default=list, related_name="member_in_workspaces")
+    name = models.CharField(max_length=255)
+
+    def user_can_interact(self, user):
+        return user == self.owner or user in self.members.all()
+
+
+class Task(models.Model):
+    name = models.CharField(max_length=255)
+    description = models.TextField()
+    is_open = models.BooleanField(default=False)
+    creator = models.ForeignKey(to=User, on_delete=models.CASCADE)
+    tags = models.CharField(max_length=255, default="")
+    workspace = models.ForeignKey(to=Workspace, on_delete=models.CASCADE)
+    folder = models.CharField(max_length=255, default="Public")
+    time_bounds_start = models.DateTimeField(null=True)
+    time_bounds_end = models.DateTimeField(null=True)
+    arrangement_start = models.DateTimeField(null=True)
+    arrangement_end = models.DateTimeField(null=True)
+    assignees = models.ForeignKey(to=User, null=True, on_delete=models.CASCADE, related_name="assigned_tasks")
+
+
+class WorkflowStage(models.Model):
+    workspace = models.ForeignKey(to=Workspace, on_delete=models.CASCADE)
+    name = models.CharField(max_length=64)
+    color = models.CharField(max_length=6, default="00FF00")
+    is_end = models.BooleanField()
+
+
+class AbstractLoggableAction(models.Model):
+    logged_at = models.DateTimeField(auto_now_add=True)
+    type = models.CharField(max_length=255)
+
+
+class WorkflowPush(AbstractLoggableAction):
+    from_stage = models.ForeignKey(to=WorkflowStage, on_delete=models.CASCADE,
+                                   related_name="pushes_from")
+    to_stage = models.ForeignKey(to=WorkflowStage, on_delete=models.CASCADE,
+                                 related_name="pushes_to")
+    user = models.ForeignKey(to=User, on_delete=models.CASCADE)
+
+
+class AssigneeChange(AbstractLoggableAction):
+    new_assignee = models.ForeignKey(to=User, null=True, on_delete=models.CASCADE)
