@@ -39,3 +39,9 @@ class WorkspaceSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.Workspace
         fields = "__all__"
+
+
+class WorkflowStageSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = models.WorkflowStage
+        fields = "__all__"

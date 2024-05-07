@@ -34,7 +34,8 @@ class Task(models.Model):
     time_bounds_end = models.DateTimeField(null=True)
     arrangement_start = models.DateTimeField(null=True)
     arrangement_end = models.DateTimeField(null=True)
-    assignees = models.ForeignKey(to=User, null=True, on_delete=models.CASCADE, related_name="assigned_tasks")
+    assignee = models.ForeignKey(to=User, null=True, on_delete=models.CASCADE, related_name="assigned_tasks")
+    stage = models.ForeignKey(to="WorkflowStage", null=True, on_delete=models.SET_NULL)
 
 
 class WorkflowStage(models.Model):
