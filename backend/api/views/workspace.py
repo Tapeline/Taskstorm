@@ -8,7 +8,7 @@ from api.accessor import get_object_or_null
 
 class WorkspaceMixin:
     def get_workspace(self):
-        return get_object_or_null(models.Workspace, id=self.request.data.get("workspace_id"))
+        return get_object_or_null(models.Workspace, id=self.kwargs.get("workspace_id"))
 
 
 class ListCreateWorkspaceView(ListCreateAPIView):

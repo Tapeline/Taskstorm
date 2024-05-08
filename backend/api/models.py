@@ -49,8 +49,14 @@ class AbstractLoggableAction(models.Model):
     logged_at = models.DateTimeField(auto_now_add=True)
     type = models.CharField(max_length=255)
 
+    @classmethod
+    def log(cls, **kwargs):
+        cls.objects.create(type=cls.type, **kwargs)
+
 
 class WorkflowPush(AbstractLoggableAction):
+    type = "push"
+
     from_stage = models.ForeignKey(to=WorkflowStage, on_delete=models.CASCADE,
                                    related_name="pushes_from")
     to_stage = models.ForeignKey(to=WorkflowStage, on_delete=models.CASCADE,
@@ -59,4 +65,6 @@ class WorkflowPush(AbstractLoggableAction):
 
 
 class AssigneeChange(AbstractLoggableAction):
+    type = "push"
+
     new_assignee = models.ForeignKey(to=User, null=True, on_delete=models.CASCADE)
