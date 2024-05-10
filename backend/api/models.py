@@ -1,3 +1,6 @@
+import re
+from datetime import timedelta
+
 from django.contrib.auth.models import AbstractUser
 from django.db import models
 
@@ -49,6 +52,16 @@ class NotificationRule(models.Model):
     workspace = models.ForeignKey(to=Workspace, on_delete=models.CASCADE)
     applicable_filter = models.TextField()
     time_delta = models.CharField(max_length=255)
+
+    @classmethod
+    def is_valid_time_delta(cls, time_delta):
+        return re.match(r"^[\+\-]\d+:\d\d$", time_delta)
+
+    def get_time_delta(self):
+        sign = str(self.time_delta)[0]
+        hours, minutes = map(int, self.time_delta[1:].split(":"))
+        return timedelta(hours=hours, minutes=minutes) if sign == "+" else \
+            -timedelta(hours=hours, minutes=minutes)
 
 
 class Notification(models.Model):

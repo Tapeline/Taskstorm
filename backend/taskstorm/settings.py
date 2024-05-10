@@ -82,7 +82,7 @@ WSGI_APPLICATION = 'taskstorm.wsgi.application'
 # https://docs.djangoproject.com/en/5.0/ref/settings/#databases
 
 DATABASES = {
-    "production": {
+    "local": {
         "ENGINE": "django.db.backends.postgresql_psycopg2",
         "NAME": os.environ.get("PG_NAME"),
         "USER": os.environ.get("PG_USER"),
@@ -90,7 +90,7 @@ DATABASES = {
         "HOST": "localhost",
         "PORT": "5432",
     },
-    "local": {
+    "production": {
         "ENGINE": "django.db.backends.postgresql_psycopg2",
         "NAME": os.environ.get("PG_NAME"),
         "USER": os.environ.get("PG_USER"),
@@ -100,6 +100,20 @@ DATABASES = {
     }
 }
 DATABASES["default"] = DATABASES[os.environ.get("USE_DB") or "production"]
+
+REDIS_CONFIGS = {
+    "local": {
+        "PASS": os.environ.get("REDIS_PASS"),
+        "HOST": "localhost",
+        "PORT": os.environ.get("REDIS_PORT") or "6379",
+    },
+    "production": {
+        "PASS": os.environ.get("REDIS_PASS"),
+        "HOST": os.environ.get("REDIS_HOST"),
+        "PORT": os.environ.get("REDIS_PORT") or "6379",
+    }
+}
+REDIS_CONFIG = REDIS_CONFIGS[os.environ.get("USE_DB") or "local"]
 
 
 # Password validation
@@ -158,3 +172,6 @@ SIMPLE_JWT = {
 }
 
 CORS_ALLOW_ALL_ORIGINS = True
+
+CELERY_BROKER_URL = f"redis://{REDIS_CONFIG['HOST']}:{REDIS_CONFIG['PORT']}"
+CELERY_RESULT_BACKEND = f"redis://{REDIS_CONFIG['HOST']}:{REDIS_CONFIG['PORT']}"

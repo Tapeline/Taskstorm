@@ -10,6 +10,5 @@ tzdata==2024.1
 djangorestframework-simplejwt==5.3.1
 PyJWT==2.8.0
 celery==5.3.6
-django-apscheduler==0.6.2
-APScheduler==3.10.4
 django-cors-headers==4.2.0
+redis==5.0.4

@@ -23,6 +23,24 @@ services:
       start_period: 10s
     restart: unless-stopped
 
+  redis_service:
+    image: redis:latest
+    restart: always
+    hostname: ${REDIS_HOST}
+    ports:
+      - "${REDIS_PORT}:6379"
+    expose:
+      - ${REDIS_PORT}
+    networks:
+      - main_network
+    volumes:
+      - redisdata:/root/redis
+      - redisconf:/usr/local/etc/redis/redis.conf
+    environment:
+      REDIS_PASSWORD: ${REDIS_PASS}
+      REDIS_PORT: ${REDIS_PORT}
+      REDIS_DATABASES: 16
+
   api_server:
     build: backend
     environment:
@@ -52,3 +70,5 @@ networks:
 
 volumes:
   pgdata:
+  redisdata:
+  redisconf:
