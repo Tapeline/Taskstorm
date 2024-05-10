@@ -20,3 +20,10 @@ class GetNotificationsView(ListAPIView, LimitOffsetPaginationMixin):
 
     def get_queryset(self):
         return self.cut_by_pagination(super().get_queryset().filter(recipient=self.request.user))
+
+    def list(self, request, *args, **kwargs):
+        response = super().list(request, *args, **kwargs)
+        if request.GET.get("read") is not None:
+            for notification in self.get_queryset():
+                notification.is_read = True
+                notification.save()

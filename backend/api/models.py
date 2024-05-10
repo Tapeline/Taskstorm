@@ -57,6 +57,7 @@ class Notification(models.Model):
     issue_time = models.DateTimeField(auto_now_add=True)
     message = models.TextField()
     data = models.JSONField(default=dict, blank=True)
+    is_read = models.BooleanField(default=False)
 
 
 class AbstractLoggableAction(models.Model):

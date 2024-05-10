@@ -44,3 +44,10 @@ class GetNotificationsByWorkspaceView(ListAPIView, WorkspaceMixin, LimitOffsetPa
             recipient=self.request.user,
             workspace=self.get_workspace()
         ))
+
+    def list(self, request, *args, **kwargs):
+        response = super().list(request, *args, **kwargs)
+        if request.GET.get("read") is not None:
+            for notification in self.get_queryset():
+                notification.is_read = True
+                notification.save()
