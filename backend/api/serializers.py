@@ -45,3 +45,15 @@ class WorkflowStageSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.WorkflowStage
         fields = "__all__"
+
+
+class NotificationRuleSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = models.NotificationRule
+        fields = "__all__"
+
+
+class NotificationSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = models.Notification
+        fields = "__all__"

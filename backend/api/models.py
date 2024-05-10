@@ -45,6 +45,20 @@ class WorkflowStage(models.Model):
     is_end = models.BooleanField()
 
 
+class NotificationRule(models.Model):
+    workspace = models.ForeignKey(to=Workspace, on_delete=models.CASCADE)
+    applicable_filter = models.TextField()
+    time_delta = models.CharField(max_length=255)
+
+
+class Notification(models.Model):
+    workspace = models.ForeignKey(to=Workspace, on_delete=models.CASCADE)
+    recipient = models.ForeignKey(to=User, on_delete=models.CASCADE)
+    issue_time = models.DateTimeField(auto_now_add=True)
+    message = models.TextField()
+    data = models.JSONField(default=dict, blank=True)
+
+
 class AbstractLoggableAction(models.Model):
     logged_at = models.DateTimeField(auto_now_add=True)
     type = models.CharField(max_length=255)

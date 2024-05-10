@@ -1,9 +1,10 @@
 from django.db.models import Q
-from rest_framework.generics import ListCreateAPIView, RetrieveUpdateDestroyAPIView
+from rest_framework.generics import ListCreateAPIView, RetrieveUpdateDestroyAPIView, ListAPIView
 from rest_framework.permissions import IsAuthenticated
 
 from api import serializers, models, permissions
 from api.accessor import get_object_or_null
+from api.views.pagination import LimitOffsetPaginationMixin
 
 
 class WorkspaceMixin:
@@ -31,3 +32,15 @@ class RetrieveUpdateDestroyWorkspaceView(RetrieveUpdateDestroyAPIView):
 
     def get_queryset(self):
         return super().get_queryset().filter(Q(owner=self.request.user) | Q(members=self.request.user))
+
+
+class GetNotificationsByWorkspaceView(ListAPIView, WorkspaceMixin, LimitOffsetPaginationMixin):
+    permission_classes = (IsAuthenticated, )
+    serializer_class = serializers.NotificationSerializer
+    queryset = models.Notification.objects.all()
+
+    def get_queryset(self):
+        return self.cut_by_pagination(super().get_queryset().filter(
+            recipient=self.request.user,
+            workspace=self.get_workspace()
+        ))

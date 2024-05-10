@@ -5,4 +5,5 @@ from api import views
 urlpatterns = [
     path("", views.workspace.ListCreateWorkspaceView.as_view()),
     path("<int:pk>/", views.workspace.RetrieveUpdateDestroyWorkspaceView.as_view()),
+    path("<int:pk>/notifications/", views.workspace.GetNotificationsByWorkspaceView.as_view()),
 ]
