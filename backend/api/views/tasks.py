@@ -2,16 +2,31 @@ from rest_framework.generics import ListCreateAPIView, RetrieveUpdateDestroyAPIV
 from rest_framework.permissions import IsAuthenticated
 
 from api import serializers, models, permissions
+from api.views.pagination import LimitOffsetPaginationMixin
 from api.views.workspace import WorkspaceMixin
+from api.filtering import filters, parser as filter_parser
 
 
-class ListCreateTaskView(ListCreateAPIView, WorkspaceMixin):
+class ListCreateTaskView(ListCreateAPIView, WorkspaceMixin, LimitOffsetPaginationMixin):
     serializer_class = serializers.TaskSerializer
-    queryset = models.Task.objects.all()
+    queryset = models.Task.objects.order_by("id")
     permission_classes = (IsAuthenticated, permissions.CanInteractWithWorkspace)
 
     def get_queryset(self):
-        return super().get_queryset().filter(workspace=self.get_workspace())
+        filter_string = self.get_filters()
+        qs = super().get_queryset().filter(workspace=self.get_workspace())
+        if filter_string is not None:
+            try:
+                filter_rule = filter_parser.parse_filter_expression(filter_string)
+            except ValueError:
+                return qs
+            id_list = [obj.id for obj in qs.all()
+                       if filters.applies_to_filter(obj, self.request.user, filter_rule)]
+            qs = qs.filter(id__in=id_list)
+        return self.cut_by_pagination(qs)
+
+    def get_filters(self):
+        return self.request.GET.get("filters")
 
     def create(self, request, *args, **kwargs):
         request.data["workspace"] = self.get_workspace().id
@@ -32,7 +47,7 @@ class RetrieveUpdateDestroyTaskView(RetrieveUpdateDestroyAPIView, WorkspaceMixin
         response = super().update(request, *args, **kwargs)
         new_object = self.get_object()
         if "assignee" in request.data:
-            models.AssigneeChange.log(new_assignee=request.data["assignee"])
+            models.AssigneeChange.log(new_assignee=new_object.assignee)
         if "stage" in request.data:
             models.WorkflowPush.log(from_stage=old_object.stage,
                                     to_stage=new_object.stage,
