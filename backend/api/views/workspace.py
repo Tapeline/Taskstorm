@@ -40,14 +40,18 @@ class GetNotificationsByWorkspaceView(ListAPIView, WorkspaceMixin, LimitOffsetPa
     queryset = models.Notification.objects.all()
 
     def get_queryset(self):
-        return self.cut_by_pagination(super().get_queryset().filter(
+        qs = super().get_queryset().filter(
             recipient=self.request.user,
             workspace=self.get_workspace()
-        ))
+        )
+        if self.request.GET.get("only_unread") is not None:
+            qs = qs.filter(is_read=False)
+        return self.cut_by_pagination(qs)
 
     def list(self, request, *args, **kwargs):
         response = super().list(request, *args, **kwargs)
-        if request.GET.get("read") is not None:
+        if request.GET.get("mark_read") is not None:
             for notification in self.get_queryset():
                 notification.is_read = True
                 notification.save()
+        return response
