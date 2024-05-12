@@ -115,7 +115,6 @@ REDIS_CONFIGS = {
 }
 REDIS_CONFIG = REDIS_CONFIGS[os.environ.get("USE_DB") or "local"]
 
-
 # Password validation
 # https://docs.djangoproject.com/en/5.0/ref/settings/#auth-password-validators
 
@@ -173,5 +172,6 @@ SIMPLE_JWT = {
 
 CORS_ALLOW_ALL_ORIGINS = True
 
-CELERY_BROKER_URL = f"redis://{REDIS_CONFIG['HOST']}:{REDIS_CONFIG['PORT']}"
-CELERY_RESULT_BACKEND = f"redis://{REDIS_CONFIG['HOST']}:{REDIS_CONFIG['PORT']}"
+CELERY_BROKER_URL = f"redis://default:{REDIS_CONFIG['PASS']}@{REDIS_CONFIG['HOST']}:{REDIS_CONFIG['PORT']}/0"
+CELERY_RESULT_BACKEND = f"redis://default:{REDIS_CONFIG['PASS']}@{REDIS_CONFIG['HOST']}:{REDIS_CONFIG['PORT']}/0"
+print(DATABASES["default"])

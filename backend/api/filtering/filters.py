@@ -1,8 +1,7 @@
-from api.models import Task
 from api.filtering import parser
 
 
-def get_representation(task: Task, tag):
+def get_representation(task, tag):
     if tag == "@assignee":
         return task.assignee.username if task.assignee is not None else "-"
     if tag == "@folder":
@@ -15,7 +14,7 @@ def get_representation(task: Task, tag):
         return task.tags.split()
 
 
-def simple_tag_applies_to_task(task: Task, user, tag):
+def simple_tag_applies_to_task(task, user, tag):
     if tag == "@unassigned":
         return task.assignee is None
     if tag == "@assigned":
@@ -40,7 +39,7 @@ def simple_tag_applies_to_task(task: Task, user, tag):
         return task.creator == user or task.assignee == user
 
 
-def applies_to_filter(task: Task, user, filter_node) -> bool:
+def applies_to_filter(task, user, filter_node) -> bool:
     if isinstance(filter_node, parser.OrNode):
         return applies_to_filter(task, user, filter_node.left) \
             or applies_to_filter(task, user, filter_node.right)

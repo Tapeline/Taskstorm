@@ -73,6 +73,12 @@ class Notification(models.Model):
     is_read = models.BooleanField(default=False)
 
 
+class TaskNotifiedWithRuleFact(models.Model):
+    task = models.ForeignKey(to=Task, on_delete=models.CASCADE)
+    rule = models.ForeignKey(to=NotificationRule, on_delete=models.CASCADE)
+    user = models.ForeignKey(to=User, on_delete=models.CASCADE)
+
+
 class AbstractLoggableAction(models.Model):
     logged_at = models.DateTimeField(auto_now_add=True)
     type = models.CharField(max_length=255)
