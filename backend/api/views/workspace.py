@@ -13,7 +13,7 @@ class WorkspaceMixin:
 
 
 class ListCreateWorkspaceView(ListCreateAPIView):
-    serializer_class = serializers.WorkspaceSerializer
+    serializer_class = serializers.WorkspaceUnwrappedSerializer
     queryset = models.Workspace.objects.all()
     permission_classes = (IsAuthenticated,)
 
@@ -21,17 +21,22 @@ class ListCreateWorkspaceView(ListCreateAPIView):
         return super().get_queryset().filter(Q(owner=self.request.user) | Q(members=self.request.user))
 
     def create(self, request, *args, **kwargs):
+        self.serializer_class = serializers.WorkspaceSerializer
         request.data["owner"] = request.user.id
         return super().create(request, *args, **kwargs)
 
 
 class RetrieveUpdateDestroyWorkspaceView(RetrieveUpdateDestroyAPIView):
-    serializer_class = serializers.WorkspaceSerializer
+    serializer_class = serializers.WorkspaceUnwrappedSerializer
     queryset = models.Workspace.objects.all()
     permission_classes = (IsAuthenticated, permissions.CanInteractWithWorkspace)
 
     def get_queryset(self):
         return super().get_queryset().filter(Q(owner=self.request.user) | Q(members=self.request.user))
+
+    def update(self, request, *args, **kwargs):
+        self.serializer_class = serializers.WorkspaceSerializer
+        return super().update(request, *args, **kwargs)
 
 
 class GetNotificationsByWorkspaceView(ListAPIView, WorkspaceMixin, LimitOffsetPaginationMixin):

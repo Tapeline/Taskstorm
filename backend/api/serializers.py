@@ -29,16 +29,30 @@ class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
         return data
 
 
+class WorkspaceSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = models.Workspace
+        fields = "__all__"
+
+
+class WorkspaceUnwrappedSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = models.Workspace
+        fields = "__all__"
+        depth = 1
+
+
 class TaskSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.Task
         fields = "__all__"
 
 
-class WorkspaceSerializer(serializers.ModelSerializer):
+class TaskUnwrappedSerializer(serializers.ModelSerializer):
     class Meta:
-        model = models.Workspace
+        model = models.Task
         fields = "__all__"
+        depth = 1
 
 
 class WorkflowStageSerializer(serializers.ModelSerializer):

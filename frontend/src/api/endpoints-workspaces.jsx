@@ -1,0 +1,28 @@
+import {apiUrl, sendRequest} from "./common.jsx";
+
+export function getAllWorkspaces(token) {
+    return sendRequest(
+        "GET",
+        apiUrl("workspaces/"),
+        {},
+        "Authorization: Bearer " + token
+    )
+}
+
+export function getWorkspace(token, id) {
+    return sendRequest(
+        "GET",
+        apiUrl("workspaces/" + id + "/"),
+        {},
+        "Authorization: Bearer " + token
+    )
+}
+
+export function newWorkspace(token, name) {
+    return sendRequest(
+        "POST",
+        apiUrl("workspaces/"),
+        {"name": name},
+        "Authorization: Bearer " + token
+    )
+}

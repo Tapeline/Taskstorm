@@ -28,9 +28,9 @@ class Workspace(models.Model):
 class Task(models.Model):
     name = models.CharField(max_length=255)
     description = models.TextField()
-    is_open = models.BooleanField(default=False)
+    is_open = models.BooleanField(default=True)
     creator = models.ForeignKey(to=User, on_delete=models.CASCADE)
-    tags = models.CharField(max_length=255, default="")
+    tags = models.CharField(max_length=255, default="", blank=True)
     workspace = models.ForeignKey(to=Workspace, on_delete=models.CASCADE)
     folder = models.CharField(max_length=255, default="Public")
     time_bounds_start = models.DateTimeField(null=True)

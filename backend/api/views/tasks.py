@@ -8,7 +8,7 @@ from api.filtering import filters, parser as filter_parser
 
 
 class ListCreateTaskView(ListCreateAPIView, WorkspaceMixin, LimitOffsetPaginationMixin):
-    serializer_class = serializers.TaskSerializer
+    serializer_class = serializers.TaskUnwrappedSerializer
     queryset = models.Task.objects.order_by("id")
     permission_classes = (IsAuthenticated, permissions.CanInteractWithWorkspace)
 
@@ -29,13 +29,14 @@ class ListCreateTaskView(ListCreateAPIView, WorkspaceMixin, LimitOffsetPaginatio
         return self.request.GET.get("filters")
 
     def create(self, request, *args, **kwargs):
+        self.serializer_class = serializers.TaskSerializer
         request.data["workspace"] = self.get_workspace().id
         request.data["creator"] = self.request.user.id
         return super().create(request, *args, **kwargs)
 
 
 class RetrieveUpdateDestroyTaskView(RetrieveUpdateDestroyAPIView, WorkspaceMixin):
-    serializer_class = serializers.TaskSerializer
+    serializer_class = serializers.TaskUnwrappedSerializer
     queryset = models.Task.objects.all()
     permission_classes = (IsAuthenticated, permissions.CanInteractWithWorkspace)
 
@@ -43,6 +44,7 @@ class RetrieveUpdateDestroyTaskView(RetrieveUpdateDestroyAPIView, WorkspaceMixin
         return super().get_queryset().filter(workspace=self.get_workspace())
 
     def update(self, request, *args, **kwargs):
+        self.serializer_class = serializers.TaskSerializer
         old_object = self.get_object()
         response = super().update(request, *args, **kwargs)
         new_object = self.get_object()

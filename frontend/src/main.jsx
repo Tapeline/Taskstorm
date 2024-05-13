@@ -9,12 +9,41 @@ import RegisterPage from "./pages/RegisterPage/RegisterPage.jsx";
 import {ToastContainer} from "react-toastify";
 import 'react-toastify/dist/ReactToastify.css';
 import ProfilePage from "./pages/ProfilePage/ProfilePage.jsx";
+import WorkspaceListPage from "./pages/WorkspaceListPage/WorkspaceListPage.jsx";
+import WorkspaceDetailPage from "./pages/WorkspaceDetailPage/WorkspaceDetailPage.jsx";
+import TaskDetailPage from "./pages/TaskDetailPage/TaskDetailPage.jsx";
 
 
 const router = createBrowserRouter([
     {
         path: '/',
-        element: <App/>
+        element: <App/>,
+        children: [
+            {
+                path: "/profile",
+                element: <ProfilePage/>
+            },
+            {
+                path: "/profile/:page",
+                element: <ProfilePage/>
+            },
+            {
+                path: "/workspaces",
+                element: <WorkspaceListPage/>
+            },
+            {
+                path: "/workspaces/:workspaceId",
+                element: <WorkspaceDetailPage/>
+            },
+            {
+                path: "/workspaces/:workspaceId/:page",
+                element: <WorkspaceDetailPage/>
+            },
+            {
+                path: "/workspaces/:workspaceId/tasks/:taskId",
+                element: <TaskDetailPage/>
+            }
+        ]
     },
     {
         path: "/login",
@@ -23,15 +52,13 @@ const router = createBrowserRouter([
     {
         path: "/register",
         element: <RegisterPage/>
-    },
-    {
-        path: "/profile/:page",
-        element: <ProfilePage/>
     }
 ]);
 
 ReactDOM.createRoot(document.getElementById('root')).render(
     <React.StrictMode>
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css"/>
+
         <RouterProvider router={router}></RouterProvider>
 
         <ToastContainer
