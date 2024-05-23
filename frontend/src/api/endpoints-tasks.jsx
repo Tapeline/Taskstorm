@@ -42,3 +42,12 @@ export function modifyTaskInWorkspace(token, workspaceId, taskId, data) {
         "Authorization: Bearer " + token
     )
 }
+
+export function removeTaskFromWorkspace(token, workspaceId, taskId) {
+    return sendRequest(
+        "DELETE",
+        apiUrl("workspaces/" + workspaceId + "/tasks/" + taskId + "/"),
+        {},
+        "Authorization: Bearer " + token
+    )
+}

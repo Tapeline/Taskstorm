@@ -26,3 +26,12 @@ export function newWorkspace(token, name) {
         "Authorization: Bearer " + token
     )
 }
+
+export function modifyWorkspace(token, id, data) {
+    return sendRequest(
+        "PATCH",
+        apiUrl("workspaces/" + id + "/"),
+        data,
+        "Authorization: Bearer " + token
+    )
+}

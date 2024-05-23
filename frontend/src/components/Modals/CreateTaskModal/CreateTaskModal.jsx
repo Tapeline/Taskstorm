@@ -1,5 +1,5 @@
 import React, {useState} from "react";
-import {Button, Form, Modal} from "react-bootstrap";
+import {Button, Form, InputGroup, Modal} from "react-bootstrap";
 import {newWorkspace} from "../../../api/endpoints-workspaces.jsx";
 import {toastError} from "../../../ui/toasts.jsx";
 import {useNavigate} from "react-router-dom";
@@ -47,18 +47,34 @@ export default function CreateTaskModal(props) {
                 </Modal.Header>
                 <Form onSubmit={handleSubmit}>
                     <Modal.Body>
-                        <Form.Control type="text" placeholder="Task name"
-                                      onChange={e => setTaskName(e.target.value)}
-                                      className="mb-3" required={true}/>
-                        <Form.Control type="text" placeholder="Task description" as="textarea"
-                                      onChange={e => setTaskDescription(e.target.value)}
-                                      className="mb-3" required={true}/>
-                        <Form.Control type="text" placeholder="Task folder"
-                                      onChange={e => setTaskFolder(e.target.value)}
-                                      className="mb-3" defaultValue={"Public"}/>
-                        <Form.Control type="text" placeholder="Task tags (separated by space)"
-                                      onChange={e => setTaskTags(e.target.value)}
-                                      className="mb-3" defaultValue={""}/>
+                        <InputGroup className="mb-3">
+                            <InputGroup.Text id="name-addon">Name</InputGroup.Text>
+                            <Form.Control type="text"
+                                          onChange={e => setTaskName(e.target.value)}
+                                          required={true}
+                                          aria-describedby="name-addon"/>
+                        </InputGroup>
+                        <InputGroup className="mb-3">
+                            <InputGroup.Text id="desc-addon">Description</InputGroup.Text>
+                            <Form.Control type="text" as="textarea"
+                                          onChange={e => setTaskDescription(e.target.value)}
+                                          required={true}
+                                          aria-describedby="desc-addon"/>
+                        </InputGroup>
+                        <InputGroup className="mb-3">
+                            <InputGroup.Text id="cat-addon">Category</InputGroup.Text>
+                            <Form.Control type="text"
+                                          onChange={e => setTaskFolder(e.target.value)}
+                                          defaultValue={"Public"}
+                                          aria-describedby="cat-addon"/>
+                        </InputGroup>
+                        <InputGroup className="mb-3">
+                            <InputGroup.Text id="tags-addon">Tags</InputGroup.Text>
+                            <Form.Control type="text" placeholder="Task tags (separated by space)"
+                                          onChange={e => setTaskTags(e.target.value)}
+                                          defaultValue={""}
+                                          aria-describedby="tags-addon"/>
+                        </InputGroup>
                     </Modal.Body>
                     <Modal.Footer>
                         <Button variant="primary" type="submit">Create</Button>

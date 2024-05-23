@@ -2,6 +2,7 @@ from rest_framework.generics import ListCreateAPIView, RetrieveUpdateDestroyAPIV
 from rest_framework.permissions import IsAuthenticated
 
 from api import serializers, models, permissions
+from api.exceptions import APIConflictException
 from api.views.pagination import LimitOffsetPaginationMixin
 from api.views.workspace import WorkspaceMixin
 from api.filtering import filters, parser as filter_parser
@@ -46,6 +47,9 @@ class RetrieveUpdateDestroyTaskView(RetrieveUpdateDestroyAPIView, WorkspaceMixin
     def update(self, request, *args, **kwargs):
         self.serializer_class = serializers.TaskSerializer
         old_object = self.get_object()
+        if request.data.get("is_open") is False:
+            if old_object.stage is not None and not old_object.stage.is_end:
+                raise APIConflictException("Task cannot be closed until its stage is not at end")
         response = super().update(request, *args, **kwargs)
         new_object = self.get_object()
         if "assignee" in request.data:

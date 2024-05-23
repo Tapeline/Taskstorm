@@ -39,6 +39,15 @@ class Task(models.Model):
     arrangement_end = models.DateTimeField(null=True)
     assignee = models.ForeignKey(to=User, null=True, on_delete=models.CASCADE, related_name="assigned_tasks")
     stage = models.ForeignKey(to="WorkflowStage", null=True, on_delete=models.SET_NULL)
+    parent_task = models.ForeignKey(to="Task", on_delete=models.SET_NULL, null=True, default=None)
+    linked_tasks = models.ManyToManyField(to="Task", blank=True, default=list, related_name="linked_to_tasks")
+
+
+class Comment(models.Model):
+    task = models.ForeignKey(to=Task, on_delete=models.CASCADE)
+    user = models.ForeignKey(to=User, on_delete=models.CASCADE)
+    text = models.TextField()
+    posted_at = models.DateTimeField(auto_now_add=True)
 
 
 class WorkflowStage(models.Model):
@@ -92,9 +101,9 @@ class WorkflowPush(AbstractLoggableAction):
     type = "push"
 
     from_stage = models.ForeignKey(to=WorkflowStage, on_delete=models.CASCADE,
-                                   related_name="pushes_from")
+                                   related_name="pushes_from", null=True)
     to_stage = models.ForeignKey(to=WorkflowStage, on_delete=models.CASCADE,
-                                 related_name="pushes_to")
+                                 related_name="pushes_to", null=True)
     user = models.ForeignKey(to=User, on_delete=models.CASCADE)
 
 

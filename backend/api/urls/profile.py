@@ -5,4 +5,5 @@ from api import views
 urlpatterns = [
     path("", views.profile.ProfileView.as_view()),
     path("notifications/", views.profile.GetNotificationsView.as_view()),
+    path("all/", views.profile.GetAllUsersView.as_view()),
 ]

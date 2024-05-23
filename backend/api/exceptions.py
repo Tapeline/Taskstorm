@@ -18,6 +18,11 @@ class APIBadRequestException(APIException):
         super().__init__(message, 400, **data)
 
 
+class APIConflictException(APIException):
+    def __init__(self, message, **data):
+        super().__init__(message, 409, **data)
+
+
 def custom_exception_handler(exc, context):
     response = exception_handler(exc, context)
 

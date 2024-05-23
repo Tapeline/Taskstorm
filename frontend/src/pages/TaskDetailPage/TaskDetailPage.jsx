@@ -13,6 +13,11 @@ import CreateTaskModal from "../../components/Modals/CreateTaskModal/CreateTaskM
 import EditTaskNameModal from "../../components/Modals/EditTaskModals/EditTaskNameModal.jsx";
 import EditTaskFolderModal from "../../components/Modals/EditTaskModals/EditTaskFolderModal.jsx";
 import EditTaskAssigneeModal from "../../components/Modals/EditTaskModals/EditTaskAssigneeModal.jsx";
+import EditTaskStageModal from "../../components/Modals/EditTaskModals/EditTaskStageModal.jsx";
+import DisplayEditTaskTimeModal from "../../components/Modals/EditTaskModals/DisplayEditTaskTimeModal.jsx";
+import EditTaskDescriptionModal from "../../components/Modals/EditTaskModals/EditTaskDescriptionModal.jsx";
+import OpenCloseTaskButton from "../../components/Modals/EditTaskModals/OpenCloseTaskButton.jsx";
+import DeleteTaskButton from "../../components/Modals/EditTaskModals/DeleteTaskButton.jsx";
 
 export default function TaskDetailPage() {
     const {workspaceId, taskId} = useParams();
@@ -48,7 +53,9 @@ export default function TaskDetailPage() {
             <div className="d-flex justify-content-between">
                 <h2>{taskData.name} <EditTaskNameModal task={taskData} workspaceId={workspaceId}/></h2>
                 <div>
-                    <Button variant="outline-secondary">Close task</Button>
+                    <OpenCloseTaskButton task={taskData} workspaceId={workspaceId}/>
+                    <span className="mx-1"></span>
+                    <DeleteTaskButton task={taskData} workspaceId={workspaceId}/>
                 </div>
             </div>
             <h6><i className="bi bi-folder"></i> {taskData.folder}&nbsp;
@@ -75,20 +82,36 @@ export default function TaskDetailPage() {
             <div className="d-flex mb-3">
                 {
                     taskData.stage !== null
-                        ? <span className="small"> Staged: {taskData.stage?.name}</span>
+                        ? <span className="small"> Stage:&nbsp;
+                            <i className="bi bi-circle-fill"
+                               style={{color: "#" + taskData.stage?.color}}></i>&nbsp;
+                            {taskData.stage?.name}</span>
                         : <span className="small"> Unstaged</span>
                 }
+                &nbsp;
+                <EditTaskStageModal task={taskData} workspaceId={workspaceId}/>
             </div>
             <div className="d-flex">
                 <span className="small">Time bounds:&nbsp;
-                     {taskData.time_bounds_start} - {taskData.time_bounds_end}</span>
+                    <DisplayEditTaskTimeModal task={taskData} workspaceId={workspaceId}
+                                              title="Edit time bound start"
+                                              field="time_bounds_start"/>
+                    <span> to </span>
+                    <DisplayEditTaskTimeModal task={taskData} workspaceId={workspaceId}
+                                              title="Edit time bound end"
+                                              field="time_bounds_end"/></span>
             </div>
             <div className="d-flex mb-5">
                 <span className="small">Arranged:&nbsp;
-                     {taskData.arrangement_start} - {taskData.arrangement_end}</span>
+                    <DisplayEditTaskTimeModal task={taskData} workspaceId={workspaceId}
+                                              title="Edit arrangement start"
+                                              field="arrangement_start"/>
+                    <span> to </span>
+                    <DisplayEditTaskTimeModal task={taskData} workspaceId={workspaceId}
+                                              title="Edit arrangement end"
+                                              field="arrangement_end"/></span>
             </div>
-            <p>{taskData.description}</p>
-
+            <p><EditTaskDescriptionModal task={taskData} workspaceId={workspaceId}/> {taskData.description}</p>
         </div>
     );
 }

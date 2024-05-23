@@ -31,3 +31,9 @@ class GetNotificationsView(ListAPIView, LimitOffsetPaginationMixin):
                 notification.is_read = True
                 notification.save()
         return response
+
+
+class GetAllUsersView(ListAPIView):
+    permission_classes = (IsAuthenticated, )
+    serializer_class = serializers.UserSerializer
+    queryset = models.User.objects.all()

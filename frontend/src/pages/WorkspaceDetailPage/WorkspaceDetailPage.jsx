@@ -10,13 +10,15 @@ import {getAllTasksInWorkspace} from "../../api/endpoints-tasks.jsx";
 import WorkspaceCard from "../../components/WorkspaceCard/WorkspaceCard.jsx";
 import TaskCard from "../../components/TaskCard/TaskCard.jsx";
 import CreateTaskModal from "../../components/Modals/CreateTaskModal/CreateTaskModal.jsx";
+import WorkspaceMemberTable from "../../components/WorkspaceMemberTable/WorkspaceMemberTable.jsx";
+import AddWorkspaceMemberModal from "../../components/Modals/AddWorkspaceMemberModal/AddWorkspaceMemberModal.jsx";
 
 export default function WorkspaceDetailPage() {
     const {workspaceId, page} = useParams();
     const [key, setKey] = useState(page);
     const navigate = useNavigate();
     const accessToken = localStorage.getItem("accessToken");
-    const [workspaceData, setWorkspaceData] = useState({});
+    const [workspaceData, setWorkspaceData] = useState(null);
     const [taskList, setTaskList] = useState([]);
     const [isWorkspaceNotFound, setWorkspaceNotFound] = useState(false);
     const [taskFilter, setTaskFilter] = useState(null);
@@ -51,14 +53,11 @@ export default function WorkspaceDetailPage() {
         });
     }, [taskFilter]);
 
-    const reloadTasks = () => {
-
-    }
-
     if (isWorkspaceNotFound)
         return <h1>Workspace not found</h1>;
 
     return (
+        workspaceData === null? "Loading" :
         <div className="px-lg-5">
             <h1 className="mb-5">{workspaceData.name}</h1>
             <Tabs id="controlled-tab-example" activeKey={key}
@@ -71,12 +70,13 @@ export default function WorkspaceDetailPage() {
                     </div>
                     {
                         taskList.map(function (data, id) {
-                            return <TaskCard data={data}/>
+                            return <TaskCard data={data} key={id}/>
                         })
                     }
                 </Tab>
                 <Tab eventKey="members" title="Members">
-                    Tab content
+                    <AddWorkspaceMemberModal workspace={workspaceData}/>
+                    <WorkspaceMemberTable workspace={workspaceData}/>
                 </Tab>
                 <Tab eventKey="manage" title="Manage">
                     <p>Owner {workspaceData.owner?.username}</p>

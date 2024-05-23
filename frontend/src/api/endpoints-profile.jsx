@@ -8,3 +8,13 @@ export function getProfile(token) {
         "Authorization: Bearer " + token
     )
 }
+
+
+export function getAllUsers(token) {
+    return sendRequest(
+        "GET",
+        apiUrl("profile/all/"),
+        {},
+        "Authorization: Bearer " + token
+    )
+}
