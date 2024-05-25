@@ -15,8 +15,8 @@ export default function WorkspaceMemberTable(props) {
                 </tr>
             </thead>
             <tbody>
-            {workspace.members?.map((value) => {
-                return <WorkspaceMemberTableRow workspace={workspace} member={value}/>;
+            {workspace.members?.map((value, index) => {
+                return <WorkspaceMemberTableRow workspace={workspace} member={value} key={index}/>;
             })}
             {workspace.members?.length === 0? <tr><td colSpan={3}>No members for now</td></tr> : ""}
             </tbody>

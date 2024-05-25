@@ -17,7 +17,6 @@ export default function AddWorkspaceMemberModal(props) {
 
     useEffect(() => {
         setMemberIds(workspace.members?.map((v) => { return v.id; }));
-        console.log(memberIds);
 
         getProfile(localStorage.getItem("accessToken")).then((response) => {
             if (!response.success && response.status === 401) navigate("/login");

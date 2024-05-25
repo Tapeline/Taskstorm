@@ -12,9 +12,11 @@ export default function TaskCard(props) {
                     {
                         data.is_open
                             ? <Badge pill bg="warning" text="dark">Open</Badge>
-                            : <Badge pill bg="secondary" text="dark">Closed</Badge>
+                            : <Badge pill bg="secondary" text="light">Closed</Badge>
                     }&nbsp;
-                    {data.name}
+                    <Link to={"/workspaces/" + data.workspace.id + "/tasks/" + data.id + "/"}>
+                        {data.name}
+                    </Link>
                 </Card.Title>
                 <Card.Subtitle className="mb-2 text-muted">by {data.creator.username}</Card.Subtitle>
                 <Card.Subtitle className="mb-2 text-muted">{
@@ -30,7 +32,7 @@ export default function TaskCard(props) {
                             {data.stage?.name}</span>
                         : <span className="small"> Unstaged</span>
                 }</Card.Subtitle>
-                <Link to={"/workspaces/" + data.workspace.id + "/tasks/" + data.id + "/"}>Details</Link>
+                {/*<Link to={"/workspaces/" + data.workspace.id + "/tasks/" + data.id + "/"}>Details</Link>*/}
             </Card.Body>
         </Card>
     )

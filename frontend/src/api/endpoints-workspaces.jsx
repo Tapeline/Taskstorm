@@ -35,3 +35,12 @@ export function modifyWorkspace(token, id, data) {
         "Authorization: Bearer " + token
     )
 }
+
+export function removeWorkspace(token, id) {
+    return sendRequest(
+        "DELETE",
+        apiUrl("workspaces/" + id + "/"),
+        {},
+        "Authorization: Bearer " + token
+    )
+}

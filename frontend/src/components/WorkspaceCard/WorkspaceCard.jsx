@@ -6,7 +6,7 @@ export default function WorkspaceCard(props) {
     const {data} = props;
 
     return (
-        <Card>
+        <Card className="mb-2">
             <Card.Body>
                 <Card.Title>{data.name}</Card.Title>
                 <Card.Subtitle className="mb-2 text-muted">Owner: {data.owner.username}</Card.Subtitle>

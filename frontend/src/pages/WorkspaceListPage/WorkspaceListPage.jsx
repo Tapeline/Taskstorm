@@ -27,6 +27,7 @@ export default function WorkspaceListPage() {
 
     return (<div className="px-lg-5">
         <CreateWorkspaceModal/>
+        <div className="my-2"></div>
         {
             workspaceList.map(function (data, id) {
                 return <WorkspaceCard data={data}/>

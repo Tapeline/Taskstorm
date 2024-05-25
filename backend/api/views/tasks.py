@@ -58,6 +58,9 @@ class RetrieveUpdateDestroyTaskView(RetrieveUpdateDestroyAPIView, WorkspaceMixin
             models.WorkflowPush.log(from_stage=old_object.stage,
                                     to_stage=new_object.stage,
                                     user=request.user)
+            if new_object.stage is not None:
+                new_object.is_open = not new_object.stage.is_end
+                new_object.save()
         if "arrangement_start" in request.data or "arrangement_end" in request.data:
             models.TaskNotifiedWithRuleFact.objects.filter(task=new_object).delete()
         return response
