@@ -16,6 +16,8 @@ class LimitOffsetPaginationMixin:
     def cut_by_pagination(self, queryset):
         p_limit, p_offset = self.get_pagination_params()
         all_objects = queryset.all()
+        if p_limit == -1:
+            return queryset
         if p_offset >= len(all_objects):
             return queryset
         id_list = [all_objects[i].id for i in range(p_offset, min(len(all_objects), p_offset + p_limit))]

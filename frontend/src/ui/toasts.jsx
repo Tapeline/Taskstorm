@@ -6,3 +6,11 @@ export function toastError(message) {
         type: "error"
     });
 }
+
+export function toastNotification(message) {
+    if (message.length > 30) message = message.substring(0, 30) + "...";
+    toast(<p>{message}</p>, {
+        autoClose: 4000,
+        type: "info"
+    });
+}

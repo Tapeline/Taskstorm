@@ -41,7 +41,6 @@ export default function AddWorkspaceMemberModal(props) {
     const handleShow = () => setShow(true);
     const handleSubmit = (e) => {
         e.preventDefault();
-        console.log(value);
         const memberId = value === "null" || value === null? null : parseInt(value);
         if (memberId === null) {
             toastError("Please select a valid user");

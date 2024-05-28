@@ -24,7 +24,7 @@ export default function KanbanBoard(props) {
             if (!response.success && response.status === 401) {
                 navigate("/login");
             } else {
-                const _columns = [{title: "Unstaged", stage: null,
+                const _columns = [{title: "Unstaged", stage: -1,
                     tasks: [], stageData: null}];
                 const _columnIds = [null];
                 response.data.map(stage => {
@@ -45,7 +45,6 @@ export default function KanbanBoard(props) {
                 const _columns = columns.slice();
                 _columns.map(col => { col.tasks = []; })
                 response.data.map(task => {
-                    console.log("TASK", task, columnIds, _columns);
                     _columns[columnIds.indexOf(task.stage === null? null : task.stage.id)]?.tasks.push(task);
                 })
                 setColumns(_columns);
@@ -55,11 +54,12 @@ export default function KanbanBoard(props) {
 
     const handleDragEnd = result => {
         const {destination, source, draggableId} = result;
-        if (!destination) return;
-        const fromStage = parseInt(source.droppableId.substring(2));
-        const toStage = parseInt(destination.droppableId.substring(2));
+        console.log(destination, source, draggableId);
+        let fromStage = parseInt(source.droppableId.substring(2));
+        let toStage = parseInt(destination.droppableId.substring(2));
+        if (fromStage === -1) fromStage = null;
+        if (toStage === -1) toStage = null;
         const taskId = parseInt(draggableId.substring(2));
-        console.log(taskId);
         const newColumns = columns.slice();
         const oldColumns = columns.slice();
         let removedTask;

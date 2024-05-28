@@ -9,7 +9,8 @@ export default function WorkspaceStageTableRow(props) {
         <tr>
             <td># {stage.id}</td>
             <td><i className="bi bi-circle-fill" style={{color: "#" + stage?.color}}></i> {stage.name}</td>
-            <td>{stage.is_end ? "Yes" : "No"}</td>
+            <td>{stage.is_end ? <i className="bi bi-check-lg text-success"></i> :
+                <i className="bi bi-x-lg text-danger"></i>}</td>
             <td>
                 <WorkspaceStageTableRowEditStageButton stage={stage} workspace={workspace}/>
                 <span className="mx-2"></span>

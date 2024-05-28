@@ -51,7 +51,7 @@ class GetNotificationsByWorkspaceView(ListAPIView, WorkspaceMixin, LimitOffsetPa
         )
         if self.request.GET.get("only_unread") is not None:
             qs = qs.filter(is_read=False)
-        return self.cut_by_pagination(qs)
+        return self.cut_by_pagination(qs).order_by("issue_time").reverse()
 
     def list(self, request, *args, **kwargs):
         response = super().list(request, *args, **kwargs)

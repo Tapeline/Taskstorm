@@ -33,7 +33,6 @@ export default function DisplayEditTaskTimeModal(props) {
     const handleShow = () => setShow(true);
     const handleSubmit = (e, reset=false) => {
         e.preventDefault();
-        console.log(date);
         modifyTaskInWorkspace(
             localStorage.getItem("accessToken"),
             workspaceId,

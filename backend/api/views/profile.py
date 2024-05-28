@@ -16,7 +16,7 @@ class ProfileView(RetrieveUpdateDestroyAPIView):
 class GetNotificationsView(ListAPIView, LimitOffsetPaginationMixin):
     permission_classes = (IsAuthenticated, )
     serializer_class = serializers.NotificationSerializer
-    queryset = models.Notification.objects.all()
+    queryset = models.Notification.objects.all().order_by("issue_time").reverse()
 
     def get_queryset(self):
         qs = super().get_queryset().filter(recipient=self.request.user)

@@ -1,5 +1,5 @@
 import {useEffect, useState} from "react";
-import {Button, Col, Form, Row, Tab, Tabs} from "react-bootstrap";
+import {Button, Col, Form, Row, Spinner, Tab, Tabs} from "react-bootstrap";
 import {login} from "../../api/endpoints-auth.jsx";
 import {toastError} from "../../ui/toasts.jsx";
 import {Link, useNavigate, useParams} from "react-router-dom";
@@ -16,18 +16,28 @@ import KanbanBoard from "../../components/Kanban/KanbanBoard.jsx";
 import DeleteWorkspaceModal from "../../components/Modals/DeleteWorkspaceModal/DeleteWorkspaceModal.jsx";
 import CreateStageModal from "../../components/Modals/CreateStageModal/CreateStageModal.jsx";
 import WorkspaceStageTable from "../../components/WorkspaceStageTable/WorkspaceStageTable.jsx";
-import {getStagesInWorkspace} from "../../api/endpoints-workflow.jsx";
+import {getAllNotificationsInWorkspace, getStagesInWorkspace} from "../../api/endpoints-workflow.jsx";
+import CreateNotificationRuleModal
+    from "../../components/Modals/CreateNotificationRuleModal/CreateNotificationRuleModal.jsx";
+import WorkspaceNotificationRuleTable
+    from "../../components/WorkspaceNotificationRuleTable/WorkspaceNotificationRuleTable.jsx";
+import {getRulesInWorkspace} from "../../api/endpoints-notifications.jsx";
+import NotificationCard from "../../components/Notifications/NotificationCard.jsx";
+import Paginator from "../../components/Pagination/Paginator.jsx";
 
 export default function WorkspaceDetailPage() {
     const {workspaceId, page} = useParams();
     const [key, setKey] = useState(page === undefined || page === null? "tasks" : page);
     const navigate = useNavigate();
     const accessToken = localStorage.getItem("accessToken");
-    const [workspaceData, setWorkspaceData] = useState(null);
-    const [taskList, setTaskList] = useState([]);
-    const [isWorkspaceNotFound, setWorkspaceNotFound] = useState(false);
     const [taskFilter, setTaskFilter] = useState(null);
-    const [workspaceStages, setWorkspaceStages] = useState([]);
+
+    const [isWorkspaceNotFound, setWorkspaceNotFound] = useState(false);
+    const [taskList, setTaskList] = useState(null);
+    const [workspaceData, setWorkspaceData] = useState(null);
+    const [workspaceStages, setWorkspaceStages] = useState(null);
+    const [workspaceRules, setWorkspaceRules] = useState(null);
+    const [workspaceNotifications, setWorkspaceNotifications] = useState(null);
 
     if (accessToken === null) {
         navigate("login/");
@@ -64,17 +74,42 @@ export default function WorkspaceDetailPage() {
                 setWorkspaceStages(response.data);
             }
         });
+        getRulesInWorkspace(accessToken, workspaceId).then(response => {
+            if (!response.success && response.status === 401) {
+                navigate("/login");
+            } else {
+                setWorkspaceRules(response.data);
+            }
+        });
+        getAllNotificationsInWorkspace(accessToken, workspaceId).then(response => {
+            if (!response.success && response.status === 401) {
+                navigate("/login");
+            } else {
+                setWorkspaceNotifications(response.data);
+            }
+        });
     }, [taskFilter]);
 
     useEffect(() => {
         navigate("/workspaces/" + workspaceId + "/" + key + "/");
     }, [key]);
 
+    const isFullyLoaded = () => {
+        return !(workspaceRules === null || workspaceStages === null || workspaceData === null ||
+                 taskList === null || workspaceNotifications === null)
+    }
+
     if (isWorkspaceNotFound)
         return <h1>Workspace not found</h1>;
 
     return (
-        workspaceData === null? "Loading" :
+        !isFullyLoaded()?
+        <div className="d-flex justify-content-center h-100 w-100 align-items-center">
+            <Spinner animation="border" role="status">
+                <span className="visually-hidden">Loading...</span>
+            </Spinner>
+        </div>
+        :
         <div className="px-lg-5">
             <Link to="/workspaces">Back to workspace list</Link>
             <h1 className="mb-5">{workspaceData.name}</h1>
@@ -87,6 +122,28 @@ export default function WorkspaceDetailPage() {
                 <Tab eventKey="stages" title={<i className="bi bi-flag-fill"></i>}>
                     <CreateStageModal workspace={workspaceData}/>
                     <WorkspaceStageTable workspace={workspaceData} stages={workspaceStages}/>
+                </Tab>
+                <Tab eventKey="notifications" title={<i className="bi bi-bell-fill"></i>}>
+                    <Row>
+                        <Col style={{minWidth: "400px"}}>
+                            <h3>Notifications</h3>
+                            {/*
+                                workspaceNotifications.map((value, index) => {
+                                    return <NotificationCard notification={value} key={index}/>;
+                                })
+                            */}
+                            <Paginator data={workspaceNotifications}
+                                       render={(value, index) => {
+                                    return <NotificationCard notification={value} key={index}/>;
+                                }}/>
+                        </Col>
+                        <Col style={{minWidth: "400px"}}>
+                            <h3>Notification rules</h3>
+                            <CreateNotificationRuleModal workspace={workspaceData}/>
+                            <WorkspaceNotificationRuleTable workspace={workspaceData}
+                                                            rules={workspaceRules}/>
+                        </Col>
+                    </Row>
                 </Tab>
                 <Tab eventKey="manage" title={<i className="bi bi-gear-fill"></i>}>
                     <Row>

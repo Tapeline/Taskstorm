@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from "react";
-import {Badge, Button, Form, Tab, Tabs} from "react-bootstrap";
+import {Badge, Button, Form, Spinner, Tab, Tabs} from "react-bootstrap";
 import {login} from "../../api/endpoints-auth.jsx";
 import {toastError} from "../../ui/toasts.jsx";
 import {Link, useNavigate, useParams} from "react-router-dom";
@@ -24,7 +24,7 @@ export default function TaskDetailPage() {
     const navigate = useNavigate();
     const accessToken = localStorage.getItem("accessToken");
     const [isTaskNotFound, setIsTaskNotFound] = useState(false);
-    const [taskData, setTaskData] = useState({});
+    const [taskData, setTaskData] = useState(null);
 
     if (accessToken === null) {
         navigate("login/");
@@ -47,6 +47,13 @@ export default function TaskDetailPage() {
         return <h1>Task not found</h1>;
 
     return (
+        taskData === null?
+        <div className="d-flex justify-content-center h-100 w-100 align-items-center">
+            <Spinner animation="border" role="status">
+                <span className="visually-hidden">Loading...</span>
+            </Spinner>
+        </div>
+        :
         <div className="px-lg-5">
             <Link to={"/workspaces/" + workspaceId}>Back to workspace</Link>
             <hr/>

@@ -13,7 +13,10 @@ from api.filtering import filters, parser as filter_parser
 def is_task_applicable(now: datetime, task, user, filter_rule, rule) -> bool:
     if not filters.applies_to_filter(task, user, filter_rule):
         return False
+    if task.arrangement_start is None:
+        return False
     delta = rule.get_time_delta()
+    print(task.arrangement_start, delta)
     return now >= task.arrangement_start + delta
 
 

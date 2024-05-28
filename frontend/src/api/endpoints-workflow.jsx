@@ -35,3 +35,12 @@ export function removeStageFromWorkspace(token, workspaceId, stageId) {
         "Authorization: Bearer " + token
     )
 }
+
+export function getAllNotificationsInWorkspace(token, workspaceId) {
+    return sendRequest(
+        "GET",
+        apiUrl("workspaces/" + workspaceId + "/notifications/?limit=-1"),
+        {},
+        "Authorization: Bearer " + token
+    )
+}
