@@ -43,6 +43,7 @@ services:
 
   api_server:
     build: backend
+    hostname: ${API_HOST}
     environment:
       SERVER_ADDRESS: "0.0.0.0:${API_PORT}"
       PG_NAME: ${DB_NAME}
@@ -50,6 +51,10 @@ services:
       PG_PASS: ${DB_PASS}
       PG_PORT: ${DB_PORT}
       PG_HOST: ${DB_HOST}
+      USE_DB: "production"
+      REDIS_PASSWORD: ${REDIS_PASS}
+      REDIS_PORT: ${REDIS_PORT}
+      REDIS_HOST: ${REDIS_HOST}
     ports:
       - "${API_PORT}:${API_PORT}"
     expose:
@@ -61,6 +66,23 @@ services:
         condition: service_healthy
     links:
       - db_service
+      - redis_service
+
+  frontend_service:
+    build: frontend
+    environment:
+      API_BASE_URL: "${API_HOST}:${API_PORT}/api/"
+    ports:
+      - "80:3000"
+    expose:
+      - "80"
+    networks:
+      - main_network
+    depends_on:
+      api_server:
+        condition: service_started
+    links:
+      - api_server
 
 
 networks:

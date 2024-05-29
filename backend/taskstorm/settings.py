@@ -26,11 +26,7 @@ SECRET_KEY = 'django-insecure-sfd4v-x!l_=tif8$^o74()w4b!nwp4=x7@5-&sr&+ja3e^!^3r
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = [
-    "localhost",
-    "127.0.0.1",
-]
-
+ALLOWED_HOSTS = ['*']
 
 # Application definition
 
@@ -174,4 +170,4 @@ CORS_ALLOW_ALL_ORIGINS = True
 
 CELERY_BROKER_URL = f"redis://default:{REDIS_CONFIG['PASS']}@{REDIS_CONFIG['HOST']}:{REDIS_CONFIG['PORT']}/0"
 CELERY_RESULT_BACKEND = f"redis://default:{REDIS_CONFIG['PASS']}@{REDIS_CONFIG['HOST']}:{REDIS_CONFIG['PORT']}/0"
-print(DATABASES["default"])
+print(DATABASES["default"], REDIS_CONFIG)
