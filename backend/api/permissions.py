@@ -11,3 +11,8 @@ class CanInteractWithWorkspace(BasePermission):
         if workspace is None:
             return True
         return workspace.can_interact(request.user)
+
+
+class CanInteractWithCommentObject(BasePermission):
+    def has_object_permission(self, request, view, obj):
+        return obj.user.id == request.user.id

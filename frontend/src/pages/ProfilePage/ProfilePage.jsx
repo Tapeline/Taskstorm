@@ -15,10 +15,6 @@ export default function ProfilePage() {
     const accessToken = localStorage.getItem("accessToken");
     const [profileData, setProfileData] = useState({});
 
-    if (accessToken === null) {
-        navigate("login/");
-        return;
-    }
     if (page === null) {
         navigate("/profile/dashboard");
         return;
@@ -26,11 +22,7 @@ export default function ProfilePage() {
 
     useEffect(() => {
         getProfile(accessToken).then(response => {
-            if (!response.success && response.status === 401) {
-                navigate("/login");
-            } else {
-                setProfileData(response.data);
-            }
+            setProfileData(response.data);
         });
     }, []);
 

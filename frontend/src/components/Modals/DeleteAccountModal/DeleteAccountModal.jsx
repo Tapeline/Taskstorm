@@ -14,9 +14,7 @@ export default function DeleteAccountModal() {
     const handleSubmit = (e) => {
         e.preventDefault();
         deleteProfile(localStorage.getItem("accessToken")).then((response) => {
-            if (!response.success && response.status === 401) {
-                navigate("/login");
-            } else if (!response.success) {
+            if (!response.success) {
                 toastError(response.reason);
             } else {
                 handleClose();

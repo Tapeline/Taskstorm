@@ -1,4 +1,4 @@
-from . import auth, profile, tasks, workspace, workflow, notification_rules
+from . import auth, profile, tasks, workspace, workflow, notification_rules, comments
 
 __all__ = (
     "auth",
@@ -6,5 +6,6 @@ __all__ = (
     "tasks",
     "workspace",
     "workflow",
-    "notification_rules"
+    "notification_rules",
+    "comments"
 )

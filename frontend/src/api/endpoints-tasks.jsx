@@ -25,11 +25,11 @@ export function getTaskInWorkspace(token, workspaceId, taskId) {
     )
 }
 
-export function newTaskInWorkspace(token, workspaceId, name, desc, folder, tags) {
+export function newTaskInWorkspace(token, workspaceId, data) {
     return sendRequest(
         "POST",
         apiUrl("workspaces/" + workspaceId + "/tasks/"),
-        {"name": name, "description": desc, "folder": folder, "tags": tags},
+        data,
         "Authorization: Bearer " + token
     )
 }

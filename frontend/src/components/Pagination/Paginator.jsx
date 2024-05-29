@@ -2,7 +2,8 @@ import React, {useEffect, useState} from "react";
 import {Col, Form, InputGroup, Pagination, Row} from "react-bootstrap";
 
 export default function Paginator(props) {
-    const {data, render} = props;
+    const {children} = props;
+    const data = children;
     const [itemsPerPage, setItemsPerPage] =useState(5);
     const [pageCount, setPageCount] = useState(0);
     const [currentPage, setCurrentPage] = useState( 0);
@@ -66,9 +67,7 @@ export default function Paginator(props) {
             </Row>
             <div>
                 {
-                    pages[currentPage]?.map((value, index) => {
-                        return render(value, index);
-                    })
+                    pages[currentPage]
                 }
             </div>
         </div>

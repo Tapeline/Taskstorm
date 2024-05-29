@@ -24,6 +24,8 @@ import WorkspaceNotificationRuleTable
 import {getRulesInWorkspace} from "../../api/endpoints-notifications.jsx";
 import NotificationCard from "../../components/Notifications/NotificationCard.jsx";
 import Paginator from "../../components/Pagination/Paginator.jsx";
+import TransferWorkspaceOwnershipModal
+    from "../../components/Modals/TransferWorkspaceOwnershipModal/TransferWorkspaceOwnershipModal.jsx";
 
 export default function WorkspaceDetailPage() {
     const {workspaceId, page} = useParams();
@@ -50,43 +52,23 @@ export default function WorkspaceDetailPage() {
 
     useEffect(() => {
         getWorkspace(accessToken, workspaceId).then(response => {
-            if (!response.success && response.status === 401) {
-                navigate("/login");
-            } else if (!response.success && response.success == 404) {
+            if (!response.success && response.status === 404) {
                 setWorkspaceNotFound(true);
             } else {
                 setWorkspaceData(response.data);
             }
         });
         getAllTasksInWorkspace(accessToken, workspaceId, taskFilter).then(response => {
-            if (!response.success && response.status === 401) {
-                navigate("/login");
-            } else if (!response.success && response.success == 404) {
-                setWorkspaceNotFound(true);
-            } else {
-                setTaskList(response.data);
-            }
+            setTaskList(response.data);
         });
         getStagesInWorkspace(accessToken, workspaceId).then(response => {
-            if (!response.success && response.status === 401) {
-                navigate("/login");
-            } else {
-                setWorkspaceStages(response.data);
-            }
+            setWorkspaceStages(response.data);
         });
         getRulesInWorkspace(accessToken, workspaceId).then(response => {
-            if (!response.success && response.status === 401) {
-                navigate("/login");
-            } else {
-                setWorkspaceRules(response.data);
-            }
+            setWorkspaceRules(response.data);
         });
         getAllNotificationsInWorkspace(accessToken, workspaceId).then(response => {
-            if (!response.success && response.status === 401) {
-                navigate("/login");
-            } else {
-                setWorkspaceNotifications(response.data);
-            }
+            setWorkspaceNotifications(response.data);
         });
     }, [taskFilter]);
 
@@ -132,10 +114,13 @@ export default function WorkspaceDetailPage() {
                                     return <NotificationCard notification={value} key={index}/>;
                                 })
                             */}
-                            <Paginator data={workspaceNotifications}
-                                       render={(value, index) => {
-                                    return <NotificationCard notification={value} key={index}/>;
-                                }}/>
+                            <Paginator>
+                                {
+                                    workspaceNotifications.map((value, index) => {
+                                        return <NotificationCard notification={value} key={index}/>;
+                                    })
+                                }
+                            </Paginator>
                         </Col>
                         <Col style={{minWidth: "400px"}}>
                             <h3>Notification rules</h3>
@@ -149,6 +134,7 @@ export default function WorkspaceDetailPage() {
                     <Row>
                         <Col md={2}>
                             <Row><Link to="#manage-general">General</Link></Row>
+                            <Row><Link to="#manage-ownership">Ownership</Link></Row>
                             <Row><Link to="#manage-danger-zone">Danger zone</Link></Row>
                         </Col>
                         <Col>
@@ -156,9 +142,19 @@ export default function WorkspaceDetailPage() {
                                 <h3>General</h3>
                                 <div>
                                     <h4>{workspaceData.name}</h4>
-                                    <h6>Owner: {workspaceData.owner.username}</h6>
                                     <h6>ID: {workspaceData.id}</h6>
                                 </div>
+                            </Row>
+                            <hr/>
+                            <Row id="#manage-ownership">
+                                <h3>Ownership</h3>
+                                <h6>Current owner: {workspaceData.owner.username}</h6>
+                                {workspaceData.owner.id.toString() ===
+                                    localStorage.getItem("accountId")?
+                                    <div>
+                                        <TransferWorkspaceOwnershipModal workspace={workspaceData}/>
+                                    </div>
+                                : ""}
                             </Row>
                             <hr/>
                             <Row id="#manage-danger-zone">

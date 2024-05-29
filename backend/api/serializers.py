@@ -71,3 +71,16 @@ class NotificationSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.Notification
         fields = "__all__"
+
+
+class CommentSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = models.Comment
+        fields = "__all__"
+
+
+class CommentUnwrappedSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = models.Comment
+        depth = 1
+        fields = "__all__"

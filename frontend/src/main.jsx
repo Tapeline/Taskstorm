@@ -12,6 +12,9 @@ import ProfilePage from "./pages/ProfilePage/ProfilePage.jsx";
 import WorkspaceListPage from "./pages/WorkspaceListPage/WorkspaceListPage.jsx";
 import WorkspaceDetailPage from "./pages/WorkspaceDetailPage/WorkspaceDetailPage.jsx";
 import TaskDetailPage from "./pages/TaskDetailPage/TaskDetailPage.jsx";
+import LoginRequiredRoute from "./utils/LoginRequiredRoute.jsx";
+import LogoutPage from "./pages/LogoutPage/LogoutPage.jsx";
+import LocalSettingsPage from "./pages/LocalSettingsPage/LocalSettingsPage.jsx";
 
 
 const router = createBrowserRouter([
@@ -21,28 +24,32 @@ const router = createBrowserRouter([
         children: [
             {
                 path: "/profile",
-                element: <ProfilePage/>
+                element: <LoginRequiredRoute><ProfilePage/></LoginRequiredRoute>
             },
             {
                 path: "/profile/:page",
-                element: <ProfilePage/>
+                element: <LoginRequiredRoute><ProfilePage/></LoginRequiredRoute>
             },
             {
                 path: "/workspaces",
-                element: <WorkspaceListPage/>
+                element: <LoginRequiredRoute><WorkspaceListPage/></LoginRequiredRoute>
             },
             {
                 path: "/workspaces/:workspaceId",
-                element: <WorkspaceDetailPage/>
+                element: <LoginRequiredRoute><WorkspaceDetailPage/></LoginRequiredRoute>
             },
             {
                 path: "/workspaces/:workspaceId/:page",
-                element: <WorkspaceDetailPage/>
+                element: <LoginRequiredRoute><WorkspaceDetailPage/></LoginRequiredRoute>
             },
             {
                 path: "/workspaces/:workspaceId/tasks/:taskId",
-                element: <TaskDetailPage/>
-            }
+                element: <LoginRequiredRoute><TaskDetailPage/></LoginRequiredRoute>
+            },
+            {
+                path: "/local-settings",
+                element: <LoginRequiredRoute><LocalSettingsPage/></LoginRequiredRoute>
+            },
         ]
     },
     {
@@ -52,6 +59,10 @@ const router = createBrowserRouter([
     {
         path: "/register",
         element: <RegisterPage/>
+    },
+    {
+        path: "/logout",
+        element: <LogoutPage/>
     }
 ]);
 

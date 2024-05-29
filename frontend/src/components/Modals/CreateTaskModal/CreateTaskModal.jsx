@@ -4,6 +4,7 @@ import {newWorkspace} from "../../../api/endpoints-workspaces.jsx";
 import {toastError} from "../../../ui/toasts.jsx";
 import {useNavigate} from "react-router-dom";
 import {newTaskInWorkspace} from "../../../api/endpoints-tasks.jsx";
+import {localSettings} from "../../../utils/localSettings.jsx";
 
 export default function CreateTaskModal(props) {
     const [show, setShow] = useState(false);
@@ -18,13 +19,18 @@ export default function CreateTaskModal(props) {
     const handleShow = () => setShow(true);
     const handleSubmit = (e) => {
         e.preventDefault();
+        const data = {
+            "name": taskName,
+            "description": taskDescription,
+            "folder": taskFolder,
+            "tags": taskTags
+        };
+        if (localSettings.getBool("autoAssign"))
+            data["assignee"] = parseInt(localStorage.getItem("accountId"));
         newTaskInWorkspace(
             localStorage.getItem("accessToken"),
             workspace.id,
-            taskName,
-            taskDescription,
-            taskFolder,
-            taskTags
+            data
         ).then((response) => {
             if (!response.success && response.status === 401) {
                 navigate("/login");

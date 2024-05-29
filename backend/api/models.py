@@ -41,6 +41,7 @@ class Task(models.Model):
     stage = models.ForeignKey(to="WorkflowStage", null=True, on_delete=models.SET_NULL)
     parent_task = models.ForeignKey(to="Task", on_delete=models.SET_NULL, null=True, default=None)
     linked_tasks = models.ManyToManyField(to="Task", blank=True, default=list, related_name="linked_to_tasks")
+    created_at = models.DateTimeField(auto_now_add=True)
 
 
 class Comment(models.Model):

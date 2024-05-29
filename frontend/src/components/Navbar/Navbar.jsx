@@ -22,8 +22,14 @@ export default function Navbar() {
             );
             navbar.classList.remove("fixed-bottom");
         } else {
-            navbar.removeAttribute("style")
-            content.removeAttribute("style")
+            navbar.setAttribute(
+                'style',
+                `height: 72px;`
+            );
+            content.setAttribute(
+                'style',
+                `padding-bottom: 80px!important;`
+            );
             navbar.classList.add("fixed-bottom");
         }
     }
@@ -45,6 +51,7 @@ export default function Navbar() {
                 <NavbarLink linkTo="/workspaces" text=" Workspaces" icon="bi-house" />
                 <NavbarLink linkTo="/local-settings" text=" Local settings" icon="bi-sliders" />
                 <NavbarLink linkTo="/profile/dashboard" text=" Profile" icon="bi-person-circle" />
+                <NavbarLink linkTo="/logout" text=" Logout" icon="bi-box-arrow-left"/>
             </ul>
         </div>
     );

@@ -18,6 +18,12 @@ import DisplayEditTaskTimeModal from "../../components/Modals/EditTaskModals/Dis
 import EditTaskDescriptionModal from "../../components/Modals/EditTaskModals/EditTaskDescriptionModal.jsx";
 import OpenCloseTaskButton from "../../components/Modals/EditTaskModals/OpenCloseTaskButton.jsx";
 import DeleteTaskButton from "../../components/Modals/EditTaskModals/DeleteTaskButton.jsx";
+import {getCommentsForTask} from "../../api/endpoints-comments.jsx";
+import Preloader from "../../components/Preloader/Preloader.jsx";
+import CommentCard from "../../components/CommentCard/CommentCard.jsx";
+import LeaveCommentField from "../../components/LeaveCommentField/LeaveCommentField.jsx";
+import Paginator from "../../components/Pagination/Paginator.jsx";
+import HWhitespace from "../../utils/HWhitespace.jsx";
 
 export default function TaskDetailPage() {
     const {workspaceId, taskId} = useParams();
@@ -25,21 +31,19 @@ export default function TaskDetailPage() {
     const accessToken = localStorage.getItem("accessToken");
     const [isTaskNotFound, setIsTaskNotFound] = useState(false);
     const [taskData, setTaskData] = useState(null);
-
-    if (accessToken === null) {
-        navigate("login/");
-        return;
-    }
+    const [taskComments, setTaskComments] = useState(null);
 
     useEffect(() => {
         getTaskInWorkspace(accessToken, workspaceId, taskId).then(response => {
-            if (!response.success && response.status === 401) {
-                navigate("/login");
-            } else if (!response.success && response.success == 404) {
+            if (!response.success && response.status === 404) {
                 setIsTaskNotFound(true);
             } else {
                 setTaskData(response.data);
             }
+        });
+        getCommentsForTask(accessToken, workspaceId, taskId).then(response => {
+            console.log(response.data)
+            setTaskComments(response.data);
         });
     }, []);
 
@@ -47,12 +51,8 @@ export default function TaskDetailPage() {
         return <h1>Task not found</h1>;
 
     return (
-        taskData === null?
-        <div className="d-flex justify-content-center h-100 w-100 align-items-center">
-            <Spinner animation="border" role="status">
-                <span className="visually-hidden">Loading...</span>
-            </Spinner>
-        </div>
+        taskData === null || taskComments === null?
+        <Preloader/>
         :
         <div className="px-lg-5">
             <Link to={"/workspaces/" + workspaceId}>Back to workspace</Link>
@@ -108,7 +108,7 @@ export default function TaskDetailPage() {
                                               title="Edit time bound end"
                                               field="time_bounds_end"/></span>
             </div>
-            <div className="d-flex mb-5">
+            <div className="d-flex">
                 <span className="small">Arranged:&nbsp;
                     <DisplayEditTaskTimeModal task={taskData} workspaceId={workspaceId}
                                               title="Edit arrangement start"
@@ -118,7 +118,22 @@ export default function TaskDetailPage() {
                                               title="Edit arrangement end"
                                               field="arrangement_end"/></span>
             </div>
-            <p><EditTaskDescriptionModal task={taskData} workspaceId={workspaceId}/> {taskData.description}</p>
+            <p className="my-5">
+                <EditTaskDescriptionModal task={taskData} workspaceId={workspaceId}/>
+                <HWhitespace/>
+                {taskData.description}
+            </p>
+            <div>
+                <h5>Comments</h5>
+                <Paginator>
+                    {
+                        taskComments.map((value, index) => {
+                            return <CommentCard data={value} workspaceId={workspaceId} key={index}/>
+                        })
+                    }
+                </Paginator>
+                <LeaveCommentField task={taskData}/>
+            </div>
         </div>
     );
 }

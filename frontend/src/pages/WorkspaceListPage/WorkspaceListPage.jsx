@@ -4,6 +4,7 @@ import {getAllWorkspaces} from "../../api/endpoints-workspaces.jsx";
 import WorkspaceCard from "../../components/WorkspaceCard/WorkspaceCard.jsx";
 import CreateWorkspaceModal from "../../components/Modals/CreateWorkspaceModal/CreateWorkspaceModal.jsx";
 import {Form, Spinner} from "react-bootstrap";
+import Preloader from "../../components/Preloader/Preloader.jsx";
 
 export default function WorkspaceListPage() {
     const navigate = useNavigate();
@@ -17,21 +18,13 @@ export default function WorkspaceListPage() {
 
     useEffect(() => {
         getAllWorkspaces(accessToken).then(response => {
-            if (!response.success && response.status === 401) {
-                navigate("/login");
-            } else {
-                setWorkspaceList(response.data);
-            }
+            setWorkspaceList(response.data);
         });
     }, []);
 
     return (
         workspaceList === null?
-        <div className="d-flex justify-content-center h-100 w-100 align-items-center">
-            <Spinner animation="border" role="status">
-                <span className="visually-hidden">Loading...</span>
-            </Spinner>
-        </div>
+        <Preloader/>
         :
         <div className="px-lg-5">
             <CreateWorkspaceModal/>

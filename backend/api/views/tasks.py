@@ -2,15 +2,21 @@ from rest_framework.generics import ListCreateAPIView, RetrieveUpdateDestroyAPIV
 from rest_framework.permissions import IsAuthenticated
 
 from api import serializers, models, permissions
+from api.accessor import get_object_or_null
 from api.exceptions import APIConflictException
 from api.views.pagination import LimitOffsetPaginationMixin
 from api.views.workspace import WorkspaceMixin
 from api.filtering import filters, parser as filter_parser
 
 
+class TaskMixin(WorkspaceMixin):
+    def get_task(self):
+        return get_object_or_null(models.Task, id=self.kwargs.get("task_id"))
+
+
 class ListCreateTaskView(ListCreateAPIView, WorkspaceMixin, LimitOffsetPaginationMixin):
     serializer_class = serializers.TaskUnwrappedSerializer
-    queryset = models.Task.objects.order_by("id")
+    queryset = models.Task.objects.order_by("-is_open", "-created_at")
     permission_classes = (IsAuthenticated, permissions.CanInteractWithWorkspace)
 
     def get_queryset(self):

@@ -23,6 +23,11 @@ class APIConflictException(APIException):
         super().__init__(message, 409, **data)
 
 
+class APIPermissionException(APIException):
+    def __init__(self, message, **data):
+        super().__init__(message, 403, **data)
+
+
 def custom_exception_handler(exc, context):
     response = exception_handler(exc, context)
 
