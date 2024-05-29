@@ -36,6 +36,9 @@ class WorkspaceSerializer(serializers.ModelSerializer):
 
 
 class WorkspaceUnwrappedSerializer(serializers.ModelSerializer):
+    owner = UserSerializer()
+    members = UserSerializer(many=True)
+
     class Meta:
         model = models.Workspace
         fields = "__all__"
@@ -49,6 +52,8 @@ class TaskSerializer(serializers.ModelSerializer):
 
 
 class TaskUnwrappedSerializer(serializers.ModelSerializer):
+    creator = UserSerializer()
+
     class Meta:
         model = models.Task
         fields = "__all__"
@@ -80,6 +85,8 @@ class CommentSerializer(serializers.ModelSerializer):
 
 
 class CommentUnwrappedSerializer(serializers.ModelSerializer):
+    user = UserSerializer()
+
     class Meta:
         model = models.Comment
         depth = 1
