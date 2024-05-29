@@ -6,6 +6,9 @@ import CommentCardEditCommentButton from "./CommentCardEditCommentButton.jsx";
 import VWhitespace from "../../utils/VWhitespace.jsx";
 import HWhitespace from "../../utils/HWhitespace.jsx";
 import CommentCardDeleteCommentButton from "./CommentCardDeleteCommentButton.jsx";
+import Markdown from "react-markdown";
+import remarkGfm from "remark-gfm";
+import MarkdownRender from "../Markdown/MarkdownRender.jsx";
 
 export default function CommentCard(props) {
     const {workspaceId, data} = props;
@@ -20,22 +23,16 @@ export default function CommentCard(props) {
                             <CommentCardDeleteCommentButton workspaceId={workspaceId}
                                                   taskId={data.task.id} comment={data}/>
                             <HWhitespace/>
-                        </>
-                        : ""
-                    }
-                    by {data.user.username} at {dateConverter(data.posted_at)}
-                </Card.Subtitle>
-                <Card.Text>
-                    {
-                        data.user.id === parseInt(localStorage.getItem("accountId"))?
-                        <>
                             <CommentCardEditCommentButton workspaceId={workspaceId}
                                                   taskId={data.task.id} comment={data}/>
                             <HWhitespace/>
                         </>
                         : ""
                     }
-                    {data.text}
+                    by {data.user.username} at {dateConverter(data.posted_at)}
+                </Card.Subtitle>
+                <Card.Text>
+                    <MarkdownRender text={data.text}/>
                 </Card.Text>
             </Card.Body>
         </Card>

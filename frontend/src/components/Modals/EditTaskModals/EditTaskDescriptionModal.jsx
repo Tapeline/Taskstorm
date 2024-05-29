@@ -43,7 +43,7 @@ export default function EditTaskDescriptionModal(props) {
                 </Modal.Header>
                 <Form onSubmit={handleSubmit}>
                     <Modal.Body>
-                        <Form.Control type="text" placeholder="Task folder" as="textarea"
+                        <Form.Control type="text" placeholder="Task folder" as="textarea" rows={20}
                                       onChange={e => setValue(e.target.value)}
                                       className="mb-3" required={true} defaultValue={task.description}/>
                     </Modal.Body>

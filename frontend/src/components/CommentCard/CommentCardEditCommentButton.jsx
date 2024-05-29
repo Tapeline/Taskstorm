@@ -38,19 +38,22 @@ export default function CommentCardEditCommentButton(props) {
                 <i className="bi bi-pencil-square"></i></a>
 
             <Modal show={show} onHide={handleClose}>
-                <Modal.Header closeButton>
-                    <Modal.Title>Change comment text</Modal.Title>
-                </Modal.Header>
-                <Form onSubmit={handleSubmit}>
-                    <Modal.Body>
-                        <Form.Control type="text" placeholder="Text" as="textarea"
-                                      onChange={e => setValue(e.target.value)}
-                                      className="mb-3" required={true} defaultValue={comment.text}/>
-                    </Modal.Body>
-                    <Modal.Footer>
-                        <Button variant="primary" type="submit">Apply</Button>
-                    </Modal.Footer>
-                </Form>
+                <div>
+                    <Modal.Header closeButton>
+                        <Modal.Title>Change comment text</Modal.Title>
+                    </Modal.Header>
+                    <Form onSubmit={handleSubmit}>
+                        <Modal.Body>
+                            <Form.Control type="text" placeholder="Text" as="textarea"
+                                          onChange={e => setValue(e.target.value)}
+                                          className="mb-3" required={true} defaultValue={comment.text}
+                                          rows={20}/>
+                        </Modal.Body>
+                        <Modal.Footer>
+                            <Button variant="primary" type="submit">Apply</Button>
+                        </Modal.Footer>
+                    </Form>
+                </div>
             </Modal>
         </>
     );

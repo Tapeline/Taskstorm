@@ -24,6 +24,7 @@ import CommentCard from "../../components/CommentCard/CommentCard.jsx";
 import LeaveCommentField from "../../components/LeaveCommentField/LeaveCommentField.jsx";
 import Paginator from "../../components/Pagination/Paginator.jsx";
 import HWhitespace from "../../utils/HWhitespace.jsx";
+import MarkdownRender from "../../components/Markdown/MarkdownRender.jsx";
 
 export default function TaskDetailPage() {
     const {workspaceId, taskId} = useParams();
@@ -121,7 +122,7 @@ export default function TaskDetailPage() {
             <p className="my-5">
                 <EditTaskDescriptionModal task={taskData} workspaceId={workspaceId}/>
                 <HWhitespace/>
-                {taskData.description}
+                <MarkdownRender text={taskData.description}/>
             </p>
             <div>
                 <h5>Comments</h5>
