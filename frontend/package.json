@@ -10,8 +10,12 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@remirror/pm": "^2.0.3",
+    "@remirror/react": "^2.0.25",
     "axios": "^1.6.8",
     "bootstrap": "^5.3.3",
+    "quill": "^2.0.2",
+    "quill-cursors": "^4.0.3",
     "react": "^18.2.0",
     "react-beautiful-dnd": "^13.1.1",
     "react-bootstrap": "^2.10.2",
@@ -19,10 +23,16 @@
     "react-colorful": "^5.6.1",
     "react-dom": "^18.2.0",
     "react-markdown": "^9.0.1",
+    "react-quill": "^2.0.0",
     "react-router-dom": "^6.23.0",
     "react-syntax-highlighter": "^15.5.0",
     "react-toastify": "^10.0.5",
-    "remark-gfm": "^4.0.0"
+    "remark-gfm": "^4.0.0",
+    "remirror": "^2.0.24",
+    "socket.io-client": "^4.7.5",
+    "y-quill": "^1.0.0",
+    "y-websocket": "^1.4.5",
+    "yjs": "^13.6.15"
   },
   "devDependencies": {
     "@types/react": "^18.2.66",

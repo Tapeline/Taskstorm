@@ -31,6 +31,7 @@ ALLOWED_HOSTS = ['*']
 # Application definition
 
 INSTALLED_APPS = [
+    'daphne',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -39,13 +40,15 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     "api",
     "corsheaders",
+    "channels",
     "rest_framework",
 ]
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
-    "corsheaders.middleware.CorsMiddleware",
+    #"corsheaders.middleware.CorsMiddleware",
+    "api.middleware.SyncCorsMiddleware",
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
@@ -171,3 +174,13 @@ CORS_ALLOW_ALL_ORIGINS = True
 CELERY_BROKER_URL = f"redis://default:{REDIS_CONFIG['PASS']}@{REDIS_CONFIG['HOST']}:{REDIS_CONFIG['PORT']}/0"
 CELERY_RESULT_BACKEND = f"redis://default:{REDIS_CONFIG['PASS']}@{REDIS_CONFIG['HOST']}:{REDIS_CONFIG['PORT']}/0"
 print(DATABASES["default"], REDIS_CONFIG)
+
+ASGI_APPLICATION = "taskstorm.asgi.application"
+CHANNEL_LAYERS = {
+    "default": {
+        "BACKEND": "channels_redis.core.RedisChannelLayer",
+        "CONFIG": {
+            "hosts": [f"redis://default:{REDIS_CONFIG['PASS']}@{REDIS_CONFIG['HOST']}:{REDIS_CONFIG['PORT']}/1"]
+        },
+    }
+}

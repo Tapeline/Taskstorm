@@ -15,6 +15,7 @@ import TaskDetailPage from "./pages/TaskDetailPage/TaskDetailPage.jsx";
 import LoginRequiredRoute from "./utils/LoginRequiredRoute.jsx";
 import LogoutPage from "./pages/LogoutPage/LogoutPage.jsx";
 import LocalSettingsPage from "./pages/LocalSettingsPage/LocalSettingsPage.jsx";
+import DocumentDetailPage from "./pages/DocumentDetailPage/DocumentDetailPage.jsx";
 
 
 const router = createBrowserRouter([
@@ -37,6 +38,10 @@ const router = createBrowserRouter([
             {
                 path: "/workspaces/:workspaceId",
                 element: <LoginRequiredRoute><WorkspaceDetailPage/></LoginRequiredRoute>
+            },
+            {
+                path: "/workspaces/:workspaceId/documents/:documentId",
+                element: <LoginRequiredRoute><DocumentDetailPage/></LoginRequiredRoute>
             },
             {
                 path: "/workspaces/:workspaceId/:page",
@@ -67,7 +72,8 @@ const router = createBrowserRouter([
 ]);
 
 ReactDOM.createRoot(document.getElementById('root')).render(
-    <React.StrictMode>
+    // <React.StrictMode>
+    <>
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css"/>
 
         <RouterProvider router={router}></RouterProvider>
@@ -82,6 +88,7 @@ ReactDOM.createRoot(document.getElementById('root')).render(
             draggable={false}
             theme="colored"
         />
-    </React.StrictMode>,
+    </>
+    // </React.StrictMode>,
 );
 

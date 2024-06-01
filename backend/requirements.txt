@@ -12,3 +12,6 @@ PyJWT==2.8.0
 celery==5.3.6
 django-cors-headers==4.2.0
 redis==5.0.4
+daphne==4.0.0
+channels==4.0.0
+channels-redis==4.2.0
