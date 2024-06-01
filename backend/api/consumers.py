@@ -1,6 +1,16 @@
 import json
 
+from asgiref.sync import sync_to_async
 from channels.generic.websocket import AsyncWebsocketConsumer, WebsocketConsumer
+from rest_framework_simplejwt.authentication import JWTAuthentication
+
+from api.models import Document
+
+
+@sync_to_async
+def get_user(token):
+    auth = JWTAuthentication()
+    return auth.get_user(auth.get_validated_token(token))
 
 
 class EditorConsumer(AsyncWebsocketConsumer):
@@ -30,14 +40,33 @@ class EditorConsumer(AsyncWebsocketConsumer):
             self.channel_name
         )
 
+    def save_document(self, doc_id, data, user):
+        if not Document.objects.filter(id=doc_id).exists():
+            return
+        doc = Document.objects.get(id=doc_id)
+        if doc.workspace.owner == user or user in doc.workspace.members.all():
+            doc.data = data
+            doc.save()
+
+    def get_document(self, doc_id, user):
+        if not Document.objects.filter(id=doc_id).exists():
+            return {}
+        doc = Document.objects.get(id=doc_id)
+        if doc.workspace.owner == user or user in doc.workspace.members.all():
+            return doc.data
+        return {}
+
     # Receive message from WebSocket
     async def receive(self, text_data=None, bytes_data=None):
         data = json.loads(text_data)
+        user = await get_user(data["token"])
+        del data["token"]
         if data["command"] == "save-document":
-            self.DOCUMENTS[data["documentId"]] = data["data"]
+            print("SAVE", data, int(self.room_name))
+            await sync_to_async(self.save_document)(int(data["documentId"]), data["data"], user)
         elif data["command"] == "get-document":
-            doc = self.DOCUMENTS.get(data["documentId"]) or {"ops": None}
-            await self.send(json.dumps({"command": "load-document", "data": doc}))
+            data = await sync_to_async(self.get_document)(int(data["documentId"]), user)
+            await self.send(json.dumps({"command": "load-document", "data": data}))
         elif data["command"] == "send-changes":
             await self.channel_layer.group_send(
                 self.room_group_name,
@@ -62,7 +91,6 @@ class EditorConsumer(AsyncWebsocketConsumer):
 
     async def editor_message(self, event):
         if "json_data" in event:
-            print("sending", event["json_data"])
             await self.send(json.dumps(event["json_data"]))
             return
 

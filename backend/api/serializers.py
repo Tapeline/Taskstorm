@@ -91,3 +91,9 @@ class CommentUnwrappedSerializer(serializers.ModelSerializer):
         model = models.Comment
         depth = 1
         fields = "__all__"
+
+
+class DocumentSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = models.Document
+        fields = "__all__"

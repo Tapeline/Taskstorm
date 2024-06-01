@@ -51,6 +51,12 @@ class Comment(models.Model):
     posted_at = models.DateTimeField(auto_now_add=True)
 
 
+class Document(models.Model):
+    workspace = models.ForeignKey(to=Workspace, on_delete=models.CASCADE)
+    title = models.CharField(max_length=255)
+    data = models.JSONField()
+
+
 class WorkflowStage(models.Model):
     workspace = models.ForeignKey(to=Workspace, on_delete=models.CASCADE)
     name = models.CharField(max_length=64)

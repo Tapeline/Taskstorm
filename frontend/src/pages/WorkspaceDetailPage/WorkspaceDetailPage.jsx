@@ -1,13 +1,8 @@
 import {useEffect, useState} from "react";
-import {Button, Col, Form, Row, Spinner, Tab, Tabs} from "react-bootstrap";
-import {login} from "../../api/endpoints-auth.jsx";
-import {toastError} from "../../ui/toasts.jsx";
+import {Button, Col, Form, ListGroup, Row, Spinner, Tab, Tabs} from "react-bootstrap";
 import {Link, useNavigate, useParams} from "react-router-dom";
-import {toast} from "react-toastify";
-import {getProfile} from "../../api/endpoints-profile.jsx";
 import {getWorkspace} from "../../api/endpoints-workspaces.jsx";
 import {getAllTasksInWorkspace} from "../../api/endpoints-tasks.jsx";
-import WorkspaceCard from "../../components/WorkspaceCard/WorkspaceCard.jsx";
 import TaskCard from "../../components/TaskCard/TaskCard.jsx";
 import CreateTaskModal from "../../components/Modals/CreateTaskModal/CreateTaskModal.jsx";
 import WorkspaceMemberTable from "../../components/WorkspaceMemberTable/WorkspaceMemberTable.jsx";
@@ -26,6 +21,10 @@ import NotificationCard from "../../components/Notifications/NotificationCard.js
 import Paginator from "../../components/Pagination/Paginator.jsx";
 import TransferWorkspaceOwnershipModal
     from "../../components/Modals/TransferWorkspaceOwnershipModal/TransferWorkspaceOwnershipModal.jsx";
+import {getAllDocumentsInWorkspace} from "../../api/endpoints-documents.jsx";
+import CreateDocumentModal from "../../components/Modals/CreateDocumentModal/CreateDocumentModal.jsx";
+import VWhitespace from "../../utils/VWhitespace.jsx";
+import HWhitespace from "../../utils/HWhitespace.jsx";
 
 export default function WorkspaceDetailPage() {
     const {workspaceId, page} = useParams();
@@ -40,6 +39,7 @@ export default function WorkspaceDetailPage() {
     const [workspaceStages, setWorkspaceStages] = useState(null);
     const [workspaceRules, setWorkspaceRules] = useState(null);
     const [workspaceNotifications, setWorkspaceNotifications] = useState(null);
+    const [workspaceDocuments, setWorkspaceDocuments] = useState(null);
 
     if (accessToken === null) {
         navigate("login/");
@@ -70,6 +70,9 @@ export default function WorkspaceDetailPage() {
         getAllNotificationsInWorkspace(accessToken, workspaceId).then(response => {
             setWorkspaceNotifications(response.data);
         });
+        getAllDocumentsInWorkspace(accessToken, workspaceId).then(response => {
+            setWorkspaceDocuments(response.data);
+        })
     }, [taskFilter]);
 
     useEffect(() => {
@@ -78,7 +81,7 @@ export default function WorkspaceDetailPage() {
 
     const isFullyLoaded = () => {
         return !(workspaceRules === null || workspaceStages === null || workspaceData === null ||
-                 taskList === null || workspaceNotifications === null)
+                 taskList === null || workspaceNotifications === null || workspaceDocuments === null)
     }
 
     if (isWorkspaceNotFound)
@@ -180,6 +183,28 @@ export default function WorkspaceDetailPage() {
                 </Tab>
                 <Tab eventKey="kanban" title="Kanban">
                     <KanbanBoard filter={taskFilter} workspace={workspaceData}/>
+                </Tab>
+                <Tab eventKey="documents" title="Documents">
+                    <CreateDocumentModal workspaceId={workspaceData.id}/>
+                    <br/>
+                    <VWhitespace/>
+                    <ListGroup>
+                        {
+                            workspaceDocuments.map(function (data, id) {
+                                return <ListGroup.Item action key={id}
+                                                       href={`/workspaces/${workspaceId}/` +
+                                                             `documents/${data.id}`}>
+                                    <i className="bi bi-file-earmark-fill"></i>
+                                    <HWhitespace/>
+                                    {data.title}
+                                </ListGroup.Item>;
+                            })
+                        }
+                        {
+                            workspaceDocuments.length === 0?
+                                <ListGroup.Item>No documents for now</ListGroup.Item> : ""
+                        }
+                    </ListGroup>
                 </Tab>
             </Tabs>
         </div>

@@ -5,6 +5,8 @@ import { useEffect, useState } from "react";
 import { useRef } from "react";
 import { useParams } from "react-router-dom";
 import {getRandomVibrantColor} from "../../utils/colors.jsx";
+import Preloader from "../Preloader/Preloader.jsx";
+import OverlayingPreloader from "../Preloader/OverlayingPreloader.jsx";
 
 ReactQuill.Quill.register("modules/cursors", QuillCursors)
 
@@ -29,9 +31,11 @@ export default function Editor(props) {
     const [socket, setSocket] = useState();
     const {username} = props;
     const [value, setValue] = useState("");
+    const [isTextLoaded, setIsTextLoaded] = useState(false);
+    const accessToken = localStorage.getItem("accessToken");
 
     useEffect(() => {
-        const _socket = new WebSocket("ws://localhost:8080/ws/editor/test");
+        const _socket = new WebSocket("ws://localhost:8080/ws/editor/" + documentId);
         const editor = quillRef.current?.getEditor();
         const cursors = editor?.getModule('cursors');
         let timer;
@@ -41,21 +45,24 @@ export default function Editor(props) {
         _socket.onopen = () => {
             timer = setInterval(() => {
                 _socket.send(JSON.stringify({
-                command: "save-document",
-                data: editor.getContents(),
-                documentId: documentId
+                    command: "save-document",
+                    data: editor.getContents(),
+                    documentId: documentId,
+                    token: accessToken
                 }))
             }, 3000);
 
             _socket.send(JSON.stringify({
                 command: "get-document",
-                documentId: documentId
+                documentId: documentId,
+                token: accessToken
             }))
 
             _socket.send(JSON.stringify({
                 command: "notify-join-room",
                 username: username,
-                uuid: myId
+                uuid: myId,
+                token: accessToken
             }))
         };
 
@@ -64,6 +71,7 @@ export default function Editor(props) {
             if (data.command === "load-document") {
                 editor.setContents(data.data);
                 editor.enable();
+                setIsTextLoaded(true);
             } else if (data.command === "receive-changes") {
                 if (data.issuer === myId) return;
                 if (quillRef.current == null || documentId !== data.documentId) return;
@@ -87,7 +95,8 @@ export default function Editor(props) {
             _socket.send(JSON.stringify({
                 command: "notify-leave-room",
                 username: username,
-                uuid: myId
+                uuid: myId,
+                token: accessToken
             }))
             _socket.close();
         };
@@ -101,7 +110,8 @@ export default function Editor(props) {
             command: "send-changes",
             delta: delta,
             documentId: documentId,
-            issuer: myId
+            issuer: myId,
+            token: accessToken
         }));
     };
 
@@ -110,11 +120,15 @@ export default function Editor(props) {
             command: "notify-cursor-change",
             range: range,
             username: username,
-            uuid: myId
+            uuid: myId,
+            token: accessToken
         }));
     }
 
-    return (
+    return (<>
+        {
+            !isTextLoaded? <OverlayingPreloader/> : ""
+        }
         <ReactQuill
             theme="snow"
             value={value}
@@ -126,5 +140,5 @@ export default function Editor(props) {
             }}
             ref={quillRef}
         />
-    );
+    </>);
 }

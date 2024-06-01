@@ -1,3 +1,17 @@
 #navbar {
     background: #2F24C1;
 }
+
+.preloader-background {
+    position:absolute;
+    top: 50%;
+    left: 0;
+    background: #2a2a2a55;
+    width: 100vw;
+    display:block;
+    text-align:center;
+    height: 100vh;
+    color: #FFF;
+    transform: translateY(-50%);
+    z-index: 1000;
+}
