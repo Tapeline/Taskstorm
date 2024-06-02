@@ -12,7 +12,7 @@ jobs:
         with:
           host: ${{secrets.HOST}}
           username: ${{secrets.USERNAME}}
-          key: ${{secrets.SSH_KEY}}
+          password: ${{secrets.PASSWORD}}
           script: |
             rm -rf Taskstorm> /dev/null || echo > /dev/null
             git clone https://github.com/Tapeline/Taskstorm.git
