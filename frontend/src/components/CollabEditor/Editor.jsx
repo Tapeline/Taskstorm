@@ -7,6 +7,7 @@ import { useParams } from "react-router-dom";
 import {getRandomVibrantColor} from "../../utils/colors.jsx";
 import Preloader from "../Preloader/Preloader.jsx";
 import OverlayingPreloader from "../Preloader/OverlayingPreloader.jsx";
+import {v4 as uuidv4} from 'uuid';
 
 ReactQuill.Quill.register("modules/cursors", QuillCursors)
 
@@ -23,7 +24,7 @@ const TOOLBAR_OPTIONS = [
     ["clean"],
 ];
 
-const myId = crypto.randomUUID();
+const myId = uuidv4();
 
 export default function Editor(props) {
     const quillRef = useRef();

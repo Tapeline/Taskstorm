@@ -1,5 +1,6 @@
 import React, {useEffect, useState} from "react";
 import {Col, Form, InputGroup, Pagination, Row} from "react-bootstrap";
+import {v4 as uuidv4} from 'uuid';
 
 export default function Paginator(props) {
     const {children} = props;
@@ -8,7 +9,7 @@ export default function Paginator(props) {
     const [pageCount, setPageCount] = useState(0);
     const [currentPage, setCurrentPage] = useState( 0);
     const [pages, setPages] = useState([]);
-    const elementGUID = crypto.randomUUID();
+    const elementGUID = uuidv4();
 
     const renewPages = () => {
         const _pageCount = Math.ceil(data?.length / itemsPerPage);
