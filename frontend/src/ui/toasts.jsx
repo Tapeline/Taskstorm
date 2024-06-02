@@ -14,3 +14,10 @@ export function toastNotification(message) {
         type: "info"
     });
 }
+
+export function toastSuccess(message) {
+    toast(<p>{message}</p>, {
+        autoClose: 3000,
+        type: "success"
+    });
+}

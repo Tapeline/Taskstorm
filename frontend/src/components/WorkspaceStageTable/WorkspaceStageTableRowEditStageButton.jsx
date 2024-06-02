@@ -61,8 +61,8 @@ export default function WorkspaceStageTableRowEditStageButton(props) {
                             <HexColorPicker color={stageColor} onChange={setStageColor} />
                         </InputGroup>
                         <InputGroup className="mb-3">
-                            <Form.Check onChange={e => setStageIsEnd(e.target.value)}
-                                        label="Is end?" defaultValue={stage.is_end}/>
+                            <Form.Check onChange={e => setStageIsEnd(e.target.checked)}
+                                        label="Is end?" checked={stage.is_end}/>
                         </InputGroup>
                     </Modal.Body>
                     <Modal.Footer>

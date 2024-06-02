@@ -7,6 +7,7 @@ import {toast} from "react-toastify";
 import {getProfile} from "../../api/endpoints-profile.jsx";
 import DeleteWorkspaceModal from "../../components/Modals/DeleteWorkspaceModal/DeleteWorkspaceModal.jsx";
 import DeleteAccountModal from "../../components/Modals/DeleteAccountModal/DeleteAccountModal.jsx";
+import VWhitespace from "../../utils/VWhitespace.jsx";
 
 export default function ProfilePage() {
     const {page} = useParams();
@@ -26,7 +27,9 @@ export default function ProfilePage() {
         });
     }, []);
 
-    return (
+    return (<div className="px-lg-5">
+        <h1>Your profile</h1>
+        <VWhitespace size={1}/>
         <Tabs id="controlled-tab-example" activeKey={key}
               onSelect={(k) => setKey(k)} className="mb-3">
             <Tab eventKey="dashboard" title="Dashboard">
@@ -63,5 +66,5 @@ export default function ProfilePage() {
                 </Row>
             </Tab>
         </Tabs>
-    )
+    </div>);
 }

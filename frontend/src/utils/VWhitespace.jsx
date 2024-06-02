@@ -1,4 +1,4 @@
-export default function VWhitespace({width}) {
-    if (!width) width = 2;
-    return <div className={"my-" + width}></div>
+export default function VWhitespace({size}) {
+    if (!size) size = 2;
+    return <div className={"py-" + size}></div>
 }

@@ -98,6 +98,7 @@ export default function WorkspaceDetailPage() {
         <div className="px-lg-5">
             <Link to="/workspaces">Back to workspace list</Link>
             <h1 className="mb-5">{workspaceData.name}</h1>
+            <VWhitespace size={1}/>
             <Tabs id="controlled-tab-example" activeKey={key}
                   onSelect={(k) => setKey(k)} className="mb-3">
                 <Tab eventKey="members" title={<i className="bi bi-people-fill"></i>}>

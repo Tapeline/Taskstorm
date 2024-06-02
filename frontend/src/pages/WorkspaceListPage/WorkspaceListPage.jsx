@@ -27,6 +27,7 @@ export default function WorkspaceListPage() {
         <Preloader/>
         :
         <div className="px-lg-5">
+            <h1>Your workspaces</h1>
             <CreateWorkspaceModal/>
             <div className="my-2"></div>
             {
