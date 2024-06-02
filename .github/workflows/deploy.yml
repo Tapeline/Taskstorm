@@ -1,0 +1,23 @@
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: SSH Remote Action
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{secrets.HOST}}
+          username: ${{secrets.USERNAME}}
+          key: ${{secrets.KEY}}
+          port: ${{secrets.PORT}}
+          script: |
+            rm -rf Taskstorm> /dev/null || echo > /dev/null
+            git clone https://github.com/Tapeline/Taskstorm.git
+            cd Taskstorm
+            docker-compose -f docker-compose.yml -p taskstorm up -d --build
+            sleep 5
+            docker logs -n 30 -t taskstorm-api_server-1
