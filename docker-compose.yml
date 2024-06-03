@@ -74,8 +74,8 @@ services:
     build: frontend
     hostname: frontend
     environment:
-      API_BASE_URL: "api:8080/api/"
-      API_WS_URL: "wss://api:8080/ws/"
+      API_BASE_URL: "taskstorm.tapeline.dev/api/"
+      API_WS_URL: "wss://taskstorm.tapeline.dev/ws/"
     ports:
       - "8081:3000"
     expose:
