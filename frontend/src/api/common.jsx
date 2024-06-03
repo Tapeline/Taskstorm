@@ -1,5 +1,6 @@
 export function getBaseUrl() {
     const envUrl = import.meta.env.API_BASE_URL;
+    console.log(import.meta.env.API_BASE_URL, import.meta.env.API_WS_URL);
     if (envUrl === null || envUrl === undefined)
         return "http://localhost:8080/api/";
     return envUrl;
