@@ -38,7 +38,7 @@ services:
       - redisconf:/usr/local/etc/redis/redis.conf
     environment:
       REDIS_PASSWORD: ${REDIS_PASS}
-      REDIS_PORT: ${REDIS_PORT}
+      REDIS_PORT: 6379
       REDIS_DATABASES: 16
 
   api_server:
@@ -73,9 +73,6 @@ services:
   frontend_service:
     build: frontend
     hostname: frontend
-    command: ["API_BASE_URL=taskstorm.tapeline.dev/api/",
-              "API_WS_URL=wss://taskstorm.tapeline.dev/ws/",
-              "npm", "run", "dev", "--", "--host", "--port", "3000"]
     environment:
       API_BASE_URL: "taskstorm.tapeline.dev/api/"
       API_WS_URL: "wss://taskstorm.tapeline.dev/ws/"
