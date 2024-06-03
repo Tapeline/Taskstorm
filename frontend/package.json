@@ -29,6 +29,7 @@
     "react-toastify": "^10.0.5",
     "remark-gfm": "^4.0.0",
     "remirror": "^2.0.24",
+    "serve": "^14.2.3",
     "socket.io-client": "^4.7.5",
     "uuid": "^9.0.1",
     "y-quill": "^1.0.0",

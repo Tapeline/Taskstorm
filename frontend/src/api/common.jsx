@@ -1,17 +1,19 @@
 export function getBaseUrl() {
-    const envUrl = import.meta.env.API_BASE_URL;
+    //const envUrl = import.meta.env.API_BASE_URL;
     console.log(import.meta.env.API_BASE_URL, import.meta.env.API_WS_URL);
     console.log(import.meta.env);
     console.log(JSON.stringify(import.meta.env));
-    if (envUrl === null || envUrl === undefined)
+    //if (envUrl === null || envUrl === undefined)
+    if (import.meta.env.DEV)
         return "http://localhost:8080/api/";
-    return envUrl;
+    return "https://taskstorm.tapeline.dev/api/";
 }
 
 export function getBaseWebSocketUrl() {
-    const envUrl = import.meta.env.API_WS_URL;
-    if (envUrl === null || envUrl === undefined)
-        return "ws://localhost:8080/ws/";
+    //const envUrl = import.meta.env.API_WS_URL;
+    //if (envUrl === null || envUrl === undefined)
+    if (import.meta.env.DEV)
+        return "wss://taskstorm.tapeline.dev/ws/";
     return envUrl;
 }
 

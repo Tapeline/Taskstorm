@@ -1,1 +1,3 @@
-API_BASE_URL=taskstorm.tapeline.dev/api/ API_WS_URL=wss://taskstorm.tapeline.dev/ws/ npm run dev -- --host --port 3000
+npm run build;
+npx serve -s dist
+#npm run dev -- --host --port 3000
