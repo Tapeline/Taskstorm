@@ -79,7 +79,7 @@ services:
     ports:
       - "8081:3000"
     expose:
-      - "8081"
+      - 8081
     networks:
       - main_network
     depends_on:
