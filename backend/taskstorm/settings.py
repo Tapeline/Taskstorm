@@ -83,9 +83,9 @@ WSGI_APPLICATION = 'taskstorm.wsgi.application'
 DATABASES = {
     "local": {
         "ENGINE": "django.db.backends.postgresql_psycopg2",
-        "NAME": os.environ.get("PG_NAME"),
-        "USER": os.environ.get("PG_USER"),
-        "PASSWORD": os.environ.get("PG_PASS"),
+        "NAME": os.environ.get("PG_NAME") or "taskstorm",
+        "USER": os.environ.get("PG_USER") or "pguser",
+        "PASSWORD": os.environ.get("PG_PASS") or "pgpass",
         "HOST": "localhost",
         "PORT": "5432",
     },
@@ -98,11 +98,12 @@ DATABASES = {
         "PORT": os.environ.get("PG_PORT") or "5432",
     }
 }
-DATABASES["default"] = DATABASES[os.environ.get("USE_DB") or "production"]
+print(os.environ.get("USE_DB") or "local")
+DATABASES["default"] = DATABASES[os.environ.get("USE_DB") or "local"]
 
 REDIS_CONFIGS = {
     "local": {
-        "PASS": os.environ.get("REDIS_PASS"),
+        "PASS": os.environ.get("REDIS_PASS") or "redispass",
         "HOST": "localhost",
         "PORT": os.environ.get("REDIS_PORT") or "6379",
     },

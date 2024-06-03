@@ -2,7 +2,7 @@ version: "3.7"
 services:
   db_service:
     image: postgres:13.3
-    hostname: ${DB_HOST}
+    hostname: postgres
     environment:
       POSTGRES_DB: ${DB_NAME}
       POSTGRES_USER: ${DB_USER}
@@ -26,7 +26,7 @@ services:
   redis_service:
     image: redis:latest
     restart: always
-    hostname: ${REDIS_HOST}
+    hostname: redis
     ports:
       - "${REDIS_PORT}:6379"
     expose:
@@ -43,18 +43,20 @@ services:
 
   api_server:
     build: backend
-    hostname: ${API_HOST}
+    hostname: api
     environment:
       SERVER_ADDRESS: "0.0.0.0:${API_PORT}"
+      SERVER_IP: "0.0.0.0"
+      SERVER_PORT: ${API_PORT}
       PG_NAME: ${DB_NAME}
       PG_USER: ${DB_USER}
       PG_PASS: ${DB_PASS}
       PG_PORT: ${DB_PORT}
-      PG_HOST: ${DB_HOST}
+      PG_HOST: postgres
       USE_DB: "production"
       REDIS_PASSWORD: ${REDIS_PASS}
       REDIS_PORT: ${REDIS_PORT}
-      REDIS_HOST: ${REDIS_HOST}
+      REDIS_HOST: redis
     ports:
       - "${API_PORT}:${API_PORT}"
     expose:
@@ -70,12 +72,14 @@ services:
 
   frontend_service:
     build: frontend
+    hostname: frontend
     environment:
-      API_BASE_URL: "${API_HOST}:${API_PORT}/api/"
+      API_BASE_URL: "api:${API_PORT}/api/"
+      API_WS_URL: "wss://api:${API_PORT}/ws/"
     ports:
-      - "80:3000"
+      - "8080:3000"
     expose:
-      - "80"
+      - "8080"
     networks:
       - main_network
     depends_on:
@@ -83,6 +87,25 @@ services:
         condition: service_started
     links:
       - api_server
+
+  nginx_service:
+    command: nginx -g "daemon off;"
+    depends_on:
+      - api_server
+      - frontend_service
+    image: nginx:alpine
+    restart: on-failure
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf
+      - ~/sslcert/fullchain.pem:/etc/nginx/server.crt
+      - ~/sslcert/privkey.pem:/etc/nginx/server.key
+    ports:
+      - "443:443"
+    networks:
+      - main_network
+    links:
+      - api_server
+      - frontend_service
 
 
 networks:

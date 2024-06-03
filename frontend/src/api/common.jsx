@@ -5,8 +5,19 @@ export function getBaseUrl() {
     return envUrl;
 }
 
+export function getBaseWebSocketUrl() {
+    const envUrl = import.meta.env.API_WS_URL;
+    if (envUrl === null || envUrl === undefined)
+        return "ws://localhost:8080/ws/";
+    return envUrl;
+}
+
 export function apiUrl(url) {
     return getBaseUrl() + url;
+}
+
+export function wsUrl(url) {
+    return getBaseWebSocketUrl() + url;
 }
 
 

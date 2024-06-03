@@ -9,7 +9,7 @@ export default function Paginator(props) {
     const [pageCount, setPageCount] = useState(0);
     const [currentPage, setCurrentPage] = useState( 0);
     const [pages, setPages] = useState([]);
-    const elementGUID = uuidv4();
+    const elementGUID = crypto.randomUUID();
 
     const renewPages = () => {
         const _pageCount = Math.ceil(data?.length / itemsPerPage);

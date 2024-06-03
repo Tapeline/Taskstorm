@@ -8,6 +8,7 @@ import {getRandomVibrantColor} from "../../utils/colors.jsx";
 import Preloader from "../Preloader/Preloader.jsx";
 import OverlayingPreloader from "../Preloader/OverlayingPreloader.jsx";
 import {v4 as uuidv4} from 'uuid';
+import {wsUrl} from "../../api/common.jsx";
 
 ReactQuill.Quill.register("modules/cursors", QuillCursors)
 
@@ -24,7 +25,7 @@ const TOOLBAR_OPTIONS = [
     ["clean"],
 ];
 
-const myId = uuidv4();
+const myId = crypto.randomUUID();
 
 export default function Editor(props) {
     const quillRef = useRef();
@@ -36,7 +37,7 @@ export default function Editor(props) {
     const accessToken = localStorage.getItem("accessToken");
 
     useEffect(() => {
-        const _socket = new WebSocket("ws://localhost:8080/ws/editor/" + documentId);
+        const _socket = new WebSocket(wsUrl("editor/" + documentId));
         const editor = quillRef.current?.getEditor();
         const cursors = editor?.getModule('cursors');
         let timer;
