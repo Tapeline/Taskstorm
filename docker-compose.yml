@@ -73,13 +73,16 @@ services:
   frontend_service:
     build: frontend
     hostname: frontend
+    command: ["API_BASE_URL=taskstorm.tapeline.dev/api/",
+              "API_WS_URL=wss://taskstorm.tapeline.dev/ws/",
+              "npm", "run", "dev", "--", "--host", "--port", "3000"]
     environment:
       API_BASE_URL: "taskstorm.tapeline.dev/api/"
       API_WS_URL: "wss://taskstorm.tapeline.dev/ws/"
     ports:
-      - "8081:3000"
+      - "3000:3000"
     expose:
-      - 8081
+      - 3000
     networks:
       - main_network
     depends_on:
