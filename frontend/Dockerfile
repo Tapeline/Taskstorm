@@ -4,6 +4,7 @@ COPY package.json .
 RUN npm install
 COPY . .
 EXPOSE 3000
-CMD ["API_BASE_URL=taskstorm.tapeline.dev/api/",
-     "API_WS_URL=wss://taskstorm.tapeline.dev/ws/",
-     "npm", "run", "dev", "--", "--host", "--port", "3000"]
+#CMD ["API_BASE_URL=taskstorm.tapeline.dev/api/",
+#     "API_WS_URL=wss://taskstorm.tapeline.dev/ws/",
+#     "npm", "run", "dev", "--", "--host", "--port", "3000"]
+CMD chmod +x ./start.sh ; ./start.sh
