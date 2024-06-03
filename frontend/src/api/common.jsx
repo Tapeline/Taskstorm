@@ -13,8 +13,8 @@ export function getBaseWebSocketUrl() {
     //const envUrl = import.meta.env.API_WS_URL;
     //if (envUrl === null || envUrl === undefined)
     if (import.meta.env.DEV)
-        return "wss://taskstorm.tapeline.dev/ws/";
-    return envUrl;
+        return "ws://localhost:8080/ws/";
+    return "wss://taskstorm.tapeline.dev/ws/";
 }
 
 export function apiUrl(url) {
