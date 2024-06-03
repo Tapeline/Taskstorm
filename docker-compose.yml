@@ -28,9 +28,9 @@ services:
     restart: always
     hostname: redis
     ports:
-      - "${REDIS_PORT}:6379"
+      - "6379:6379"
     expose:
-      - ${REDIS_PORT}
+      - 6379
     networks:
       - main_network
     volumes:
@@ -55,7 +55,7 @@ services:
       PG_HOST: postgres
       USE_DB: "production"
       REDIS_PASSWORD: ${REDIS_PASS}
-      REDIS_PORT: ${REDIS_PORT}
+      REDIS_PORT: 6379
       REDIS_HOST: redis
     ports:
       - "8080:8080"
