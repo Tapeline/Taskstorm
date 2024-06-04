@@ -18,7 +18,14 @@ export default function RegisterPage() {
                 toastError(response.reason);
             } else {
                 toastSuccess("Successfully registered");
-                navigate("/login");
+                login(userName, userPass).then(response => {
+                    if (!response.success) {
+                        toastError(response.reason);
+                    } else {
+                        localStorage.setItem("accessToken", response.data.token);
+                        navigate("/");
+                    }
+                })
             }
         }).catch(toastError);
     }

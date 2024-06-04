@@ -14,7 +14,9 @@ export default function RealTimeNotificationUpdater() {
 
             response.data?.map(value => {
                 if (shown.includes(value.id)) return;
-                toastNotification(value.message);
+                const issue_time = new Date(value.issue_time);
+                const time_diff = Math.floor(Math.abs(issue_time - Date.now()) / 1000);
+                if (time_diff < 2000) toastNotification(value.message);
                 shown.push(value.id);
             })
 
