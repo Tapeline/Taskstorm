@@ -45,7 +45,9 @@ export default function CreateTaskModal(props) {
 
     return (
         <>
-            <Button variant="primary" onClick={handleShow}>New task</Button>
+            <Button variant="primary" onClick={handleShow}>
+                <i className="bi bi-plus-lg"></i>
+            </Button>
 
             <Modal show={show} onHide={handleClose}>
                 <Modal.Header closeButton>

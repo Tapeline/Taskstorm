@@ -33,10 +33,10 @@ export default function WorkspaceNotificationRuleTableRowDeleteNotificationRuleB
 
     return (
         <>
-            <Button variant="outline-danger" onClick={handleShow}><i className="bi bi-trash"></i></Button>
+            <a className="link-danger" onClick={handleShow}><i className="bi bi-trash"></i></a>
 
             <Modal show={show} onHide={handleClose} className="alert-danger">
-                <Modal.Header closeButton>
+            <Modal.Header closeButton>
                     <Modal.Title>Delete rule?</Modal.Title>
                 </Modal.Header>
                 <Modal.Body>

@@ -8,6 +8,10 @@ import {getProfile} from "../../api/endpoints-profile.jsx";
 import DeleteWorkspaceModal from "../../components/Modals/DeleteWorkspaceModal/DeleteWorkspaceModal.jsx";
 import DeleteAccountModal from "../../components/Modals/DeleteAccountModal/DeleteAccountModal.jsx";
 import VWhitespace from "../../utils/VWhitespace.jsx";
+import CategoryPanel from "../../components/CategorySwitcher/CategoryPanel.jsx";
+import TransferWorkspaceOwnershipModal
+    from "../../components/Modals/TransferWorkspaceOwnershipModal/TransferWorkspaceOwnershipModal.jsx";
+import CategorySwitcher from "../../components/CategorySwitcher/CategorySwitcher.jsx";
 
 export default function ProfilePage() {
     const {page} = useParams();
@@ -27,9 +31,14 @@ export default function ProfilePage() {
         });
     }, []);
 
+    useEffect(() => {
+        navigate("/profile/" + key + "/");
+    }, [key]);
+
     return (<div className="px-lg-5">
         <h1>Your profile</h1>
         <VWhitespace size={1}/>
+
         <Tabs id="controlled-tab-example" activeKey={key}
               onSelect={(k) => setKey(k)} className="mb-3">
             <Tab eventKey="dashboard" title="Dashboard">
@@ -42,28 +51,15 @@ export default function ProfilePage() {
                 Tab content
             </Tab>
             <Tab eventKey="manage" title="Manage">
-                <Row>
-                    <Col md={2}>
-                        <Row><Link to="#manage-general">General</Link></Row>
-                        <Row><Link to="#manage-danger-zone">Danger zone</Link></Row>
-                    </Col>
-                    <Col>
-                        <Row id="#manage-general">
-                            <h3>General</h3>
-                            <div>
-                                <h4>Username: {profileData.username}</h4>
-                                <h6>ID: {profileData.id}</h6>
-                            </div>
-                        </Row>
-                        <hr/>
-                        <Row id="#manage-danger-zone">
-                            <h3>Danger zone</h3>
-                            <div>
-                                <DeleteAccountModal/>
-                            </div>
-                        </Row>
-                    </Col>
-                </Row>
+                <CategorySwitcher defaultKey="#general">
+                    <CategoryPanel name="General" tabId="#general">
+                        <h4>Username: {profileData.username}</h4>
+                        <h6>ID: {profileData.id}</h6>
+                    </CategoryPanel>
+                    <CategoryPanel name="Danger zone" tabId="#danger-zone">
+                        <DeleteAccountModal/>
+                    </CategoryPanel>
+                </CategorySwitcher>
             </Tab>
         </Tabs>
     </div>);

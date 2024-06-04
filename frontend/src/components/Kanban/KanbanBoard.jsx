@@ -87,8 +87,10 @@ export default function KanbanBoard(props) {
             <Row>
                 {
                     columns.map((column, id) => {
-                        return <KanbanBoardColumn key={id} column={column} colId={column.stage}
-                                                  stageData={column.stageData} workspaceId={workspace.id}/>;
+                        return <KanbanBoardColumn key={id} column={column}
+                                                  colId={column.stage}
+                                                  stageData={column.stageData}
+                                                  workspaceId={workspace.id}/>;
                     })
                 }
             </Row>

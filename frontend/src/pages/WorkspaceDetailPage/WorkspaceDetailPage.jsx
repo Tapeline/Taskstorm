@@ -25,6 +25,8 @@ import {getAllDocumentsInWorkspace} from "../../api/endpoints-documents.jsx";
 import CreateDocumentModal from "../../components/Modals/CreateDocumentModal/CreateDocumentModal.jsx";
 import VWhitespace from "../../utils/VWhitespace.jsx";
 import HWhitespace from "../../utils/HWhitespace.jsx";
+import CategorySwitcher from "../../components/CategorySwitcher/CategorySwitcher.jsx";
+import CategoryPanel from "../../components/CategorySwitcher/CategoryPanel.jsx";
 
 export default function WorkspaceDetailPage() {
     const {workspaceId, page} = useParams();
@@ -103,21 +105,18 @@ export default function WorkspaceDetailPage() {
                   onSelect={(k) => setKey(k)} className="mb-3">
                 <Tab eventKey="members" title={<i className="bi bi-people-fill"></i>}>
                     <AddWorkspaceMemberModal workspace={workspaceData}/>
+                    <VWhitespace/>
                     <WorkspaceMemberTable workspace={workspaceData}/>
                 </Tab>
                 <Tab eventKey="stages" title={<i className="bi bi-flag-fill"></i>}>
                     <CreateStageModal workspace={workspaceData}/>
+                    <VWhitespace/>
                     <WorkspaceStageTable workspace={workspaceData} stages={workspaceStages}/>
                 </Tab>
                 <Tab eventKey="notifications" title={<i className="bi bi-bell-fill"></i>}>
                     <Row>
-                        <Col style={{minWidth: "400px"}}>
+                        <Col sm>
                             <h3>Notifications</h3>
-                            {/*
-                                workspaceNotifications.map((value, index) => {
-                                    return <NotificationCard notification={value} key={index}/>;
-                                })
-                            */}
                             <Paginator>
                                 {
                                     workspaceNotifications.map((value, index) => {
@@ -126,49 +125,34 @@ export default function WorkspaceDetailPage() {
                                 }
                             </Paginator>
                         </Col>
-                        <Col style={{minWidth: "400px"}}>
+                        <Col sm>
                             <h3>Notification rules</h3>
                             <CreateNotificationRuleModal workspace={workspaceData}/>
+                            <VWhitespace/>
                             <WorkspaceNotificationRuleTable workspace={workspaceData}
                                                             rules={workspaceRules}/>
                         </Col>
                     </Row>
                 </Tab>
                 <Tab eventKey="manage" title={<i className="bi bi-gear-fill"></i>}>
-                    <Row>
-                        <Col md={2}>
-                            <Row><Link to="#manage-general">General</Link></Row>
-                            <Row><Link to="#manage-ownership">Ownership</Link></Row>
-                            <Row><Link to="#manage-danger-zone">Danger zone</Link></Row>
-                        </Col>
-                        <Col>
-                            <Row id="#manage-general">
-                                <h3>General</h3>
+                    <CategorySwitcher defaultKey="#general">
+                        <CategoryPanel name="General" tabId="#general">
+                            <h4>{workspaceData.name}</h4>
+                            <h6>ID: {workspaceData.id}</h6>
+                        </CategoryPanel>
+                        <CategoryPanel name="Ownership" tabId="#ownership">
+                            <h6>Current owner: {workspaceData.owner.username}</h6>
+                            {workspaceData.owner.id.toString() ===
+                                localStorage.getItem("accountId")?
                                 <div>
-                                    <h4>{workspaceData.name}</h4>
-                                    <h6>ID: {workspaceData.id}</h6>
+                                    <TransferWorkspaceOwnershipModal workspace={workspaceData}/>
                                 </div>
-                            </Row>
-                            <hr/>
-                            <Row id="#manage-ownership">
-                                <h3>Ownership</h3>
-                                <h6>Current owner: {workspaceData.owner.username}</h6>
-                                {workspaceData.owner.id.toString() ===
-                                    localStorage.getItem("accountId")?
-                                    <div>
-                                        <TransferWorkspaceOwnershipModal workspace={workspaceData}/>
-                                    </div>
-                                : ""}
-                            </Row>
-                            <hr/>
-                            <Row id="#manage-danger-zone">
-                                <h3>Danger zone</h3>
-                                <div>
-                                    <DeleteWorkspaceModal workspace={workspaceData}/>
-                                </div>
-                            </Row>
-                        </Col>
-                    </Row>
+                            : ""}
+                        </CategoryPanel>
+                        <CategoryPanel name="Danger zone" tabId="#danger-zone">
+                            <DeleteWorkspaceModal workspace={workspaceData}/>
+                        </CategoryPanel>
+                    </CategorySwitcher>
                 </Tab>
                 <Tab eventKey="tasks" title="Tasks">
                     <div className="d-flex mb-2">
@@ -187,7 +171,6 @@ export default function WorkspaceDetailPage() {
                 </Tab>
                 <Tab eventKey="documents" title="Documents">
                     <CreateDocumentModal workspaceId={workspaceData.id}/>
-                    <br/>
                     <VWhitespace/>
                     <ListGroup>
                         {

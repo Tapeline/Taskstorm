@@ -32,7 +32,10 @@ export default function WorkspaceStageTableRowDeleteStageButton(props) {
 
     return (
         <>
-            <Button variant="outline-danger" onClick={handleShow}><i className="bi bi-trash"></i></Button>
+            {/*<Button variant="outline-danger" onClick={handleShow}>*/}
+            {/*    <i className="bi bi-trash"></i>*/}
+            {/*</Button>*/}
+            <a className="link-danger" onClick={handleShow}><i className="bi bi-trash"></i></a>
 
             <Modal show={show} onHide={handleClose} className="alert-danger">
                 <Modal.Header closeButton>

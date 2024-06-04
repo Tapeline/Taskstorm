@@ -33,7 +33,7 @@ export default function WorkspaceMemberTableRowDeleteMemberButton(props) {
 
     return (
         <>
-            <Button variant="outline-danger" onClick={handleShow}><i className="bi bi-trash"></i></Button>
+            <a className="link-danger" onClick={handleShow}><i className="bi bi-trash"></i></a>
 
             <Modal show={show} onHide={handleClose} className="alert-danger">
                 <Modal.Header closeButton>
@@ -41,7 +41,7 @@ export default function WorkspaceMemberTableRowDeleteMemberButton(props) {
                 </Modal.Header>
                 <Modal.Body>
                     <p>Are you sure you want to expel {member.username} from this workspace?<br/>
-                    You can re-add {member.username} later.</p>
+                        You can re-add {member.username} later.</p>
                 </Modal.Body>
                 <Modal.Footer>
                     <Button variant="outline-danger" type="submit" onClick={handleSubmit}>

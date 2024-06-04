@@ -42,8 +42,10 @@ export default function WorkspaceStageTableRowEditStageButton(props) {
 
     return (
         <>
-            <Button variant="outline-primary" onClick={handleShow}><i className="bi bi-pencil-square"></i></Button>
-
+            {/*<Button variant="outline-primary" onClick={handleShow}>*/}
+            {/*    <i className="bi bi-pencil-square"></i>*/}
+            {/*</Button>*/}
+            <a className="link-primary" onClick={handleShow}><i className="bi bi-pencil-square"></i></a>
             <Modal show={show} onHide={handleClose}>
                 <Modal.Header closeButton>
                     <Modal.Title>Edit stage</Modal.Title>
@@ -58,7 +60,7 @@ export default function WorkspaceStageTableRowEditStageButton(props) {
                                           aria-describedby="name-addon"/>
                         </InputGroup>
                         <InputGroup className="mb-3">
-                            <HexColorPicker color={stageColor} onChange={setStageColor} />
+                            <HexColorPicker color={stageColor} onChange={setStageColor}/>
                         </InputGroup>
                         <InputGroup className="mb-3">
                             <Form.Check onChange={e => setStageIsEnd(e.target.checked)}

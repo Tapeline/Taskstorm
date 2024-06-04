@@ -37,7 +37,7 @@ export default function WorkspaceNotificationRuleTableRowEditNotificationRuleBut
 
     return (
         <>
-            <Button variant="outline-primary" onClick={handleShow}><i className="bi bi-pencil-square"></i></Button>
+            <a className="link-primary" onClick={handleShow}><i className="bi bi-pencil-square"></i></a>
 
             <Modal show={show} onHide={handleClose}>
                 <Modal.Header closeButton>

@@ -32,7 +32,7 @@ export default function Paginator(props) {
     return (
         <div className="t-pagination">
             <Row>
-                <Col>
+                <Col sm>
                     <Pagination>
                         <Pagination.First
                             onClick={() => setCurrentPage(0)}/>
@@ -56,8 +56,8 @@ export default function Paginator(props) {
                             onClick={() => setCurrentPage(pageCount - 1)}/>
                     </Pagination>
                 </Col>
-                <Col>
-                    <InputGroup className="mb-3">
+                <Col sm>
+                    <InputGroup className="mb-3 w-100">
                         <InputGroup.Text id={"pagination-items-" + elementGUID}>
                             Items per page</InputGroup.Text>
                         <Form.Control type="number" value={itemsPerPage}
