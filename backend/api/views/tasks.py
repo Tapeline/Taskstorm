@@ -1,5 +1,7 @@
 from rest_framework.generics import ListCreateAPIView, RetrieveUpdateDestroyAPIView
 from rest_framework.permissions import IsAuthenticated
+from rest_framework.response import Response
+from rest_framework.views import APIView
 
 from api import serializers, models, permissions
 from api.accessor import get_object_or_null
@@ -59,14 +61,44 @@ class RetrieveUpdateDestroyTaskView(RetrieveUpdateDestroyAPIView, WorkspaceMixin
         response = super().update(request, *args, **kwargs)
         new_object = self.get_object()
         if "assignee" in request.data:
-            models.AssigneeChange.log(new_assignee=new_object.assignee)
+            models.AssigneeChangeAction.log(new_object, user=request.user,
+                                            new_assignee=new_object.assignee)
         if "stage" in request.data:
-            models.WorkflowPush.log(from_stage=old_object.stage,
-                                    to_stage=new_object.stage,
-                                    user=request.user)
+            models.WorkflowPushAction.log(new_object,
+                                          from_stage=old_object.stage,
+                                          to_stage=new_object.stage,
+                                          user=request.user)
             if new_object.stage is not None:
                 new_object.is_open = not new_object.stage.is_end
                 new_object.save()
+        if "is_open" in request.data:
+            models.OpenStateChangeAction.log(new_object, user=request.user,
+                                             new_state=new_object.is_open)
         if "arrangement_start" in request.data or "arrangement_end" in request.data:
             models.TaskNotifiedWithRuleFact.objects.filter(task=new_object).delete()
         return response
+
+
+class GetActivityOnTask(APIView, TaskMixin):
+    def get(self, request, *args, **kwargs):
+        queried_type = request.GET.get("type")
+        comments, pushes, assignments, state_changes = [], [], [], []
+        if queried_type is None or queried_type == "comments":
+            comments = [{"type": "comment", **serializers.CommentSerializer(x).data}
+                        for x in models.Comment.objects.filter(
+                         task=self.get_task())]
+        if queried_type is None or queried_type == "pushes":
+            pushes = [serializers.WorkflowPushSerializer(x).data
+                      for x in models.WorkflowPushAction.objects.filter(
+                       task=self.get_task())]
+        if queried_type is None or queried_type == "assignments":
+            assignments = [serializers.AssigneeChangeSerializer(x).data
+                           for x in models.AssigneeChangeAction.objects.filter(
+                            task=self.get_task())]
+        if queried_type is None or queried_type == "state-changes":
+            state_changes = [serializers.OpenStateChangeSerializer(x).data
+                             for x in models.OpenStateChangeAction.objects.filter(
+                              task=self.get_task())]
+        activity = comments + pushes + assignments + state_changes
+        activity.sort(key=lambda x: x["posted_at"] if "posted_at" in x else x["logged_at"], reverse=True)
+        return Response(activity, status=200)

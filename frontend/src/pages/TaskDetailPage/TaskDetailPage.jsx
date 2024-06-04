@@ -6,7 +6,7 @@ import {Link, useNavigate, useParams} from "react-router-dom";
 import {toast} from "react-toastify";
 import {getProfile} from "../../api/endpoints-profile.jsx";
 import {getWorkspace} from "../../api/endpoints-workspaces.jsx";
-import {getAllTasksInWorkspace, getTaskInWorkspace} from "../../api/endpoints-tasks.jsx";
+import {getAllTaskActivity, getAllTasksInWorkspace, getTaskInWorkspace} from "../../api/endpoints-tasks.jsx";
 import WorkspaceCard from "../../components/WorkspaceCard/WorkspaceCard.jsx";
 import TaskCard from "../../components/TaskCard/TaskCard.jsx";
 import CreateTaskModal from "../../components/Modals/CreateTaskModal/CreateTaskModal.jsx";
@@ -25,6 +25,12 @@ import LeaveCommentField from "../../components/LeaveCommentField/LeaveCommentFi
 import Paginator from "../../components/Pagination/Paginator.jsx";
 import HWhitespace from "../../utils/HWhitespace.jsx";
 import MarkdownRender from "../../components/Markdown/MarkdownRender.jsx";
+import CategorySwitcher from "../../components/CategorySwitcher/CategorySwitcher.jsx";
+import CategoryPanel from "../../components/CategorySwitcher/CategoryPanel.jsx";
+import WorkflowPushCard from "../../components/ActivityCards/WorkflowPushCard.jsx";
+import AssigneeChangeCard from "../../components/ActivityCards/AssigneeChangeCard.jsx";
+import OpenStateChangeCard from "../../components/ActivityCards/OpenStateChangeCard.jsx";
+import VWhitespace from "../../utils/VWhitespace.jsx";
 
 export default function TaskDetailPage() {
     const {workspaceId, taskId} = useParams();
@@ -32,7 +38,12 @@ export default function TaskDetailPage() {
     const accessToken = localStorage.getItem("accessToken");
     const [isTaskNotFound, setIsTaskNotFound] = useState(false);
     const [taskData, setTaskData] = useState(null);
+    const [taskActivity, setTaskActivity] = useState(null);
     const [taskComments, setTaskComments] = useState(null);
+    const [taskPushes, setTaskPushes] = useState(null);
+    const [taskAssignments, setTaskAssignments] = useState(null);
+    const [taskStateChanges, setTaskStateChanges] = useState(null);
+    const [key, setKey] = useState("all");
 
     useEffect(() => {
         getTaskInWorkspace(accessToken, workspaceId, taskId).then(response => {
@@ -42,19 +53,31 @@ export default function TaskDetailPage() {
                 setTaskData(response.data);
             }
         });
-        getCommentsForTask(accessToken, workspaceId, taskId).then(response => {
-            console.log(response.data)
-            setTaskComments(response.data);
+        getAllTaskActivity(accessToken, workspaceId, taskId).then(response => {
+            const activity = response.data;
+            const comments = activity.filter(x => x.type === "comment");
+            const pushes = activity.filter(x => x.type === "push");
+            const assignments = activity.filter(x => x.type === "assign");
+            const states = activity.filter(x => x.type === "state");
+            setTaskActivity(activity);
+            setTaskComments(comments);
+            setTaskPushes(pushes);
+            setTaskAssignments(assignments);
+            setTaskStateChanges(states);
         });
     }, []);
 
     if (isTaskNotFound)
         return <h1>Task not found</h1>;
 
+    const isLoaded = () => {
+        return !(taskData === null || taskActivity === null || taskComments === null ||
+                 taskPushes === null || taskAssignments === null || taskStateChanges === null);
+    }
+
     return (
-        taskData === null || taskComments === null?
-        <Preloader/>
-        :
+        !isLoaded()? <Preloader/> :
+
         <div className="px-lg-5">
             <Link to={"/workspaces/" + workspaceId}>Back to workspace</Link>
             <hr/>
@@ -125,14 +148,51 @@ export default function TaskDetailPage() {
                 <MarkdownRender text={taskData.description}/>
             </p>
             <div>
-                <h5>Comments</h5>
-                <Paginator>
-                    {
-                        taskComments.map((value, index) => {
-                            return <CommentCard data={value} workspaceId={workspaceId} key={index}/>
-                        })
-                    }
-                </Paginator>
+                <h5>Activity</h5>
+                <Tabs id="activity-tabs" activeKey={key} onSelect={k => setKey(k)}>
+                    <Tab title="All activity" eventKey="all">
+                        <VWhitespace/>
+                        <Paginator>{taskActivity.map((value, index) => {
+                            if (value.type === "comment")
+                                return <CommentCard data={value}
+                                                    workspaceId={workspaceId}
+                                                    key={index}/>;
+                            else if (value.type === "push")
+                                return <WorkflowPushCard data={value} key={index}/>;
+                            else if (value.type === "assign")
+                                return <AssigneeChangeCard data={value} key={index}/>;
+                            else if (value.type === "state")
+                                return <OpenStateChangeCard data={value} key={index}/>;
+                        })}</Paginator>
+                    </Tab>
+                    <Tab title="Comments" eventKey="comments">
+                        <VWhitespace/>
+                        <Paginator>{taskComments.map((value, index) => {
+                            return <CommentCard data={value}
+                                                workspaceId={workspaceId}
+                                                key={index}/>;
+                        })}</Paginator>
+                    </Tab>
+                    <Tab title="Workflow" eventKey="pushes">
+                        <VWhitespace/>
+                        <Paginator>{taskPushes.map((value, index) => {
+                            return <WorkflowPushCard data={value} key={index}/>;
+                        })}</Paginator>
+                    </Tab>
+                    <Tab title="Assignments" eventKey="assignments">
+                        <VWhitespace/>
+                        <Paginator>{taskAssignments.map((value, index) => {
+                            return <AssigneeChangeCard data={value} key={index}/>;
+                        })}</Paginator>
+                    </Tab>
+                    <Tab title="Open/Close" eventKey="state-change">
+                        <VWhitespace/>
+                        <Paginator>{taskStateChanges.map((value, index) => {
+                            return <OpenStateChangeCard data={value} key={index}/>;
+                        })}</Paginator>
+                    </Tab>
+                </Tabs>
+                <VWhitespace size={3}/>
                 <LeaveCommentField task={taskData}/>
             </div>
         </div>

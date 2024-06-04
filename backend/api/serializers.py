@@ -97,3 +97,31 @@ class DocumentSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.Document
         fields = "__all__"
+
+
+class WorkflowPushSerializer(serializers.ModelSerializer):
+    user = UserSerializer()
+
+    class Meta:
+        model = models.WorkflowPushAction
+        fields = "__all__"
+        depth = 1
+
+
+class AssigneeChangeSerializer(serializers.ModelSerializer):
+    user = UserSerializer()
+    new_assignee = UserSerializer()
+
+    class Meta:
+        model = models.AssigneeChangeAction
+        fields = "__all__"
+        depth = 1
+
+
+class OpenStateChangeSerializer(serializers.ModelSerializer):
+    user = UserSerializer()
+
+    class Meta:
+        model = models.OpenStateChangeAction
+        fields = "__all__"
+        depth = 1

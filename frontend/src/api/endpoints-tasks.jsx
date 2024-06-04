@@ -51,3 +51,13 @@ export function removeTaskFromWorkspace(token, workspaceId, taskId) {
         "Authorization: Bearer " + token
     )
 }
+
+
+export function getAllTaskActivity(token, workspaceId, taskId) {
+    return sendRequest(
+        "GET",
+        apiUrl("workspaces/" + workspaceId + "/tasks/" + taskId + "/activity/"),
+        {},
+        "Authorization: Bearer " + token
+    )
+}

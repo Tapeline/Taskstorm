@@ -98,13 +98,14 @@ class TaskNotifiedWithRuleFact(models.Model):
 class AbstractLoggableAction(models.Model):
     logged_at = models.DateTimeField(auto_now_add=True)
     type = models.CharField(max_length=255)
+    task = models.ForeignKey(to=Task, on_delete=models.CASCADE)
 
     @classmethod
-    def log(cls, **kwargs):
-        cls.objects.create(type=cls.type, **kwargs)
+    def log(cls, task, **kwargs):
+        cls.objects.create(type=cls.type, task=task, **kwargs)
 
 
-class WorkflowPush(AbstractLoggableAction):
+class WorkflowPushAction(AbstractLoggableAction):
     type = "push"
 
     from_stage = models.ForeignKey(to=WorkflowStage, on_delete=models.CASCADE,
@@ -114,7 +115,15 @@ class WorkflowPush(AbstractLoggableAction):
     user = models.ForeignKey(to=User, on_delete=models.CASCADE)
 
 
-class AssigneeChange(AbstractLoggableAction):
-    type = "push"
+class AssigneeChangeAction(AbstractLoggableAction):
+    type = "assign"
 
+    user = models.ForeignKey(to=User, on_delete=models.CASCADE, related_name="my_assignee_changes")
     new_assignee = models.ForeignKey(to=User, null=True, on_delete=models.CASCADE)
+
+
+class OpenStateChangeAction(AbstractLoggableAction):
+    type = "state"
+
+    user = models.ForeignKey(to=User, on_delete=models.CASCADE)
+    new_state = models.BooleanField()
