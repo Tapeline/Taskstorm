@@ -31,6 +31,9 @@ import WorkflowPushCard from "../../components/ActivityCards/WorkflowPushCard.js
 import AssigneeChangeCard from "../../components/ActivityCards/AssigneeChangeCard.jsx";
 import OpenStateChangeCard from "../../components/ActivityCards/OpenStateChangeCard.jsx";
 import VWhitespace from "../../utils/VWhitespace.jsx";
+import EditTaskTagsModal from "../../components/Modals/EditTaskModals/EditTaskTagsModal.jsx";
+import {getColorByStringHash, stringToColour} from "../../utils/colors.jsx";
+import ColorHash from "color-hash";
 
 export default function TaskDetailPage() {
     const {workspaceId, taskId} = useParams();
@@ -43,6 +46,7 @@ export default function TaskDetailPage() {
     const [taskPushes, setTaskPushes] = useState(null);
     const [taskAssignments, setTaskAssignments] = useState(null);
     const [taskStateChanges, setTaskStateChanges] = useState(null);
+    const [workspaceData, setWorkspaceData] = useState(null);
     const [key, setKey] = useState("all");
 
     useEffect(() => {
@@ -65,6 +69,9 @@ export default function TaskDetailPage() {
             setTaskAssignments(assignments);
             setTaskStateChanges(states);
         });
+        getWorkspace(accessToken, workspaceId).then(response => {
+            setWorkspaceData(response.data);
+        })
     }, []);
 
     if (isTaskNotFound)
@@ -72,57 +79,81 @@ export default function TaskDetailPage() {
 
     const isLoaded = () => {
         return !(taskData === null || taskActivity === null || taskComments === null ||
-                 taskPushes === null || taskAssignments === null || taskStateChanges === null);
+                 taskPushes === null || taskAssignments === null || taskStateChanges === null ||
+                 workspaceData === null);
     }
+
+    const colorHash = new ColorHash({
+        lightness: 0.35,
+        saturation: 1,
+    });
 
     return (
         !isLoaded()? <Preloader/> :
 
-        <div className="px-lg-5">
-            <Link to={"/workspaces/" + workspaceId}>Back to workspace</Link>
-            <hr/>
-            <div className="d-flex justify-content-between">
-                <h2>{taskData.name} <EditTaskNameModal task={taskData} workspaceId={workspaceId}/></h2>
-                <div>
-                    <OpenCloseTaskButton task={taskData} workspaceId={workspaceId}/>
-                    <span className="mx-1"></span>
-                    <DeleteTaskButton task={taskData} workspaceId={workspaceId}/>
+            <div className="px-lg-5">
+                <Link to={"/workspaces/" + workspaceId}>Back to workspace</Link>
+                <hr/>
+                <div className="d-flex justify-content-between">
+                    <h2>{taskData.name} <EditTaskNameModal task={taskData} workspaceId={workspaceId}/></h2>
+                    <div>
+                        <OpenCloseTaskButton task={taskData} workspaceId={workspaceId}/>
+                        <span className="mx-1"></span>
+                        <DeleteTaskButton task={taskData} workspaceId={workspaceId}/>
+                    </div>
                 </div>
-            </div>
-            <h6><i className="bi bi-folder"></i> {taskData.folder}&nbsp;
-                <EditTaskFolderModal task={taskData} workspaceId={workspaceId}/></h6>
-            <div className="d-flex justify-content-between">
-                <div>
-                    {
-                        taskData.is_open
-                            ? <Badge pill bg="warning" text="dark">Open</Badge>
-                            : <Badge pill bg="secondary" text="dark">Closed</Badge>
-                    }
-                    <span className="small"> by {taskData.creator?.username}</span>
+                <h6><i className="bi bi-folder"></i> {taskData.folder}&nbsp;
+                    <EditTaskFolderModal task={taskData} workspaceId={workspaceId}/></h6>
+                <div className="d-flex justify-content-between mb-1">
+                    <div>
+                        {
+                            taskData.is_open
+                                ? <Badge pill bg="warning" text="dark">Open</Badge>
+                                : <Badge pill bg="secondary" text="dark">Closed</Badge>
+                        }
+                        <span className="small"> by {taskData.creator?.username}</span>
+                    </div>
+                    <div>
+                        {
+                            taskData.assignee !== null
+                                ? <span className="small"> Assigned to {taskData.assignee?.username}</span>
+                                : <span className="small"> Unassigned</span>
+                        }
+                        &nbsp;
+                        <EditTaskAssigneeModal task={taskData} workspaceId={workspaceId}/>
+                    </div>
                 </div>
-                <div>
+                <div className="d-flex mb-3">
                     {
-                        taskData.assignee !== null
-                            ? <span className="small"> Assigned to {taskData.assignee?.username}</span>
-                            : <span className="small"> Unassigned</span>
+                        taskData.tags.length !== 0
+                            ? <><span className="small">Tags:</span><span>&nbsp;{
+                                taskData.tags.split(" ").map((tag, index) => {
+                                    let color = colorHash.hex(tag);
+                                    if (workspaceData.settings.tag_coloring[tag] !== undefined)
+                                        color = workspaceData.settings.tag_coloring[tag];
+                                    return <span className="badge me-1" key={index} style={{
+                                        background: color
+                                    }}>{tag}</span>;
+                                })
+                            }</span></>
+                            : <span className="small">No tags</span>
                     }
                     &nbsp;
-                    <EditTaskAssigneeModal task={taskData} workspaceId={workspaceId}/>
+                    <EditTaskTagsModal task={taskData} workspaceId={workspaceId}/>
                 </div>
-            </div>
-            <div className="d-flex mb-3">
-                {
-                    taskData.stage !== null
-                        ? <span className="small"> Stage:&nbsp;
-                            <i className="bi bi-circle-fill"
-                               style={{color: "#" + taskData.stage?.color}}></i>&nbsp;
-                            {taskData.stage?.name}</span>
-                        : <span className="small"> Unstaged</span>
-                }
-                &nbsp;
-                <EditTaskStageModal task={taskData} workspaceId={workspaceId}/>
-            </div>
-            <div className="d-flex">
+                <div className="d-flex mb-3">
+                    {
+                        taskData.stage !== null
+                            ? <span className="small">Stage:&nbsp;
+                                <i className="bi bi-circle-fill"
+                                   style={{color: "#" + taskData.stage?.color}}></i>&nbsp;
+                                {taskData.stage?.name}</span>
+                            : <span className="small"> Unstaged</span>
+                    }
+                    &nbsp;
+                    <EditTaskStageModal task={taskData} workspaceId={workspaceId}/>
+                </div>
+                <div className="d-flex">
                 <span className="small">Time bounds:&nbsp;
                     <DisplayEditTaskTimeModal task={taskData} workspaceId={workspaceId}
                                               title="Edit time bound start"
@@ -131,8 +162,8 @@ export default function TaskDetailPage() {
                     <DisplayEditTaskTimeModal task={taskData} workspaceId={workspaceId}
                                               title="Edit time bound end"
                                               field="time_bounds_end"/></span>
-            </div>
-            <div className="d-flex">
+                </div>
+                <div className="d-flex">
                 <span className="small">Arranged:&nbsp;
                     <DisplayEditTaskTimeModal task={taskData} workspaceId={workspaceId}
                                               title="Edit arrangement start"
@@ -141,60 +172,60 @@ export default function TaskDetailPage() {
                     <DisplayEditTaskTimeModal task={taskData} workspaceId={workspaceId}
                                               title="Edit arrangement end"
                                               field="arrangement_end"/></span>
-            </div>
-            <p className="my-5">
-                <EditTaskDescriptionModal task={taskData} workspaceId={workspaceId}/>
-                <HWhitespace/>
-                <MarkdownRender text={taskData.description}/>
-            </p>
-            <div>
-                <h5>Activity</h5>
-                <Tabs id="activity-tabs" activeKey={key} onSelect={k => setKey(k)}>
-                    <Tab title="All activity" eventKey="all">
-                        <VWhitespace/>
-                        <Paginator>{taskActivity.map((value, index) => {
-                            if (value.type === "comment")
+                </div>
+                <p className="my-5">
+                    <EditTaskDescriptionModal task={taskData} workspaceId={workspaceId}/>
+                    <HWhitespace/>
+                    <MarkdownRender text={taskData.description}/>
+                </p>
+                <div>
+                    <h5>Activity</h5>
+                    <Tabs id="activity-tabs" activeKey={key} onSelect={k => setKey(k)}>
+                        <Tab title="All activity" eventKey="all">
+                            <VWhitespace/>
+                            <Paginator>{taskActivity.map((value, index) => {
+                                if (value.type === "comment")
+                                    return <CommentCard data={value}
+                                                        workspaceId={workspaceId}
+                                                        key={index}/>;
+                                else if (value.type === "push")
+                                    return <WorkflowPushCard data={value} key={index}/>;
+                                else if (value.type === "assign")
+                                    return <AssigneeChangeCard data={value} key={index}/>;
+                                else if (value.type === "state")
+                                    return <OpenStateChangeCard data={value} key={index}/>;
+                            })}</Paginator>
+                        </Tab>
+                        <Tab title="Comments" eventKey="comments">
+                            <VWhitespace/>
+                            <Paginator>{taskComments.map((value, index) => {
                                 return <CommentCard data={value}
                                                     workspaceId={workspaceId}
                                                     key={index}/>;
-                            else if (value.type === "push")
+                            })}</Paginator>
+                        </Tab>
+                        <Tab title="Workflow" eventKey="pushes">
+                            <VWhitespace/>
+                            <Paginator>{taskPushes.map((value, index) => {
                                 return <WorkflowPushCard data={value} key={index}/>;
-                            else if (value.type === "assign")
+                            })}</Paginator>
+                        </Tab>
+                        <Tab title="Assignments" eventKey="assignments">
+                            <VWhitespace/>
+                            <Paginator>{taskAssignments.map((value, index) => {
                                 return <AssigneeChangeCard data={value} key={index}/>;
-                            else if (value.type === "state")
+                            })}</Paginator>
+                        </Tab>
+                        <Tab title="Open/Close" eventKey="state-change">
+                            <VWhitespace/>
+                            <Paginator>{taskStateChanges.map((value, index) => {
                                 return <OpenStateChangeCard data={value} key={index}/>;
-                        })}</Paginator>
-                    </Tab>
-                    <Tab title="Comments" eventKey="comments">
-                        <VWhitespace/>
-                        <Paginator>{taskComments.map((value, index) => {
-                            return <CommentCard data={value}
-                                                workspaceId={workspaceId}
-                                                key={index}/>;
-                        })}</Paginator>
-                    </Tab>
-                    <Tab title="Workflow" eventKey="pushes">
-                        <VWhitespace/>
-                        <Paginator>{taskPushes.map((value, index) => {
-                            return <WorkflowPushCard data={value} key={index}/>;
-                        })}</Paginator>
-                    </Tab>
-                    <Tab title="Assignments" eventKey="assignments">
-                        <VWhitespace/>
-                        <Paginator>{taskAssignments.map((value, index) => {
-                            return <AssigneeChangeCard data={value} key={index}/>;
-                        })}</Paginator>
-                    </Tab>
-                    <Tab title="Open/Close" eventKey="state-change">
-                        <VWhitespace/>
-                        <Paginator>{taskStateChanges.map((value, index) => {
-                            return <OpenStateChangeCard data={value} key={index}/>;
-                        })}</Paginator>
-                    </Tab>
-                </Tabs>
-                <VWhitespace size={3}/>
-                <LeaveCommentField task={taskData}/>
+                            })}</Paginator>
+                        </Tab>
+                    </Tabs>
+                    <VWhitespace size={3}/>
+                    <LeaveCommentField task={taskData}/>
+                </div>
             </div>
-        </div>
     );
 }

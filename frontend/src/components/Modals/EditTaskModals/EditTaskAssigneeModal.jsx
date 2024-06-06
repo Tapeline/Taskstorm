@@ -70,7 +70,7 @@ export default function EditTaskAssigneeModal(props) {
                             <option value={`${profile.id}`}>{profile.username}</option>
                             {
                                 availableUsers.map((data, id) => {
-                                    return <option value={`${data.id}`}>{data.username}</option>;
+                                    return <option key={id} value={`${data.id}`}>{data.username}</option>;
                                 })
                             }
                         </Form.Select>

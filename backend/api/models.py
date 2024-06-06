@@ -16,10 +16,15 @@ class IssuedToken(models.Model):
     is_invalidated = models.BooleanField(default=False)
 
 
+def default_workspace_settings():
+    return {"tag_coloring": {}, "views": []}
+
+
 class Workspace(models.Model):
     owner = models.ForeignKey(to=User, on_delete=models.CASCADE, related_name="owning_workspaces")
     members = models.ManyToManyField(to=User, blank=True, default=list, related_name="member_in_workspaces")
     name = models.CharField(max_length=255)
+    settings = models.JSONField(default=default_workspace_settings)
 
     def user_can_interact(self, user):
         return user == self.owner or user in self.members.all()

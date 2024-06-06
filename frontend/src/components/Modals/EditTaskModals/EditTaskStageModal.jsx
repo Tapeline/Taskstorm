@@ -68,7 +68,7 @@ export default function EditTaskStageModal(props) {
                             <option value="null">Unstaged</option>
                             {
                                 availableStages.map((data, id) => {
-                                    return <option value={`${data.id}`}>{data.name}</option>;
+                                    return <option key={id} value={`${data.id}`}>{data.name}</option>;
                                 })
                             }
                         </Form.Select>

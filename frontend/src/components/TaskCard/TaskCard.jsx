@@ -1,9 +1,16 @@
 import React from "react";
 import {Link} from "react-router-dom";
 import {Badge, Card} from "react-bootstrap";
+import EditTaskTagsModal from "../Modals/EditTaskModals/EditTaskTagsModal.jsx";
+import ColorHash from "color-hash";
 
 export default function TaskCard(props) {
-    const {data} = props;
+    const {workspace, data} = props;
+
+    const colorHash = new ColorHash({
+        lightness: 0.35,
+        saturation: 1,
+    });
 
     return (
         <Card className="mb-2">
@@ -18,7 +25,23 @@ export default function TaskCard(props) {
                         {data.name}
                     </Link>
                 </Card.Title>
-                <Card.Subtitle className="mb-2 text-muted">by {data.creator.username}</Card.Subtitle>
+                <Card.Subtitle className="mb-2 text-muted">
+                    {
+                        data.tags.length !== 0
+                            ? <><span className="small">Tags:</span><span>&nbsp;{
+                                data.tags.split(" ").map((tag, index) => {
+                                    let color = colorHash.hex(tag);
+                                    if (workspace.settings.tag_coloring[tag] !== undefined)
+                                        color = workspace.settings.tag_coloring[tag];
+                                    return <span className="badge me-1" key={index} style={{
+                                        background: color
+                                    }}>{tag}</span>;
+                                })
+                            }</span></>
+                            : <span className="small">No tags</span>
+                    }
+                </Card.Subtitle>
+                <Card.Subtitle className="mb-2 small text-muted">by {data.creator.username}</Card.Subtitle>
                 <Card.Subtitle className="mb-2 text-muted">{
                     data.assignee !== null
                         ? <span className="small"> Assigned to {data.assignee?.username}</span>

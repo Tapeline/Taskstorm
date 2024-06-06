@@ -49,5 +49,5 @@ export default function RegisterPage() {
                 <small><Link to="/login">or sign in</Link></small>
             </Form>
         </div>
-    )
+    );
 }

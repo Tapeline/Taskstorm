@@ -27,6 +27,7 @@ import VWhitespace from "../../utils/VWhitespace.jsx";
 import HWhitespace from "../../utils/HWhitespace.jsx";
 import CategorySwitcher from "../../components/CategorySwitcher/CategorySwitcher.jsx";
 import CategoryPanel from "../../components/CategorySwitcher/CategoryPanel.jsx";
+import WorkspaceTagColorTable from "../../components/WorkspaceTagColorTable/WorkspaceTagColorTable.jsx";
 
 export default function WorkspaceDetailPage() {
     const {workspaceId, page} = useParams();
@@ -140,6 +141,14 @@ export default function WorkspaceDetailPage() {
                             <h4>{workspaceData.name}</h4>
                             <h6>ID: {workspaceData.id}</h6>
                         </CategoryPanel>
+                        <CategoryPanel name="Tags" tabId="#tags">
+                            <span className="text-muted">Specify custom colors for
+                                tags instead of using generated</span>
+                            <br/>
+                            <VWhitespace/>
+                            <WorkspaceTagColorTable workspace={workspaceData}
+                                                    tags={workspaceData.settings.tag_coloring}/>
+                        </CategoryPanel>
                         <CategoryPanel name="Ownership" tabId="#ownership">
                             <h6>Current owner: {workspaceData.owner.username}</h6>
                             {workspaceData.owner.id.toString() ===
@@ -162,7 +171,7 @@ export default function WorkspaceDetailPage() {
                     </div>
                     {
                         taskList.map(function (data, id) {
-                            return <TaskCard data={data} key={id}/>
+                            return <TaskCard data={data} workspace={workspaceData} key={id}/>
                         })
                     }
                 </Tab>
