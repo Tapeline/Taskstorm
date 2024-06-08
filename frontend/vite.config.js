@@ -18,9 +18,6 @@ export default defineConfig({
         })
       },
     },
-    serviceWorkerPlugin({
-      filename: 'serviceWorker.js',
-    }),
     react(),
     // {
     //   apply: "build",
