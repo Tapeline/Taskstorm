@@ -18,4 +18,4 @@ jobs:
             git clone https://github.com/Tapeline/Taskstorm.git
             cd Taskstorm
             docker rm -f taskstorm-nginx_service-1 > /dev/null || echo > /dev/null
-            docker compose -f docker-compose.yml -p taskstorm up -d --build
+            VAPID_PRIVATE=${{secrets.VAPID_PRIVATE}} docker compose -f docker-compose.yml -p taskstorm up -d --build
