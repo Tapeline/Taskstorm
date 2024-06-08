@@ -185,3 +185,7 @@ CHANNEL_LAYERS = {
         },
     }
 }
+
+VAPID_PRIVATE = os.getenv("VAPID_PRIVATE")
+if not isinstance(VAPID_PRIVATE, str):
+    raise ValueError("$VAPID_PRIVATE is not a string")

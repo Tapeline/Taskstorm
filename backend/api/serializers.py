@@ -22,6 +22,12 @@ class UserSerializer(serializers.ModelSerializer):
         fields = ["id", "username"]
 
 
+class MyProfileSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = models.User
+        fields = ["id", "username", "settings"]
+
+
 class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
     def validate(self, attrs: Dict[str, Any]) -> Dict[str, str]:
         data = super().validate(attrs)

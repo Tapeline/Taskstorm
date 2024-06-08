@@ -5,8 +5,12 @@ from django.contrib.auth.models import AbstractUser
 from django.db import models
 
 
+def get_default_user_settings():
+    return {"wp_sub": None}
+
+
 class User(AbstractUser):
-    pass
+    settings = models.JSONField(default=get_default_user_settings)
 
 
 class IssuedToken(models.Model):

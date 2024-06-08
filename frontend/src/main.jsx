@@ -18,6 +18,17 @@ import LocalSettingsPage from "./pages/LocalSettingsPage/LocalSettingsPage.jsx";
 import DocumentDetailPage from "./pages/DocumentDetailPage/DocumentDetailPage.jsx";
 
 
+if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register(
+        "/serviceWorker.js", {scope: "/"}
+    ).then(registration => {
+        console.log('Service Worker registered with scope:', registration.scope);
+    }).catch(error => {
+        console.error('Service Worker registration failed:', error);
+    });
+    //register("/serviceWorker.js");
+}
+
 const router = createBrowserRouter([
     {
         path: '/',

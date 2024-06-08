@@ -57,6 +57,8 @@ services:
       REDIS_PASSWORD: ${REDIS_PASS}
       REDIS_PORT: 6379
       REDIS_HOST: redis
+      VAPID_PUBLIC: ${VAPID_PUBLIC}
+      VAPID_PRIVATE: ${VAPID_PRIVATE}
     ports:
       - "8080:8080"
     expose:

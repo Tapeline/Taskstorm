@@ -7,7 +7,7 @@ from api.views.pagination import LimitOffsetPaginationMixin
 
 class ProfileView(RetrieveUpdateDestroyAPIView):
     permission_classes = (IsAuthenticated, )
-    serializer_class = serializers.UserSerializer
+    serializer_class = serializers.MyProfileSerializer
 
     def get_object(self):
         return self.request.user

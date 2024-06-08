@@ -141,7 +141,7 @@ export default function TaskDetailPage() {
                     &nbsp;
                     <EditTaskTagsModal task={taskData} workspaceId={workspaceId}/>
                 </div>
-                <div className="d-flex mb-3">
+                <div className="d-flex mb-3"> 
                     {
                         taskData.stage !== null
                             ? <span className="small">Stage:&nbsp;

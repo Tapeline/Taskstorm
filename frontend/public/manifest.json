@@ -1,0 +1,24 @@
+{
+  "name": "Taskstorm",
+  "short_name": "Taskstorm",
+  "theme_color": "#2f24c1",
+  "background_color": "#2f24c1",
+  "display": "standalone",
+  "scope": "/",
+  "start_url": "/workspaces",
+  "icons":[
+    {
+      "purpose": "maskable",
+      "sizes": "512x512",
+      "src": "icon512_maskable.png",
+      "type":"image/png"
+    },
+    {
+      "purpose" :"any",
+      "sizes": "512x512",
+      "src": "icon512_rounded.png",
+      "type": "image/png"
+    }
+  ],
+  "gcm_sender_id": "103953800507"
+}

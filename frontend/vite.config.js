@@ -1,5 +1,6 @@
 import {defineConfig, transformWithEsbuild} from 'vite'
 import react from '@vitejs/plugin-react'
+import {serviceWorkerPlugin} from "@gautemo/vite-plugin-service-worker";
 
 // https://vitejs.dev/config/
 export default defineConfig({
@@ -17,7 +18,23 @@ export default defineConfig({
         })
       },
     },
+    serviceWorkerPlugin({
+      filename: 'serviceWorker.js',
+    }),
     react(),
+    // {
+    //   apply: "build",
+    //   enforce: "post",
+    //   transformIndexHtml() {
+    //     buildSync({
+    //       minify: true,
+    //       bundle: true,
+    //       entryPoints: [join(process.cwd(), "serviceWorker.js")],
+    //       outfile: join(process.cwd(), "dist", "serviceWorker.js"),
+    //     });
+    //   },
+    // },
+
   ],
   esbuild: {
     loader: 'jsx',

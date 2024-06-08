@@ -17,6 +17,12 @@ export function getBaseWebSocketUrl() {
     return "wss://taskstorm.tapeline.dev/ws/";
 }
 
+
+export function getPublicVAPID() {
+    return "BFxPi74v5KgBEUQ49mW_ZmThrczXO3FkZ-9zU1BaeRrAANl2Zp3GctHLZV0wa6tIslzzX3Qp0thsMrmiodq7b_E";
+}
+
+
 export function apiUrl(url) {
     return getBaseUrl() + url;
 }

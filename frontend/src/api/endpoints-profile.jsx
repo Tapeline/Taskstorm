@@ -9,6 +9,15 @@ export function getProfile(token) {
     )
 }
 
+export function modifyProfileSettings(token, newSettings) {
+    return sendRequest(
+        "PATCH",
+        apiUrl("profile/"),
+        {"settings": newSettings},
+        "Authorization: Bearer " + token
+    )
+}
+
 export function deleteProfile(token) {
     return sendRequest(
         "DELETE",
