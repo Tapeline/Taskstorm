@@ -45,3 +45,30 @@ export function getAllUnreadNotifications(token) {
         "Authorization: Bearer " + token
     )
 }
+
+export function getRecommendedTasks(token) {
+    return sendRequest(
+        "GET",
+        apiUrl("profile/recommended/"),
+        {},
+        "Authorization: Bearer " + token
+    )
+}
+
+export function getUserStats(token) {
+    return sendRequest(
+        "GET",
+        apiUrl("profile/stats/"),
+        {},
+        "Authorization: Bearer " + token
+    )
+}
+
+export function getUserTasks(token) {
+    return sendRequest(
+        "GET",
+        apiUrl("profile/tasks/"),
+        {},
+        "Authorization: Bearer " + token
+    )
+}

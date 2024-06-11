@@ -5,7 +5,7 @@ import EditTaskTagsModal from "../Modals/EditTaskModals/EditTaskTagsModal.jsx";
 import ColorHash from "color-hash";
 
 export default function TaskCard(props) {
-    const {workspace, data} = props;
+    const {data} = props;
 
     const colorHash = new ColorHash({
         lightness: 0.35,
@@ -31,8 +31,8 @@ export default function TaskCard(props) {
                             ? <><span className="small">Tags:</span><span>&nbsp;{
                                 data.tags.split(" ").map((tag, index) => {
                                     let color = colorHash.hex(tag);
-                                    if (workspace.settings.tag_coloring[tag] !== undefined)
-                                        color = workspace.settings.tag_coloring[tag];
+                                    if (data.workspace.settings.tag_coloring[tag] !== undefined)
+                                        color = data.workspace.settings.tag_coloring[tag];
                                     return <span className="badge me-1" key={index} style={{
                                         background: color
                                     }}>{tag}</span>;

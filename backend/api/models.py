@@ -5,6 +5,10 @@ from django.contrib.auth.models import AbstractUser
 from django.db import models
 
 
+def transform_to_queryset(model, obj_list):
+    return model.objects.filter(id__in=[x.id for x in obj_list])
+
+
 def get_default_user_settings():
     return {"wp_sub": None}
 
@@ -51,6 +55,9 @@ class Task(models.Model):
     parent_task = models.ForeignKey(to="Task", on_delete=models.SET_NULL, null=True, default=None)
     linked_tasks = models.ManyToManyField(to="Task", blank=True, default=list, related_name="linked_to_tasks")
     created_at = models.DateTimeField(auto_now_add=True)
+
+    TASK_OPEN = True
+    TASK_CLOSED = False
 
 
 class Comment(models.Model):
