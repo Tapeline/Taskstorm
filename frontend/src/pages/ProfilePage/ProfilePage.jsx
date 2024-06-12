@@ -22,6 +22,9 @@ import {getPublicVAPID} from "../../api/common.jsx";
 import Preloader from "../../components/Preloader/Preloader.jsx";
 import TaskCard from "../../components/TaskCard/TaskCard.jsx";
 import Chart from "react-apexcharts";
+import FullCalendar from "@fullcalendar/react";
+import dayGridPlugin from "@fullcalendar/daygrid";
+import timeGridPlugin from '@fullcalendar/timegrid'
 
 export default function ProfilePage() {
     const {page} = useParams();
@@ -32,6 +35,15 @@ export default function ProfilePage() {
     const [recommendedTasks, setRecommendedTasks] = useState(null);
     const [stats, setStats] = useState(null);
     const [myTasks, setMyTasks] = useState(null);
+    const [width, setWidth] = useState(window.innerWidth);
+
+    useEffect(() => {
+        window.addEventListener('resize', () => setWidth(window.innerWidth));
+        return () =>
+            window.removeEventListener('resize', () => setWidth(window.innerWidth));
+    }, []);
+
+    const isMobile = width <= 768;
 
     if (page === null) {
         navigate("/profile/dashboard");
@@ -141,6 +153,33 @@ export default function ProfilePage() {
         return [new Date(item[0]).getTime(), item[1]];
     })
 
+    const calendarEvents =
+        myTasks
+        .filter(task => task.arrangement_start !== null || task.arrangement_end !== null)
+        .map(task => {
+            let start = task.arrangement_start;
+            let end = task.arrangement_end;
+            if (start === null) {
+                end = new Date(end);
+                start = new Date(task.arrangement_end);
+                start.setHours(start.getHours() - 1);
+            } else if (end === null) {
+                start = new Date(start);
+                end = new Date(task.arrangement_start);
+                end.setHours(end.getHours() + 1);
+            } else {
+                start = new Date(start);
+                end = new Date(end);
+            }
+            return {
+                title: task.name,
+                start: start,
+                end: end,
+                id: `/workspaces/${task.workspace.id}/tasks/${task.id}`
+            }
+        }
+    );
+
     return (<div className="px-lg-5">
         <h1>Your profile</h1>
         <VWhitespace size={1}/>
@@ -150,14 +189,21 @@ export default function ProfilePage() {
             <Tab eventKey="dashboard" title="Dashboard">
                 <Row>
                     <Col md>
-                        <h5>You might want to pay attention to these tasks</h5>
-                        <VWhitespace/>
                         {
-                            recommendedTasks.map((task, index) => {
-                                return <TaskCard data={task} key={index}/>;
-                            })
+                            recommendedTasks.length === 0
+                                ? <p className="text-muted">No recommendations for now</p>
+                                : <>
+                                    <h5>Recommended tasks</h5>
+                                    <VWhitespace/>
+                                    {
+                                        recommendedTasks.map((task, index) => {
+                                            return <TaskCard data={task} key={index}/>;
+                                        })
+                                    }
+                                </>
                         }
                     </Col>
+                    <VWhitespace/>
                     <Col md>
                         <h5>Statistics</h5>
                         <VWhitespace/>
@@ -222,7 +268,34 @@ export default function ProfilePage() {
                 }
             </Tab>
             <Tab eventKey="calendar" title="Calendar">
-                Tab content
+                {
+                    isMobile
+                        ? <FullCalendar
+                            plugins={[ timeGridPlugin ]}
+                            initialView="timeGridDay"
+                            events={calendarEvents}
+                            headerToolbar={{
+                                end: 'prev,next'
+                            }}
+                            eventClick={(info) => {
+                                navigate(info.event.id);
+                            }}
+                            height="70vh"
+                            />
+                        : <FullCalendar
+                            plugins={[ dayGridPlugin, timeGridPlugin ]}
+                            initialView="dayGridMonth"
+                            events={calendarEvents}
+                            headerToolbar={{
+                                start: 'dayGridMonth,timeGridWeek,timeGridDay',
+                                center: 'title',
+                                end: 'prevYear,prev,next,nextYear'
+                            }}
+                            eventClick={(info) => {
+                                navigate(info.event.id);
+                            }}
+                            />
+                }
             </Tab>
             <Tab eventKey="manage" title="Manage">
                 <CategorySwitcher defaultKey="#general">

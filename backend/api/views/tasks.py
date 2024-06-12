@@ -71,6 +71,9 @@ class RetrieveUpdateDestroyTaskView(RetrieveUpdateDestroyAPIView, WorkspaceMixin
             if new_object.stage is not None:
                 new_object.is_open = not new_object.stage.is_end
                 new_object.save()
+                if new_object.stage.is_end:
+                    models.OpenStateChangeAction.log(new_object, user=request.user,
+                                                     new_state=new_object.is_open)
         if "is_open" in request.data:
             models.OpenStateChangeAction.log(new_object, user=request.user,
                                              new_state=new_object.is_open)

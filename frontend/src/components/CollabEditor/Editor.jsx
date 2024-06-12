@@ -5,9 +5,7 @@ import { useEffect, useState } from "react";
 import { useRef } from "react";
 import { useParams } from "react-router-dom";
 import {getRandomVibrantColor} from "../../utils/colors.jsx";
-import Preloader from "../Preloader/Preloader.jsx";
 import OverlayingPreloader from "../Preloader/OverlayingPreloader.jsx";
-import {v4 as uuidv4} from 'uuid';
 import {wsUrl} from "../../api/common.jsx";
 
 ReactQuill.Quill.register("modules/cursors", QuillCursors)
