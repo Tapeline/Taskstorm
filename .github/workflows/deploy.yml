@@ -17,5 +17,5 @@ jobs:
             rm -rf Taskstorm > /dev/null || echo > /dev/null
             git clone https://github.com/Tapeline/Taskstorm.git
             cd Taskstorm
-            docker rm -f taskstorm-nginx_service-1 > /dev/null || echo > /dev/null
+            docker container inspect taskstorm-nginx_service-1 &>/dev/null && docker rm -f taskstorm-nginx_service-1
             VAPID_PRIVATE=${{secrets.VAPID_PRIVATE}} SECRET_KEY=${{secrets.SECRET_KEY}} docker compose -f docker-compose.yml -p taskstorm up -d --build
