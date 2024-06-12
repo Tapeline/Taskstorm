@@ -1,9 +1,8 @@
-import React, {useState} from "react";
-import {Button, Form, Modal} from "react-bootstrap";
-import {newWorkspace} from "../../../api/endpoints-workspaces.jsx";
+import React from "react";
+import {Button} from "react-bootstrap";
 import {toastError} from "../../../ui/toasts.jsx";
 import {useNavigate} from "react-router-dom";
-import {modifyTaskInWorkspace, newTaskInWorkspace} from "../../../api/endpoints-tasks.jsx";
+import {modifyTaskInWorkspace} from "../../../api/endpoints-tasks.jsx";
 
 export default function OpenCloseTaskButton(props) {
     const {workspaceId, task} = props;

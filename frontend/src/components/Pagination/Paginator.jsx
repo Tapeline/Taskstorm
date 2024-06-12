@@ -1,6 +1,5 @@
 import React, {useEffect, useState} from "react";
 import {Col, Form, InputGroup, Pagination, Row} from "react-bootstrap";
-import {v4 as uuidv4} from 'uuid';
 
 export default function Paginator(props) {
     const {children} = props;

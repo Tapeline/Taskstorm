@@ -1,7 +1,6 @@
 import React from "react";
 import {Link} from "react-router-dom";
 import {Badge, Card} from "react-bootstrap";
-import EditTaskTagsModal from "../Modals/EditTaskModals/EditTaskTagsModal.jsx";
 import ColorHash from "color-hash";
 
 export default function TaskCard(props) {

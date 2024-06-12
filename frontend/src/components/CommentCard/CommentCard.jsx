@@ -1,13 +1,9 @@
 import React from "react";
-import {Link} from "react-router-dom";
-import {Badge, Card} from "react-bootstrap";
+import {Card} from "react-bootstrap";
 import {dateConverter} from "../../utils/time.jsx";
 import CommentCardEditCommentButton from "./CommentCardEditCommentButton.jsx";
-import VWhitespace from "../../utils/VWhitespace.jsx";
 import HWhitespace from "../../utils/HWhitespace.jsx";
 import CommentCardDeleteCommentButton from "./CommentCardDeleteCommentButton.jsx";
-import Markdown from "react-markdown";
-import remarkGfm from "remark-gfm";
 import MarkdownRender from "../Markdown/MarkdownRender.jsx";
 import ProfilePic from "../Misc/ProfilePic.jsx";
 

@@ -1,9 +1,7 @@
 import {useEffect, useState} from "react";
 import {Button, Col, Form, Row, Tab, Table, Tabs} from "react-bootstrap";
-import {login} from "../../api/endpoints-auth.jsx";
 import {toastError, toastSuccess} from "../../ui/toasts.jsx";
-import {Link, useNavigate, useParams} from "react-router-dom";
-import {toast} from "react-toastify";
+import {useNavigate, useParams} from "react-router-dom";
 import {
     getProfile,
     getRecommendedTasks,
@@ -11,12 +9,9 @@ import {
     getUserTasks,
     modifyProfileSettings, setUserProfilePic
 } from "../../api/endpoints-profile.jsx";
-import DeleteWorkspaceModal from "../../components/Modals/DeleteWorkspaceModal/DeleteWorkspaceModal.jsx";
 import DeleteAccountModal from "../../components/Modals/DeleteAccountModal/DeleteAccountModal.jsx";
 import VWhitespace from "../../utils/VWhitespace.jsx";
 import CategoryPanel from "../../components/CategorySwitcher/CategoryPanel.jsx";
-import TransferWorkspaceOwnershipModal
-    from "../../components/Modals/TransferWorkspaceOwnershipModal/TransferWorkspaceOwnershipModal.jsx";
 import CategorySwitcher from "../../components/CategorySwitcher/CategorySwitcher.jsx";
 import {getPublicVAPID} from "../../api/common.jsx";
 import Preloader from "../../components/Preloader/Preloader.jsx";

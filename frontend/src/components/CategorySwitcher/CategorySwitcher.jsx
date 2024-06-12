@@ -1,5 +1,4 @@
 import {Col, ListGroup, Row, Tab} from "react-bootstrap";
-import {Link} from "react-router-dom";
 
 export default function CategorySwitcher(props) {
     const {children, placement, defaultKey, ...rest} = props;

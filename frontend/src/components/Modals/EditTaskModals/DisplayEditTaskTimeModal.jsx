@@ -1,9 +1,8 @@
 import React, {useEffect, useState} from "react";
 import {Button, Form, InputGroup, Modal} from "react-bootstrap";
-import {newWorkspace} from "../../../api/endpoints-workspaces.jsx";
 import {toastError} from "../../../ui/toasts.jsx";
 import {useNavigate} from "react-router-dom";
-import {getTaskInWorkspace, modifyTaskInWorkspace, newTaskInWorkspace} from "../../../api/endpoints-tasks.jsx";
+import {getTaskInWorkspace, modifyTaskInWorkspace} from "../../../api/endpoints-tasks.jsx";
 import {toISOStringWithTimeZone} from "../../../utils/time.jsx";
 
 export default function DisplayEditTaskTimeModal(props) {

@@ -1,10 +1,8 @@
 import React, {useState} from "react";
 import {Button, Form, InputGroup, Modal} from "react-bootstrap";
-import {modifyWorkspace, newWorkspace} from "../../api/endpoints-workspaces.jsx";
+import {modifyWorkspace} from "../../api/endpoints-workspaces.jsx";
 import {toastError} from "../../ui/toasts.jsx";
 import {useNavigate} from "react-router-dom";
-import {newTaskInWorkspace} from "../../api/endpoints-tasks.jsx";
-import {modifyStageInWorkspace, newStageInWorkspace} from "../../api/endpoints-workflow.jsx";
 import {HexColorInput, HexColorPicker} from "react-colorful";
 
 export default function WorkspaceTagColorTableRowEditColorButton(props) {

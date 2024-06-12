@@ -1,4 +1,4 @@
-import {Button, Card, Form, InputGroup} from "react-bootstrap";
+import {Button, Card, Form} from "react-bootstrap";
 import React, {useState} from "react";
 import {newCommentForTask} from "../../api/endpoints-comments.jsx";
 import {toastError} from "../../ui/toasts.jsx";

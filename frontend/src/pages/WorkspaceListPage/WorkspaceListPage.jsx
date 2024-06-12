@@ -1,9 +1,8 @@
 import {useEffect, useState} from "react";
-import {Link, useNavigate, useParams} from "react-router-dom";
+import {useNavigate} from "react-router-dom";
 import {getAllWorkspaces} from "../../api/endpoints-workspaces.jsx";
 import WorkspaceCard from "../../components/WorkspaceCard/WorkspaceCard.jsx";
 import CreateWorkspaceModal from "../../components/Modals/CreateWorkspaceModal/CreateWorkspaceModal.jsx";
-import {Form, Spinner} from "react-bootstrap";
 import Preloader from "../../components/Preloader/Preloader.jsx";
 
 export default function WorkspaceListPage() {

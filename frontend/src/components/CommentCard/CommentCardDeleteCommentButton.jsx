@@ -1,5 +1,5 @@
 import React, {useState} from "react";
-import {Button, Form, Modal} from "react-bootstrap";
+import {Button, Modal} from "react-bootstrap";
 import {useNavigate} from "react-router-dom";
 import {toastError} from "../../ui/toasts.jsx";
 import {removeCommentForTask} from "../../api/endpoints-comments.jsx";

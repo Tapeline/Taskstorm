@@ -1,6 +1,5 @@
 import React, {useState} from "react";
 import {Button, Form, Modal} from "react-bootstrap";
-import {newWorkspace} from "../../../api/endpoints-workspaces.jsx";
 import {toastError} from "../../../ui/toasts.jsx";
 import {useNavigate} from "react-router-dom";
 import {newDocumentInWorkspace} from "../../../api/endpoints-documents.jsx";

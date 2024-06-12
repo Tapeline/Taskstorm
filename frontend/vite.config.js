@@ -1,6 +1,5 @@
 import {defineConfig, transformWithEsbuild} from 'vite'
 import react from '@vitejs/plugin-react'
-import {serviceWorkerPlugin} from "@gautemo/vite-plugin-service-worker";
 
 // https://vitejs.dev/config/
 export default defineConfig({

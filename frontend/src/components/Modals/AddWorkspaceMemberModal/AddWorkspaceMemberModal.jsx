@@ -2,8 +2,7 @@ import React, {useEffect, useState} from "react";
 import {Button, Form, Modal} from "react-bootstrap";
 import {toastError} from "../../../ui/toasts.jsx";
 import {useNavigate} from "react-router-dom";
-import {modifyTaskInWorkspace} from "../../../api/endpoints-tasks.jsx";
-import {getWorkspace, modifyWorkspace} from "../../../api/endpoints-workspaces.jsx";
+import {modifyWorkspace} from "../../../api/endpoints-workspaces.jsx";
 import {getAllUsers, getProfile} from "../../../api/endpoints-profile.jsx";
 
 export default function AddWorkspaceMemberModal(props) {

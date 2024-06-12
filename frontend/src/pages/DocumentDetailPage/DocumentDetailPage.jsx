@@ -2,7 +2,6 @@ import Editor from "../../components/CollabEditor/Editor.jsx";
 import {Link, useParams} from "react-router-dom";
 import {useEffect, useState} from "react";
 import {getDocumentInWorkspace} from "../../api/endpoints-documents.jsx";
-import Preloader from "../../components/Preloader/Preloader.jsx";
 import OverlayingPreloader from "../../components/Preloader/OverlayingPreloader.jsx";
 
 export default function DocumentDetailPage() {

@@ -1,9 +1,8 @@
 import React, {useState} from "react";
-import {Button, Form, Modal} from "react-bootstrap";
+import {Button, Modal} from "react-bootstrap";
 import {useNavigate} from "react-router-dom";
-import {modifyWorkspace, removeWorkspace} from "../../api/endpoints-workspaces.jsx";
+import {modifyWorkspace} from "../../api/endpoints-workspaces.jsx";
 import {toastError} from "../../ui/toasts.jsx";
-import {removeStageFromWorkspace} from "../../api/endpoints-workflow.jsx";
 
 export default function WorkspaceTagColorTableRowDeleteColorButton(props) {
     const {workspace, tagName} = props;

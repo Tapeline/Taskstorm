@@ -1,5 +1,5 @@
 import './App.css'
-import {Navigate, Outlet, useLocation, useNavigate} from "react-router-dom";
+import {Outlet, useLocation, useNavigate} from "react-router-dom";
 import Navbar from "./components/Navbar/Navbar.jsx";
 import RealTimeNotificationUpdater from "./components/Notifications/RealTimeNotificationUpdater.jsx";
 import {useEffect, useState} from "react";

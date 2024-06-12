@@ -1,7 +1,7 @@
 import {useState} from "react";
 import {Button, Form} from "react-bootstrap";
 import {login, register} from "../../api/endpoints-auth.jsx";
-import {toastError, toastNotification, toastSuccess} from "../../ui/toasts.jsx";
+import {toastError, toastSuccess} from "../../ui/toasts.jsx";
 import {Link, useNavigate} from "react-router-dom";
 import taskstormColorLogo from "../../assets/taskstormColorLogo.png";
 import VWhitespace from "../../utils/VWhitespace.jsx";

@@ -1,9 +1,8 @@
 import React, {useState} from "react";
 import {Button, Form, Modal} from "react-bootstrap";
-import {newWorkspace} from "../../../api/endpoints-workspaces.jsx";
 import {toastError} from "../../../ui/toasts.jsx";
 import {useNavigate} from "react-router-dom";
-import {modifyTaskInWorkspace, newTaskInWorkspace} from "../../../api/endpoints-tasks.jsx";
+import {modifyTaskInWorkspace} from "../../../api/endpoints-tasks.jsx";
 
 export default function EditTaskNameModal(props) {
     const [show, setShow] = useState(false);

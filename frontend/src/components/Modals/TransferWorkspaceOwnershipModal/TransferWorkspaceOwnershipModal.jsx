@@ -1,10 +1,8 @@
-import React, {useEffect, useState} from "react";
+import React, {useState} from "react";
 import {Button, Form, Modal} from "react-bootstrap";
 import {toastError} from "../../../ui/toasts.jsx";
 import {useNavigate} from "react-router-dom";
-import {modifyTaskInWorkspace} from "../../../api/endpoints-tasks.jsx";
-import {getWorkspace, modifyWorkspace} from "../../../api/endpoints-workspaces.jsx";
-import {getProfile} from "../../../api/endpoints-profile.jsx";
+import {modifyWorkspace} from "../../../api/endpoints-workspaces.jsx";
 
 export default function TransferWorkspaceOwnershipModal(props) {
     const [show, setShow] = useState(false);

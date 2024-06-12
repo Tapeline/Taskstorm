@@ -1,4 +1,3 @@
-import React from "react";
 import {getAllUnreadNotifications} from "../../api/endpoints-profile.jsx";
 import {toastNotification} from "../../ui/toasts.jsx";
 

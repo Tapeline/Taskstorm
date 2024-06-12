@@ -3,7 +3,6 @@ import {Button, Form, Modal} from "react-bootstrap";
 import {toastError} from "../../../ui/toasts.jsx";
 import {useNavigate} from "react-router-dom";
 import {modifyTaskInWorkspace} from "../../../api/endpoints-tasks.jsx";
-import {getWorkspace} from "../../../api/endpoints-workspaces.jsx";
 import {getProfile} from "../../../api/endpoints-profile.jsx";
 import {getStagesInWorkspace} from "../../../api/endpoints-workflow.jsx";
 
