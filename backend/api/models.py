@@ -1,6 +1,8 @@
 import re
+import uuid
 from datetime import timedelta
 
+from PIL import Image
 from django.contrib.auth.models import AbstractUser
 from django.db import models
 
@@ -13,8 +15,19 @@ def get_default_user_settings():
     return {"wp_sub": None}
 
 
+def upload_pfp_to(instance, filename):
+    return f"pfp/{uuid.uuid4()}.{filename.split('.')[-1]}"
+
+
 class User(AbstractUser):
     settings = models.JSONField(default=get_default_user_settings)
+    profile_pic = models.ImageField(upload_to=upload_pfp_to, blank=True, null=True)
+
+    def save(self, *args, **kwargs):
+        super().save(*args, **kwargs)
+        image = Image.open(self.profile_pic.path)
+        image.save(self.profile_pic.path, quality=20, optimize=True)
+        return self
 
 
 class IssuedToken(models.Model):

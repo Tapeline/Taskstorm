@@ -9,7 +9,7 @@ import {
     getRecommendedTasks,
     getUserStats,
     getUserTasks,
-    modifyProfileSettings
+    modifyProfileSettings, setUserProfilePic
 } from "../../api/endpoints-profile.jsx";
 import DeleteWorkspaceModal from "../../components/Modals/DeleteWorkspaceModal/DeleteWorkspaceModal.jsx";
 import DeleteAccountModal from "../../components/Modals/DeleteAccountModal/DeleteAccountModal.jsx";
@@ -25,6 +25,7 @@ import Chart from "react-apexcharts";
 import FullCalendar from "@fullcalendar/react";
 import dayGridPlugin from "@fullcalendar/daygrid";
 import timeGridPlugin from '@fullcalendar/timegrid'
+import ProfilePic from "../../components/Misc/ProfilePic.jsx";
 
 export default function ProfilePage() {
     const {page} = useParams();
@@ -36,6 +37,7 @@ export default function ProfilePage() {
     const [stats, setStats] = useState(null);
     const [myTasks, setMyTasks] = useState(null);
     const [width, setWidth] = useState(window.innerWidth);
+    const [profilePic, setProfilePic] = useState();
 
     useEffect(() => {
         window.addEventListener('resize', () => setWidth(window.innerWidth));
@@ -180,6 +182,16 @@ export default function ProfilePage() {
         }
     );
 
+    const onProfilePicSubmit = (e) => {
+        if (profilePic === undefined) {
+            toastError("Profile picture not defined");
+            return;
+        }
+        setUserProfilePic(accessToken, profilePic).then(response => {
+            window.location.href = "/profile/manage/#pfp";
+        });
+    }
+
     return (<div className="px-lg-5">
         <h1>Your profile</h1>
         <VWhitespace size={1}/>
@@ -302,6 +314,21 @@ export default function ProfilePage() {
                     <CategoryPanel name="General" tabId="#general">
                         <h4>Username: {profileData.username}</h4>
                         <h6>ID: {profileData.id}</h6>
+                    </CategoryPanel>
+                    <CategoryPanel name="Profile Picture" tabId="#pfp">
+                        <p>Current profile pic</p>
+                        <ProfilePic url={profileData.profile_pic} size={128}/>
+                        <VWhitespace/>
+                        <Form.Control
+                            type="file"
+                            name="profile_pic"
+                            accept="image/jpeg,image/png,image/gif"
+                            onChange={(e) => setProfilePic(e.target.files[0])}
+                        />
+                        <VWhitespace/>
+                        <Button variant="outline-primary" onClick={onProfilePicSubmit}>
+                            Set profile picture
+                        </Button>
                     </CategoryPanel>
                     <CategoryPanel name="Notifications" tabId="#notifications">
                         <Button variant="outline-primary"

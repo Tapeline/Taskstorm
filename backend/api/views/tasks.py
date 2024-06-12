@@ -87,21 +87,25 @@ class GetActivityOnTask(APIView, TaskMixin):
         queried_type = request.GET.get("type")
         comments, pushes, assignments, state_changes = [], [], [], []
         if queried_type is None or queried_type == "comments":
-            comments = [{"type": "comment", **serializers.CommentSerializer(x).data}
-                        for x in models.Comment.objects.filter(
-                         task=self.get_task())]
+            comments = [
+                {
+                    "type": "comment",
+                    **serializers.CommentUnwrappedSerializer(x, context={'request': request}).data
+                }
+                for x in models.Comment.objects.filter(
+                    task=self.get_task())]
         if queried_type is None or queried_type == "pushes":
-            pushes = [serializers.WorkflowPushSerializer(x).data
+            pushes = [serializers.WorkflowPushSerializer(x, context={'request': request}).data
                       for x in models.WorkflowPushAction.objects.filter(
-                       task=self.get_task())]
+                    task=self.get_task())]
         if queried_type is None or queried_type == "assignments":
-            assignments = [serializers.AssigneeChangeSerializer(x).data
+            assignments = [serializers.AssigneeChangeSerializer(x, context={'request': request}).data
                            for x in models.AssigneeChangeAction.objects.filter(
-                            task=self.get_task())]
+                    task=self.get_task())]
         if queried_type is None or queried_type == "state-changes":
-            state_changes = [serializers.OpenStateChangeSerializer(x).data
+            state_changes = [serializers.OpenStateChangeSerializer(x, context={'request': request}).data
                              for x in models.OpenStateChangeAction.objects.filter(
-                              task=self.get_task())]
+                    task=self.get_task())]
         activity = comments + pushes + assignments + state_changes
         activity.sort(key=lambda x: x["posted_at"] if "posted_at" in x else x["logged_at"], reverse=True)
         return Response(activity, status=200)

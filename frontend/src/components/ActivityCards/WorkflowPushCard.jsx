@@ -2,6 +2,7 @@ import BigIcon from "../Misc/BigIcon.jsx";
 import HWhitespace from "../../utils/HWhitespace.jsx";
 import React from "react";
 import {dateConverter} from "../../utils/time.jsx";
+import ProfilePic from "../Misc/ProfilePic.jsx";
 
 export default function WorkflowPushCard(props) {
     const {data, ...rest} = props;
@@ -10,7 +11,8 @@ export default function WorkflowPushCard(props) {
             <BigIcon icon="flag"/>
             <HWhitespace/>
             <div>
-                <h6 className="mb-0">{data.user.username} pushed this task <span
+                <h6 className="mb-0">
+                    <ProfilePic url={data.user.profile_pic} size={24}/> {data.user.username} pushed this task <span
                     className="small text-muted">{dateConverter(data.logged_at)}</span></h6>
                 <span className="text-muted">from</span>
                 <HWhitespace/>

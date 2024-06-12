@@ -72,3 +72,17 @@ export function getUserTasks(token) {
         "Authorization: Bearer " + token
     )
 }
+
+export function setUserProfilePic(token, picFile) {
+    const formData = new FormData();
+    formData.append("profile_pic", picFile, picFile.name);
+    return sendRequest(
+        "PATCH",
+        apiUrl("profile/pic/"),
+        formData,
+        {
+            "Authorization": "Bearer " + token,
+            "Content-Type": "multipart/form-data"
+        }
+    );
+}

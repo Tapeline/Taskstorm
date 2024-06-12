@@ -9,6 +9,7 @@ import CommentCardDeleteCommentButton from "./CommentCardDeleteCommentButton.jsx
 import Markdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import MarkdownRender from "../Markdown/MarkdownRender.jsx";
+import ProfilePic from "../Misc/ProfilePic.jsx";
 
 export default function CommentCard(props) {
     const {workspaceId, data} = props;
@@ -29,7 +30,8 @@ export default function CommentCard(props) {
                         </>
                         : ""
                     }
-                    by {data.user.username} at {dateConverter(data.posted_at)}
+                    by <ProfilePic url={data.user.profile_pic} size={24}/>&nbsp;
+                    {data.user.username} at {dateConverter(data.posted_at)}
                 </Card.Subtitle>
                 <Card.Text>
                     <MarkdownRender text={data.text}/>

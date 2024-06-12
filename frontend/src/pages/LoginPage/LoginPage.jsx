@@ -5,6 +5,7 @@ import {toastError} from "../../ui/toasts.jsx";
 import {Link, useNavigate} from "react-router-dom";
 import taskstormColorLogo from "../../assets/taskstormColorLogo.png";
 import VWhitespace from "../../utils/VWhitespace.jsx";
+import appStorage from "../../utils/appStorage.jsx";
 
 export default function LoginPage() {
     const [userName, setUserName] = useState("");
@@ -18,6 +19,8 @@ export default function LoginPage() {
                 toastError(response.reason);
             } else {
                 localStorage.setItem("accessToken", response.data.token);
+                appStorage.saveUserData(response.data.user_data);
+                alert();
                 navigate("/workspaces");
             }
         }).catch(toastError);

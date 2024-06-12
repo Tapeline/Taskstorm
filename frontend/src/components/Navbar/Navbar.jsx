@@ -1,6 +1,7 @@
 import React, {useEffect, useState} from "react";
 import NavbarLink from "./NavbarLink";
 import taskstormWhiteLogo from "../../assets/taskstormWhiteLogo.png";
+import NavbarProfileLink from "./NavbarProfileLink.jsx";
 
 export default function Navbar() {
     const [logoComponent, setLogoComponent] = useState("");
@@ -60,7 +61,7 @@ export default function Navbar() {
             <ul className="nav nav-pills flex-sm-column justify-content-between ps-sm-0 mb-auto">
                 <NavbarLink linkTo="/workspaces" text=" Workspaces" icon="bi-house" />
                 <NavbarLink linkTo="/local-settings" text=" Local settings" icon="bi-sliders" />
-                <NavbarLink linkTo="/profile/dashboard" text=" Profile" icon="bi-person-circle" />
+                <NavbarProfileLink/>
                 <NavbarLink linkTo="/logout" text=" Logout" icon="bi-box-arrow-left"/>
             </ul>
         </div>

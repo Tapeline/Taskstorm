@@ -40,6 +40,9 @@ class LoginView(TokenObtainPairView):
         models.IssuedToken.objects.create(user=user, token=access_token)
 
         return Response(
-            {'token': access_token},
+            {
+                'token': access_token,
+                "user_data": serializers.MyProfileSerializer(user, context={'request': request}).data
+            },
             status=status.HTTP_200_OK
         )

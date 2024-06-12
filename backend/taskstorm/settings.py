@@ -24,7 +24,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-sfd4v-x!l_=tif8$^o74()w4b!nwp4=x7@5-&sr&+ja3e^!^3r'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = bool(os.getenv("DEBUG") or 1)
 
 ALLOWED_HOSTS = ['*']
 
@@ -189,3 +189,6 @@ CHANNEL_LAYERS = {
 VAPID_PRIVATE = os.getenv("VAPID_PRIVATE")
 if not isinstance(VAPID_PRIVATE, str):
     raise ValueError("$VAPID_PRIVATE is not a string")
+
+MEDIA_ROOT = os.path.join(os.path.dirname(BASE_DIR), 'mediafiles')
+MEDIA_URL = '/media/'

@@ -34,6 +34,7 @@ import VWhitespace from "../../utils/VWhitespace.jsx";
 import EditTaskTagsModal from "../../components/Modals/EditTaskModals/EditTaskTagsModal.jsx";
 import {getColorByStringHash, stringToColour} from "../../utils/colors.jsx";
 import ColorHash from "color-hash";
+import ProfilePic from "../../components/Misc/ProfilePic.jsx";
 
 export default function TaskDetailPage() {
     const {workspaceId, taskId} = useParams();
@@ -116,7 +117,9 @@ export default function TaskDetailPage() {
                     <div>
                         {
                             taskData.assignee !== null
-                                ? <span className="small"> Assigned to {taskData.assignee?.username}</span>
+                                ? <span className="small"> Assigned to&nbsp;
+                                    <ProfilePic url={taskData.assignee?.profile_pic} size={24}/>&nbsp;
+                                    {taskData.assignee?.username}</span>
                                 : <span className="small"> Unassigned</span>
                         }
                         &nbsp;

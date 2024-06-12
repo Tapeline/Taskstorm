@@ -2,7 +2,8 @@ from datetime import timedelta
 
 from django.db.models import Q
 from django.utils import timezone
-from rest_framework.generics import RetrieveUpdateDestroyAPIView, ListAPIView
+from rest_framework.generics import RetrieveUpdateDestroyAPIView, ListAPIView, UpdateAPIView
+from rest_framework.parsers import MultiPartParser, FormParser
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -82,3 +83,13 @@ class GetAllUserTasks(ListAPIView):
         return super().get_queryset().filter(
             Q(creator=self.request.user) | Q(assignee=self.request.user)
         )
+
+
+class SetProfilePicture(UpdateAPIView):
+    permission_classes = (IsAuthenticated,)
+    serializer_class = serializers.UserProfilePicSerializer
+    parser_classes = (MultiPartParser, FormParser)
+
+    def get_object(self):
+        return self.request.user
+

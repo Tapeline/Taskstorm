@@ -19,13 +19,19 @@ class RegistrationSerializer(serializers.ModelSerializer):
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.User
-        fields = ["id", "username"]
+        fields = ["id", "username", "profile_pic"]
 
 
 class MyProfileSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.User
-        fields = ["id", "username", "settings"]
+        fields = ["id", "username", "settings", "profile_pic"]
+
+
+class UserProfilePicSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = models.User
+        fields = ["id", "profile_pic"]
 
 
 class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):

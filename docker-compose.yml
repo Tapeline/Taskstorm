@@ -59,6 +59,9 @@ services:
       REDIS_HOST: redis
       VAPID_PUBLIC: ${VAPID_PUBLIC}
       VAPID_PRIVATE: ${VAPID_PRIVATE}
+      DEBUG: 0
+    volumes:
+      - media:/app/mediafiles
     ports:
       - "8080:8080"
     expose:
@@ -119,3 +122,4 @@ volumes:
   pgdata:
   redisdata:
   redisconf:
+  media:

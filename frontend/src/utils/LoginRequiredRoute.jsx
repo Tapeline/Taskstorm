@@ -2,6 +2,7 @@ import {useEffect, useState} from "react";
 import {getProfile} from "../api/endpoints-profile.jsx";
 import Preloader from "../components/Preloader/Preloader.jsx";
 import {Navigate} from "react-router-dom";
+import appStorage from "./appStorage.jsx";
 
 export default function LoginRequiredRoute({children}) {
     const [isAuthorized, setIsAuthorized] = useState(null);
@@ -13,8 +14,7 @@ export default function LoginRequiredRoute({children}) {
         getProfile(localStorage.getItem("accessToken")).then(response => {
             const tokenInvalid = !response.success && response.status === 401;
             if (!tokenInvalid) {
-                localStorage.setItem("accountUsername", response.data.username);
-                localStorage.setItem("accountId", response.data.id);
+                appStorage.saveUserData(response.data);
             }
             setIsAuthorized(!tokenInvalid);
         })

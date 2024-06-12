@@ -2,6 +2,7 @@ import BigIcon from "../Misc/BigIcon.jsx";
 import HWhitespace from "../../utils/HWhitespace.jsx";
 import React from "react";
 import {dateConverter} from "../../utils/time.jsx";
+import ProfilePic from "../Misc/ProfilePic.jsx";
 
 export default function AssigneeChangeCard(props) {
     const {data, ...rest} = props;
@@ -15,7 +16,7 @@ export default function AssigneeChangeCard(props) {
             <HWhitespace/>
             <div>
                 <h6 className="mb-0">
-                    {data.user.username}
+                    <ProfilePic url={data.user.profile_pic} size={24}/> {data.user.username}
                     {data.new_assignee !== null
                         ? <span> assigned this task to {data.new_assignee.username}</span>
                         : <span> unassigned this task</span>}

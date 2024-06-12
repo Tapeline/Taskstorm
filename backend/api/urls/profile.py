@@ -9,4 +9,5 @@ urlpatterns = [
     path("stats/", views.profile.GetUserStats.as_view()),
     path("recommended/", views.profile.GetUserRecommendations.as_view()),
     path("tasks/", views.profile.GetAllUserTasks.as_view()),
+    path("pic/", views.profile.SetProfilePicture.as_view()),
 ]
