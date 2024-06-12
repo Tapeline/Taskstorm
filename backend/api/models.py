@@ -25,9 +25,10 @@ class User(AbstractUser):
 
     def save(self, *args, **kwargs):
         super().save(*args, **kwargs)
-        image = Image.open(self.profile_pic.path)
-        image.save(self.profile_pic.path, quality=20, optimize=True)
-        return self
+        if self.profile_pic.name is not None:
+            image = Image.open(self.profile_pic.path)
+            image.save(self.profile_pic.path, quality=20, optimize=True)
+            return self
 
 
 class IssuedToken(models.Model):

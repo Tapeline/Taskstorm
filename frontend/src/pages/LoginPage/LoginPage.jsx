@@ -20,7 +20,6 @@ export default function LoginPage() {
             } else {
                 localStorage.setItem("accessToken", response.data.token);
                 appStorage.saveUserData(response.data.user_data);
-                alert();
                 navigate("/workspaces");
             }
         }).catch(toastError);
