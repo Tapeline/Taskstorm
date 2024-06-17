@@ -5,7 +5,7 @@ def get_representation(task, tag):
     if tag == "@assignee":
         return task.assignee.username if task.assignee is not None else "-"
     if tag == "@folder":
-        return task.folderZ
+        return task.folder
     if tag == "@creator":
         return task.creator.username
     if tag == "@stage":
@@ -33,8 +33,6 @@ def simple_tag_applies_to_task(task, user, tag):
         return task.arrangement_start is None and task.arrangement_end is None
     if tag == "@unarranged":
         return not (task.arrangement_start is None and task.arrangement_end is None)
-    if tag == "@deadline":
-        return False  # TODO
     if tag == "@my":
         return task.creator == user or task.assignee == user
 
@@ -43,6 +41,8 @@ def applies_to_filter(task, user, filter_node) -> bool:
     if isinstance(filter_node, parser.OrNode):
         return applies_to_filter(task, user, filter_node.left) \
             or applies_to_filter(task, user, filter_node.right)
+    if isinstance(filter_node, parser.SequenceNode):
+        return all(applies_to_filter(task, user, x) for x in filter_node.expressions)
     if isinstance(filter_node, parser.AndNode):
         return applies_to_filter(task, user, filter_node.left) \
             and applies_to_filter(task, user, filter_node.right)

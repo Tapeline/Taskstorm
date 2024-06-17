@@ -25,7 +25,6 @@ class EditorConsumer(AsyncWebsocketConsumer):
         self.room_name = self.scope['url_route']['kwargs']['room_name']
         self.room_group_name = 'editor_%s' % self.room_name
 
-        # Join room group
         await self.channel_layer.group_add(
             self.room_group_name,
             self.channel_name
@@ -56,7 +55,6 @@ class EditorConsumer(AsyncWebsocketConsumer):
             return doc.data
         return {}
 
-    # Receive message from WebSocket
     async def receive(self, text_data=None, bytes_data=None):
         data = json.loads(text_data)
         user = await get_user(data["token"])
@@ -95,6 +93,4 @@ class EditorConsumer(AsyncWebsocketConsumer):
             return
 
         bytes_data = event['bytes_data']
-
-        # Send message to WebSocket
         await self.send(bytes_data=bytes_data)

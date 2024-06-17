@@ -13,8 +13,6 @@
 # @arranged
 # @unarranged
 #
-# @deadline
-#
 # @folder folder
 #
 # @assignee user
@@ -67,6 +65,7 @@ class Tokenizer:
                 self.start = self.current
             elif c == "\"":
                 self.parse_str()
+                self.current += 1
                 self.tokens.append(Token(Token.VALUE, self.code[self.start + 1:self.current - 1]))
                 self.start = self.current
             elif c == "&":
@@ -91,14 +90,18 @@ class Tokenizer:
                 self.start = self.current
             else:
                 self.parse_val()
-                self.tokens.append(Token("value", self.code[self.start:self.current]))
+                self.tokens.append(Token(Token.VALUE, self.code[self.start:self.current]))
                 self.start = self.current
         return self.tokens
+
+    @staticmethod
+    def _isalnum(s):
+        return s.isalnum() or s in "-+_"
 
     def parse_val(self):
         while True:
             self.current += 1
-            if self.is_at_end() or not self.code[self.current].isalnum():
+            if self.is_at_end() or not self._isalnum(self.code[self.current]):
                 break
 
     def parse_str(self):
@@ -136,18 +139,20 @@ class AndNode(Node):
         self.right = right
 
 
+class SequenceNode(Node):
+    def __init__(self, expressions):
+        super().__init__(None)
+        self.expressions = expressions
+
+
 class SimpleTagNode(Node):
-    pass
-
-
-class ValueTagNode(Node):
-    def __init__(self, token, argument):
-        super().__init__(token)
-        self.argument = argument
+    def __repr__(self):
+        return f"Tag<{self.token.text}>"
 
 
 class ValueNode(Node):
-    pass
+    def __repr__(self):
+        return f"Value<{self.token.text}>"
 
 
 class ComparisonNode(Node):
@@ -171,6 +176,12 @@ class Parser:
             return self.tokens[self.pos - 1]
         return None
 
+    def parse(self):
+        expr = []
+        while self.pos < len(self.tokens):
+            expr.append(self.parse_expr())
+        return SequenceNode(expr)
+
     def parse_expr(self):
         return self.parse_or()
 
@@ -181,9 +192,9 @@ class Parser:
         return left
 
     def parse_and(self):
-        left = self.parse_tag()
+        left = self.parse_comparison()
         while (token := self.match(Token.OP_AND)) is not None:
-            left = AndNode(token, left, self.parse_tag())
+            left = AndNode(token, left, self.parse_comparison())
         return left
 
     def parse_comparison(self):
@@ -198,7 +209,8 @@ class Parser:
         return self.parse_primary()
 
     def parse_primary(self):
-        if (token := self.match(Token.VALUE)) is not None:
+        if self.match(Token.VALUE) is not None:
+            token = self.tokens[self.pos - 1]
             return ValueNode(token)
         if self.match(Token.L_PAR) is not None:
             expr = self.parse_expr()
@@ -211,4 +223,4 @@ def parse_filter_expression(code):
     tokenizer = Tokenizer(code)
     tokens = tokenizer.tokenize()
     parser = Parser(tokens)
-    return parser.parse_expr()
+    return parser.parse()
