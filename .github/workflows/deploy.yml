@@ -20,11 +20,17 @@ jobs:
       - name: Start database
         run: docker compose up -d db_service
       - name: Unit testing
-        run: USE_DB=local python -m manage test api.tests.unit
+        run: |
+          cd backend
+          USE_DB=local python -m manage test api.tests.unit
       - name: Integration testing
-        run: USE_DB=local python -m manage test api.tests.integration
+        run: |
+          cd backend
+          USE_DB=local python -m manage test api.tests.integration
       - name: Pylint
-        run: pylint --fail-under=9 --load-plugins pylint_django --django-settings-module=taskstorm.settings api
+        run: |
+          cd backend
+          pylint --fail-under=9 --load-plugins pylint_django --django-settings-module=taskstorm.settings api
 
   deploy:
     runs-on: ubuntu-latest
