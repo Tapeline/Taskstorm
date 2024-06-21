@@ -1,3 +1,8 @@
+# pylint: disable=missing-class-docstring
+"""
+Profile-related views
+"""
+
 from datetime import timedelta
 
 from django.db.models import Q
@@ -50,6 +55,7 @@ class GetUserStats(APIView):
     permission_classes = (IsAuthenticated, )
 
     def get(self, request, *args, **kwargs):
+        """Get user statistics for past: day, week, month"""
         now = timezone.now()
         response_data: dict = {
             cat: statistics.get_all_stats_during_range(time_range, request.user)
@@ -92,4 +98,3 @@ class SetProfilePicture(UpdateAPIView):
 
     def get_object(self):
         return self.request.user
-

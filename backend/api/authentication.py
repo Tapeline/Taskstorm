@@ -1,3 +1,7 @@
+"""
+Provides more invalidable JWT
+"""
+
 from datetime import datetime
 from typing import Optional
 
@@ -8,6 +12,7 @@ from api.models import IssuedToken
 
 
 class TokenWithInvalidation(AccessToken):
+    """Invalidable JWT"""
     def check_exp(self, claim: str = "exp",
                   current_time: Optional[datetime] = None) -> None:
         super().check_exp(claim, current_time)

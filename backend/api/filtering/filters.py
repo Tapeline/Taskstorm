@@ -1,7 +1,24 @@
+"""
+Functions for filtering by parsed expression
+"""
+
 from api.filtering import parser
 
 
+class UnknownFilter(ValueError):
+    """Raised when unknown filter encountered"""
+    def __init__(self, filter_node):
+        super().__init__(f"Unknown filter: {filter_node}")
+
+
+class UnknownTag(ValueError):
+    """Raised when unknown tag encountered"""
+    def __init__(self, tag):
+        super().__init__(f"Unknown tag: {tag}")
+
+
 def get_representation(task, tag):
+    """Get textual representation of variable-tag for future comparing"""
     if tag == "@assignee":
         return task.assignee.username if task.assignee is not None else "-"
     if tag == "@folder":
@@ -12,9 +29,11 @@ def get_representation(task, tag):
         return task.stage.name if task.stage is not None else "-"
     if tag == "@tag":
         return task.tags.split()
+    raise UnknownTag(tag)
 
 
 def simple_tag_applies_to_task(task, user, tag):
+    """Check if non-variable-tag is applicable to given task"""
     if tag == "@unassigned":
         return task.assignee is None
     if tag == "@assigned":
@@ -35,9 +54,11 @@ def simple_tag_applies_to_task(task, user, tag):
         return not (task.arrangement_start is None and task.arrangement_end is None)
     if tag == "@my":
         return task.creator == user or task.assignee == user
+    raise UnknownTag(tag)
 
 
 def applies_to_filter(task, user, filter_node) -> bool:
+    """Check if filter is true for given task and user"""
     if isinstance(filter_node, parser.OrNode):
         return applies_to_filter(task, user, filter_node.left) \
             or applies_to_filter(task, user, filter_node.right)
@@ -61,3 +82,4 @@ def applies_to_filter(task, user, filter_node) -> bool:
         if filter_node.token.text in parser.Token.COMPLEX_TAGS:
             return False
         return simple_tag_applies_to_task(task, user, filter_node.token.text)
+    raise UnknownFilter(filter_node)

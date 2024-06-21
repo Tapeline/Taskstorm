@@ -1,3 +1,7 @@
+"""
+Provides notificator
+"""
+
 import logging
 
 from pywebpush import webpush, WebPushException
@@ -6,6 +10,8 @@ from taskstorm import settings
 
 
 def notify(task, user, rule):
+    """Notify user w/ all possible methods"""
+
     from api.models import Notification
     Notification.objects.create(
         workspace=task.workspace,

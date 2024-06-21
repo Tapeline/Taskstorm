@@ -1,3 +1,7 @@
+"""
+Describes ORM models
+"""
+
 import re
 import uuid
 from datetime import timedelta
@@ -8,18 +12,28 @@ from django.db import models
 
 
 def transform_to_queryset(model, obj_list):
+    """
+    Transform list of ORM object to Django queryset
+    Does not guarantee preservation of order!
+    """
     return model.objects.filter(id__in=[x.id for x in obj_list])
 
 
 def get_default_user_settings():
+    """
+    Default settings for user
+    wp_sub - webpush notification subscription
+    """
     return {"wp_sub": None}
 
 
 def upload_pfp_to(instance, filename):
+    """Get path for profile picture"""
     return f"pfp/{uuid.uuid4()}.{filename.split('.')[-1]}"
 
 
 class User(AbstractUser):
+    """User model"""
     settings = models.JSONField(default=get_default_user_settings)
     profile_pic = models.ImageField(upload_to=upload_pfp_to, blank=True, null=True)
 
@@ -28,10 +42,10 @@ class User(AbstractUser):
         if self.profile_pic.name is not None:
             image = Image.open(self.profile_pic.path)
             image.save(self.profile_pic.path, quality=20, optimize=True)
-            return self
 
 
 class IssuedToken(models.Model):
+    """Model for invalidable JWT"""
     token = models.TextField()
     user = models.ForeignKey(to=User, on_delete=models.CASCADE)
     date_of_issue = models.DateTimeField(auto_now_add=True, blank=True)
@@ -39,20 +53,30 @@ class IssuedToken(models.Model):
 
 
 def default_workspace_settings():
+    """
+    Default workspace settings
+    tag_coloring - {tag name: hex color} - map for custom tag coloring
+    views - not implemented yet
+    """
     return {"tag_coloring": {}, "views": []}
 
 
 class Workspace(models.Model):
+    """Workspace model"""
     owner = models.ForeignKey(to=User, on_delete=models.CASCADE, related_name="owning_workspaces")
-    members = models.ManyToManyField(to=User, blank=True, default=list, related_name="member_in_workspaces")
+    members = models.ManyToManyField(to=User, blank=True,
+                                     default=list,
+                                     related_name="member_in_workspaces")
     name = models.CharField(max_length=255)
     settings = models.JSONField(default=default_workspace_settings)
 
     def user_can_interact(self, user):
+        """Check if user can interact with workspace"""
         return user == self.owner or user in self.members.all()
 
 
 class Task(models.Model):
+    """Task model"""
     name = models.CharField(max_length=255)
     description = models.TextField()
     is_open = models.BooleanField(default=True)
@@ -64,10 +88,16 @@ class Task(models.Model):
     time_bounds_end = models.DateTimeField(null=True)
     arrangement_start = models.DateTimeField(null=True)
     arrangement_end = models.DateTimeField(null=True)
-    assignee = models.ForeignKey(to=User, null=True, on_delete=models.CASCADE, related_name="assigned_tasks")
-    stage = models.ForeignKey(to="WorkflowStage", null=True, on_delete=models.SET_NULL)
-    parent_task = models.ForeignKey(to="Task", on_delete=models.SET_NULL, null=True, default=None)
-    linked_tasks = models.ManyToManyField(to="Task", blank=True, default=list, related_name="linked_to_tasks")
+    assignee = models.ForeignKey(to=User, null=True,
+                                 on_delete=models.CASCADE,
+                                 related_name="assigned_tasks")
+    stage = models.ForeignKey(to="WorkflowStage", null=True,
+                              on_delete=models.SET_NULL)
+    parent_task = models.ForeignKey(to="Task", on_delete=models.SET_NULL,
+                                    null=True, default=None)
+    linked_tasks = models.ManyToManyField(to="Task", blank=True,
+                                          default=list,
+                                          related_name="linked_to_tasks")
     created_at = models.DateTimeField(auto_now_add=True)
 
     TASK_OPEN = True
@@ -75,6 +105,7 @@ class Task(models.Model):
 
 
 class Comment(models.Model):
+    """Task comment model"""
     task = models.ForeignKey(to=Task, on_delete=models.CASCADE)
     user = models.ForeignKey(to=User, on_delete=models.CASCADE)
     text = models.TextField()
@@ -82,12 +113,14 @@ class Comment(models.Model):
 
 
 class Document(models.Model):
+    """Workspace document model"""
     workspace = models.ForeignKey(to=Workspace, on_delete=models.CASCADE)
     title = models.CharField(max_length=255)
     data = models.JSONField()
 
 
 class WorkflowStage(models.Model):
+    """Workflow stage model"""
     workspace = models.ForeignKey(to=Workspace, on_delete=models.CASCADE)
     name = models.CharField(max_length=64)
     color = models.CharField(max_length=6, default="00FF00")
@@ -95,15 +128,26 @@ class WorkflowStage(models.Model):
 
 
 class NotificationRule(models.Model):
+    """
+    Notification rule model
+    Describes under which circumstances a notification should be sent.
+    applicable_filter - filters applicable tasks
+    time_delta - offset from task's arrangement_start - when to issue
+            notification. Format: -HH:MM or +HH:MM
+            -00:05 means that notification will be issued 5 mins before
+            arrangement_start, +00:05 - 5 mins after arrangement_start
+    """
     workspace = models.ForeignKey(to=Workspace, on_delete=models.CASCADE)
     applicable_filter = models.TextField()
     time_delta = models.CharField(max_length=255)
 
     @classmethod
     def is_valid_time_delta(cls, time_delta):
+        """Time delta format validator"""
         return re.match(r"^[\+\-]\d+:\d\d$", time_delta)
 
     def get_time_delta(self):
+        """Translate text time delta into datetime.timedelta"""
         sign = str(self.time_delta)[0]
         hours, minutes = map(int, self.time_delta[1:].split(":"))
         return timedelta(hours=hours, minutes=minutes) if sign == "+" else \
@@ -111,6 +155,7 @@ class NotificationRule(models.Model):
 
 
 class Notification(models.Model):
+    """Notification model"""
     workspace = models.ForeignKey(to=Workspace, on_delete=models.CASCADE)
     recipient = models.ForeignKey(to=User, on_delete=models.CASCADE)
     issue_time = models.DateTimeField(auto_now_add=True)
@@ -120,22 +165,29 @@ class Notification(models.Model):
 
 
 class TaskNotifiedWithRuleFact(models.Model):
+    """
+    States that task has been notified
+    with certain rule to avoid duplicate notifications
+    """
     task = models.ForeignKey(to=Task, on_delete=models.CASCADE)
     rule = models.ForeignKey(to=NotificationRule, on_delete=models.CASCADE)
     user = models.ForeignKey(to=User, on_delete=models.CASCADE)
 
 
 class AbstractLoggableAction(models.Model):
+    """ABC for loggable actions on tasks"""
     logged_at = models.DateTimeField(auto_now_add=True)
     type = models.CharField(max_length=255)
     task = models.ForeignKey(to=Task, on_delete=models.CASCADE)
 
     @classmethod
     def log(cls, task, **kwargs):
+        """Create action log with given paramters"""
         cls.objects.create(type=cls.type, task=task, **kwargs)
 
 
 class WorkflowPushAction(AbstractLoggableAction):
+    """Issued when workflow stage of task has changed (incl. to and from None)"""
     type = "push"
 
     from_stage = models.ForeignKey(to=WorkflowStage, on_delete=models.CASCADE,
@@ -146,6 +198,7 @@ class WorkflowPushAction(AbstractLoggableAction):
 
 
 class AssigneeChangeAction(AbstractLoggableAction):
+    """Issued when task is assigned to someone (incl. assign to None - unassignement)"""
     type = "assign"
 
     user = models.ForeignKey(to=User, on_delete=models.CASCADE, related_name="my_assignee_changes")
@@ -153,6 +206,7 @@ class AssigneeChangeAction(AbstractLoggableAction):
 
 
 class OpenStateChangeAction(AbstractLoggableAction):
+    """Issued when task is opened or closed (incl. auto-closing)"""
     type = "state"
 
     user = models.ForeignKey(to=User, on_delete=models.CASCADE)

@@ -18,7 +18,6 @@ os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'taskstorm.settings')
 
 django_application = get_asgi_application()
 
-from api.middleware import TokenAuthMiddlewareStack, TokenAuthMiddleware
 from api.routing import websocket_urlpatterns
 
 application = ProtocolTypeRouter({

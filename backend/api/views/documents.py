@@ -1,3 +1,9 @@
+# pylint: disable=missing-class-docstring
+# pylint: disable=too-many-ancestors
+"""
+Document-related views
+"""
+
 from rest_framework.generics import ListCreateAPIView, RetrieveUpdateDestroyAPIView
 from rest_framework.permissions import IsAuthenticated
 

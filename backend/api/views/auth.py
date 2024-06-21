@@ -1,3 +1,8 @@
+# pylint: disable=missing-class-docstring
+"""
+Authentication-related views
+"""
+
 from rest_framework import status
 from rest_framework.generics import CreateAPIView
 from rest_framework.permissions import AllowAny
@@ -18,7 +23,7 @@ class RegisterView(CreateAPIView):
         try:
             User.objects.get(username=request.data.get("username"))
             return Response({"error_message": "user already exists"}, 400)
-        except:
+        except User.DoesNotExist:
             return super().create(request, *args, **kwargs)
 
 
@@ -32,7 +37,7 @@ class LoginView(TokenObtainPairView):
         try:
             serializer.is_valid(raise_exception=True)
         except TokenError as e:
-            raise InvalidToken(e.args[0])
+            raise InvalidToken(e.args[0]) from e
 
         access_token = serializer.validated_data['access']
         user = serializer.validated_data['user']
@@ -42,7 +47,10 @@ class LoginView(TokenObtainPairView):
         return Response(
             {
                 'token': access_token,
-                "user_data": serializers.MyProfileSerializer(user, context={'request': request}).data
+                "user_data": serializers.MyProfileSerializer(
+                    user,
+                    context={'request': request}
+                ).data
             },
             status=status.HTTP_200_OK
         )

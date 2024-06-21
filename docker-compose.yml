@@ -52,7 +52,7 @@ services:
       PG_USER: ${DB_USER}
       PG_PASS: ${DB_PASS}
       PG_PORT: 5432
-      PG_HOST: postgres
+      PG_HOST: ${DB_HOST}
       USE_DB: "production"
       REDIS_PASSWORD: ${REDIS_PASS}
       REDIS_PORT: 6379

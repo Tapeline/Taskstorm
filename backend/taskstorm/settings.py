@@ -188,7 +188,7 @@ CHANNEL_LAYERS = {
 
 VAPID_PRIVATE = os.getenv("VAPID_PRIVATE")
 if not isinstance(VAPID_PRIVATE, str):
-    raise ValueError("$VAPID_PRIVATE is not a string")
+    print("Warning: Env $VAPID_PRIVATE is not a string")
 
 MEDIA_ROOT = os.path.join(os.path.dirname(BASE_DIR), 'mediafiles')
 MEDIA_URL = '/media/'

@@ -1,3 +1,7 @@
+"""
+Workspace-related views and utils
+"""
+
 from django.db.models import Q
 from rest_framework.generics import ListCreateAPIView, RetrieveUpdateDestroyAPIView, ListAPIView
 from rest_framework.permissions import IsAuthenticated
@@ -9,17 +13,25 @@ from api.views.pagination import LimitOffsetPaginationMixin
 
 
 class WorkspaceMixin:
+    """Provides method to get current workspace"""
     def get_workspace(self):
+        """
+        Get current workspace from url kwarg:
+        /api/workspaces/<int:workspace_id>/...
+        """
         return get_object_or_null(models.Workspace, id=self.kwargs.get("workspace_id"))
 
 
+# pylint: disable=missing-class-docstring
 class ListCreateWorkspaceView(ListCreateAPIView):
     serializer_class = serializers.WorkspaceUnwrappedSerializer
     queryset = models.Workspace.objects.all()
     permission_classes = (IsAuthenticated,)
 
     def get_queryset(self):
-        return super().get_queryset().filter(Q(owner=self.request.user) | Q(members=self.request.user))
+        return super().get_queryset().filter(
+            Q(owner=self.request.user) | Q(members=self.request.user)
+        )
 
     def create(self, request, *args, **kwargs):
         self.serializer_class = serializers.WorkspaceSerializer
@@ -27,24 +39,32 @@ class ListCreateWorkspaceView(ListCreateAPIView):
         return super().create(request, *args, **kwargs)
 
 
+# pylint: disable=missing-class-docstring
 class RetrieveUpdateDestroyWorkspaceView(RetrieveUpdateDestroyAPIView):
     serializer_class = serializers.WorkspaceUnwrappedSerializer
     queryset = models.Workspace.objects.all()
     permission_classes = (IsAuthenticated, permissions.CanInteractWithWorkspace)
 
     def get_queryset(self):
-        return super().get_queryset().filter(Q(owner=self.request.user) | Q(members=self.request.user))
+        return super().get_queryset().filter(
+            Q(owner=self.request.user) | Q(members=self.request.user)
+        )
 
     def update(self, request, *args, **kwargs):
         self.serializer_class = serializers.WorkspaceSerializer
         old_object = self.get_object()
         if "owner" in request.data and "members" in request.data:
-            raise APIBadRequestException("Cannot simultaneously set owner and members")
+            raise APIBadRequestException(
+                "Cannot simultaneously set owner and members"
+            )
         if "owner" in request.data:
             if old_object.owner.id != request.user.id:
                 raise APIPermissionException("You don't own this workspace")
-            if request.data.get("owner") not in [m.id for m in old_object.members.all()]:
-                raise APIConflictException("Ownership transfer only available to members of workspace")
+            all_member_ids = [m.id for m in old_object.members.all()]
+            if request.data.get("owner") not in all_member_ids:
+                raise APIConflictException(
+                    "Ownership transfer only available to members of workspace"
+                )
             new_members = [m.id for m in old_object.members.all()]
             new_members.append(old_object.owner.id)
             new_members.remove(request.data.get("owner"))
@@ -53,7 +73,10 @@ class RetrieveUpdateDestroyWorkspaceView(RetrieveUpdateDestroyAPIView):
         return response
 
 
-class GetNotificationsByWorkspaceView(ListAPIView, WorkspaceMixin, LimitOffsetPaginationMixin):
+# pylint: disable=missing-class-docstring
+class GetNotificationsByWorkspaceView(ListAPIView,
+                                      WorkspaceMixin,
+                                      LimitOffsetPaginationMixin):
     permission_classes = (IsAuthenticated, )
     serializer_class = serializers.NotificationSerializer
     queryset = models.Notification.objects.all()

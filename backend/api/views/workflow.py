@@ -1,3 +1,7 @@
+"""
+Workflow-related views
+"""
+
 from rest_framework.generics import ListCreateAPIView, RetrieveUpdateDestroyAPIView
 from rest_framework.permissions import IsAuthenticated
 
@@ -5,6 +9,7 @@ from api import serializers, models, permissions
 from api.views.workspace import WorkspaceMixin
 
 
+# pylint: disable=missing-class-docstring
 class ListCreateWorkflowStageView(ListCreateAPIView, WorkspaceMixin):
     serializer_class = serializers.WorkflowStageSerializer
     queryset = models.WorkflowStage.objects.all()
@@ -18,6 +23,7 @@ class ListCreateWorkflowStageView(ListCreateAPIView, WorkspaceMixin):
         return super().create(request, *args, **kwargs)
 
 
+# pylint: disable=missing-class-docstring
 class RetrieveUpdateDestroyWorkflowStageView(RetrieveUpdateDestroyAPIView, WorkspaceMixin):
     serializer_class = serializers.WorkflowStageSerializer
     queryset = models.WorkflowStage.objects.all()

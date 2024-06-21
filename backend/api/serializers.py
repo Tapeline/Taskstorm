@@ -1,3 +1,11 @@
+# pylint: disable=missing-class-docstring
+# pylint: disable=missing-function-docstring
+"""
+Provides various serializers.
+If serializer is named "unwrapped",then it
+"unwraps" foreign keys to corresponding objects
+"""
+
 from typing import Dict, Any
 
 from rest_framework import serializers
@@ -7,9 +15,11 @@ from api import models
 
 
 class RegistrationSerializer(serializers.ModelSerializer):
+    id = serializers.IntegerField(read_only=True)
+
     class Meta:
         model = models.User
-        fields = ["username", "password"]
+        fields = ["username", "password", "id"]
         extra_kwargs = {"password": {"write_only": True}}
 
     def create(self, validated_data):
@@ -35,6 +45,7 @@ class UserProfilePicSerializer(serializers.ModelSerializer):
 
 
 class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
+    # pylint: disable=abstract-method
     def validate(self, attrs: Dict[str, Any]) -> Dict[str, str]:
         data = super().validate(attrs)
         data["user"] = self.user
