@@ -14,6 +14,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from api import serializers, models, statistics, recommendations
+from api.views.notifications import NotificationReaderMixin
 from api.views.pagination import LimitOffsetPaginationMixin
 
 
@@ -25,7 +26,7 @@ class ProfileView(RetrieveUpdateDestroyAPIView):
         return self.request.user
 
 
-class GetNotificationsView(ListAPIView, LimitOffsetPaginationMixin):
+class GetNotificationsView(ListAPIView, LimitOffsetPaginationMixin, NotificationReaderMixin):
     permission_classes = (IsAuthenticated, )
     serializer_class = serializers.NotificationSerializer
     queryset = models.Notification.objects.all().order_by("issue_time").reverse()
@@ -38,10 +39,7 @@ class GetNotificationsView(ListAPIView, LimitOffsetPaginationMixin):
 
     def list(self, request, *args, **kwargs):
         response = super().list(request, *args, **kwargs)
-        if request.GET.get("mark_read") is not None:
-            for notification in self.get_queryset():
-                notification.is_read = True
-                notification.save()
+        self.mark_read_if_needed(request, self.get_queryset())
         return response
 
 

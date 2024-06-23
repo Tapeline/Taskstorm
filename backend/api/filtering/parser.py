@@ -55,7 +55,7 @@ class Tokenizer:
         self.current = 0
         self.code = code
 
-    def tokenize(self):
+    def tokenize(self) -> list[Token]:
         """Create list of tokens out of code"""
         while self.current < len(self.code):
             c = self.code[self.current]
@@ -100,33 +100,33 @@ class Tokenizer:
         return self.tokens
 
     @staticmethod
-    def _isalnum(s):
+    def _isalnum(s: str) -> bool:
         """Check if character is text (standard isalnum plus +, - and _)"""
         return s.isalnum() or s in "-+_"
 
-    def parse_val(self):
+    def parse_val(self) -> None:
         """Get value token (text)"""
         while True:
             self.current += 1
             if self.is_at_end() or not self._isalnum(self.code[self.current]):
                 break
 
-    def parse_str(self):
+    def parse_str(self) -> None:
         """Get string token"""
         while True:
             self.current += 1
             if self.is_at_end() or self.code[self.current] == "\"":
                 break
 
-    def parse_at(self):
+    def parse_at(self) -> None:
         """Get tag token"""
         while True:
             self.current += 1
             if self.is_at_end() or not self.code[self.current].isalpha():
                 break
 
-    def is_at_end(self):
-        # pylint: disable=missing-function-docstring
+    def is_at_end(self) -> bool:
+        """Check if we reached end"""
         return not self.current < len(self.code)
 
 
@@ -197,7 +197,7 @@ class Parser:
         self.tokens = tokens
         self.pos = 0
 
-    def match(self, *token_types):
+    def match(self, *token_types) -> Token | None:
         """
         Try to consume token of certain type.
         If possible - return token, increment position
@@ -210,45 +210,45 @@ class Parser:
             return self.tokens[self.pos - 1]
         return None
 
-    def parse(self):
+    def parse(self) -> SequenceNode:
         """Main parse method"""
         expr = []
         while self.pos < len(self.tokens):
             expr.append(self._parse_expr())
         return SequenceNode(expr)
 
-    def _parse_expr(self):
+    def _parse_expr(self) -> Node:
         """Expression parsing method"""
         return self._parse_or()
 
-    def _parse_or(self):
+    def _parse_or(self) -> Node:
         """Parse or operator node or dive deeper"""
         left = self._parse_and()
         while (token := self.match(Token.OP_OR)) is not None:
             left = OrNode(token, left, self._parse_and())
         return left
 
-    def _parse_and(self):
+    def _parse_and(self) -> Node:
         """Parse and operator node or dive deeper"""
         left = self._parse_comparison()
         while (token := self.match(Token.OP_AND)) is not None:
             left = AndNode(token, left, self._parse_comparison())
         return left
 
-    def _parse_comparison(self):
+    def _parse_comparison(self) -> Node:
         """Parse == != operator nodes or dive deeper"""
         left = self._parse_tag()
         while (token := self.match(Token.OP_IS, Token.OP_IS_NOT)) is not None:
             left = ComparisonNode(token, left, self._parse_tag())
         return left
 
-    def _parse_tag(self):
+    def _parse_tag(self) -> Node:
         """Parse @tag or dive deeper"""
         if (token := self.match(Token.TAG)) is not None:
             return SimpleTagNode(token)
         return self._parse_primary()
 
-    def _parse_primary(self):
+    def _parse_primary(self) -> Node:
         """Parse value node or expr in parentheses or give up"""
         if self.match(Token.VALUE) is not None:
             token = self.tokens[self.pos - 1]
@@ -260,7 +260,7 @@ class Parser:
         raise ValueError("Syntax error")
 
 
-def parse_filter_expression(code):
+def parse_filter_expression(code: str) -> SequenceNode:
     """Main parsing function"""
     tokenizer = Tokenizer(code)
     tokens = tokenizer.tokenize()

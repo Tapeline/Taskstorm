@@ -8,11 +8,11 @@ from asgiref.sync import sync_to_async
 from channels.generic.websocket import AsyncWebsocketConsumer
 from rest_framework_simplejwt.authentication import JWTAuthentication
 
-from api.models import Document
+from api.models import Document, User
 
 
 @sync_to_async
-def get_user(token):
+def get_user(token) -> User:
     """Get authenticated user via provided token"""
 
     auth = JWTAuthentication()
@@ -45,7 +45,7 @@ class EditorConsumer(AsyncWebsocketConsumer):
             self.channel_name
         )
 
-    def save_document(self, doc_id, data, user):
+    def save_document(self, doc_id: int, data: dict, user: User) -> None:
         """Tries to save document as given user"""
 
         if not Document.objects.filter(id=doc_id).exists():
@@ -55,7 +55,7 @@ class EditorConsumer(AsyncWebsocketConsumer):
             doc.data = data
             doc.save()
 
-    def get_document(self, doc_id, user):
+    def get_document(self, doc_id: int, user: User) -> dict:
         """Tries to get ocument as given user"""
 
         if not Document.objects.filter(id=doc_id).exists():
@@ -97,7 +97,7 @@ class EditorConsumer(AsyncWebsocketConsumer):
                 }
             )
 
-    async def editor_message(self, event):
+    async def editor_message(self, event) -> None:
         """Message sender"""
 
         if "json_data" in event:

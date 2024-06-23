@@ -9,6 +9,7 @@ from rest_framework.permissions import IsAuthenticated
 from api import serializers, models, permissions
 from api.accessor import get_object_or_null
 from api.exceptions import APIConflictException, APIBadRequestException, APIPermissionException
+from api.views.notifications import NotificationReaderMixin
 from api.views.pagination import LimitOffsetPaginationMixin
 
 
@@ -50,33 +51,46 @@ class RetrieveUpdateDestroyWorkspaceView(RetrieveUpdateDestroyAPIView):
             Q(owner=self.request.user) | Q(members=self.request.user)
         )
 
-    def update(self, request, *args, **kwargs):
-        self.serializer_class = serializers.WorkspaceSerializer
-        old_object = self.get_object()
-        if "owner" in request.data and "members" in request.data:
+    def _assert_owner_and_members_not_simultaneously_set(self) -> None:
+        # pylint: disable=missing-function-docstring
+        if "owner" in self.request.data and "members" in self.request.data:
             raise APIBadRequestException(
                 "Cannot simultaneously set owner and members"
             )
+
+    def _transfer_ownership(self, old_object) -> None:
+        """Try to perform workspace ownership transfer"""
+        if old_object.owner.id != self.request.user.id:
+            raise APIPermissionException("You don't own this workspace")
+
+        all_member_ids = [m.id for m in old_object.members.all()]
+        if self.request.data.get("owner") not in all_member_ids:
+            raise APIConflictException(
+                "Ownership transfer only available to members of workspace"
+            )
+
+        new_members = [m.id for m in old_object.members.all()]
+        new_members.append(old_object.owner.id)
+        new_members.remove(self.request.data.get("owner"))
+        self.request.data["members"] = new_members
+
+    def update(self, request, *args, **kwargs):
+        self.serializer_class = serializers.WorkspaceSerializer
+        old_object = self.get_object()
+        self._assert_owner_and_members_not_simultaneously_set()
         if "owner" in request.data:
-            if old_object.owner.id != request.user.id:
-                raise APIPermissionException("You don't own this workspace")
-            all_member_ids = [m.id for m in old_object.members.all()]
-            if request.data.get("owner") not in all_member_ids:
-                raise APIConflictException(
-                    "Ownership transfer only available to members of workspace"
-                )
-            new_members = [m.id for m in old_object.members.all()]
-            new_members.append(old_object.owner.id)
-            new_members.remove(request.data.get("owner"))
-            request.data["members"] = new_members
+            self._transfer_ownership(old_object)
         response = super().update(request, *args, **kwargs)
         return response
 
 
-# pylint: disable=missing-class-docstring
 class GetNotificationsByWorkspaceView(ListAPIView,
                                       WorkspaceMixin,
-                                      LimitOffsetPaginationMixin):
+                                      LimitOffsetPaginationMixin,
+                                      NotificationReaderMixin):
+    # pylint: disable=missing-class-docstring
+    # pylint: disable=too-many-ancestors
+
     permission_classes = (IsAuthenticated, )
     serializer_class = serializers.NotificationSerializer
     queryset = models.Notification.objects.all()
@@ -92,8 +106,5 @@ class GetNotificationsByWorkspaceView(ListAPIView,
 
     def list(self, request, *args, **kwargs):
         response = super().list(request, *args, **kwargs)
-        if request.GET.get("mark_read") is not None:
-            for notification in self.get_queryset():
-                notification.is_read = True
-                notification.save()
+        self.mark_read_if_needed(request, self.get_queryset())
         return response

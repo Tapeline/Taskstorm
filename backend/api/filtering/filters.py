@@ -3,6 +3,7 @@ Functions for filtering by parsed expression
 """
 
 from api.filtering import parser
+from api.filtering.parser import Node
 
 
 class UnknownFilter(ValueError):
@@ -17,7 +18,7 @@ class UnknownTag(ValueError):
         super().__init__(f"Unknown tag: {tag}")
 
 
-def get_representation(task, tag):
+def get_representation(task, tag: str) -> str:
     """Get textual representation of variable-tag for future comparing"""
     if tag == "@assignee":
         return task.assignee.username if task.assignee is not None else "-"
@@ -32,8 +33,9 @@ def get_representation(task, tag):
     raise UnknownTag(tag)
 
 
-def simple_tag_applies_to_task(task, user, tag):
+def simple_tag_applies_to_task(task, user, tag: str):
     """Check if non-variable-tag is applicable to given task"""
+    # pylint: disable=too-many-return-statements
     if tag == "@unassigned":
         return task.assignee is None
     if tag == "@assigned":
@@ -53,12 +55,14 @@ def simple_tag_applies_to_task(task, user, tag):
     if tag == "@unarranged":
         return not (task.arrangement_start is None and task.arrangement_end is None)
     if tag == "@my":
+        # pylint: disable=consider-using-in
         return task.creator == user or task.assignee == user
     raise UnknownTag(tag)
 
 
-def applies_to_filter(task, user, filter_node) -> bool:
+def applies_to_filter(task, user, filter_node: Node) -> bool:
     """Check if filter is true for given task and user"""
+    # pylint: disable=too-many-return-statements
     if isinstance(filter_node, parser.OrNode):
         return applies_to_filter(task, user, filter_node.left) \
             or applies_to_filter(task, user, filter_node.right)
@@ -76,8 +80,7 @@ def applies_to_filter(task, user, filter_node) -> bool:
         representation = get_representation(task, tag)
         if tag == "@tag":
             return (value in representation) == filter_node.mode
-        else:
-            return (str(representation) == str(value)) == filter_node.mode
+        return (str(representation) == str(value)) == filter_node.mode
     if isinstance(filter_node, parser.SimpleTagNode):
         if filter_node.token.text in parser.Token.COMPLEX_TAGS:
             return False

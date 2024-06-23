@@ -53,7 +53,7 @@ services:
       PG_PASS: ${DB_PASS}
       PG_PORT: 5432
       PG_HOST: ${DB_HOST}
-      USE_DB: "production"
+      USE_DB: "${USE_DB:-production}"
       REDIS_PASSWORD: ${REDIS_PASS}
       REDIS_PORT: 6379
       REDIS_HOST: redis
@@ -72,6 +72,8 @@ services:
     depends_on:
       db_service:
         condition: service_healthy
+      redis_service:
+        condition: service_started
     links:
       - db_service
       - redis_service

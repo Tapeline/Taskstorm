@@ -1,3 +1,5 @@
+# pylint: disable=missing-module-docstring
+
 from . import auth, profile, tasks, workspace, workflow, notification_rules, comments, documents
 
 __all__ = (

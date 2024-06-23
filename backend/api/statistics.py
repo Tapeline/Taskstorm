@@ -56,16 +56,16 @@ def get_task_close_quality_percent_during_range(time_range: TimeRange, user):
     reopen_count = 0
     for closing in closings:
         next_closings = list(filter(
-            lambda x:
-            x.logged_at > closing.logged_at and
-            x.task == closing.task,
+            lambda x, closing_=closing:
+            x.logged_at > closing_.logged_at and
+            x.task == closing_.task,
             closings
         ))
         scan_until = next_closings[0] if len(next_closings) != 0 else now
         reopenings = list(filter(
-            lambda x:
-            closing.logged_at < x.logged_at < scan_until and
-            x.task == closing.task,
+            lambda x, closing_=closing, scan_until_=scan_until:
+            closing_.logged_at < x.logged_at < scan_until_ and
+            x.task == closing_.task,
             openings
         ))
         reopen_count += len(reopenings) > 0

@@ -1,14 +1,19 @@
+"""
+Test correct filter parsing and application
+"""
+# pylint: disable=missing-function-docstring
+
 from django.test import TestCase
 
 from api.filtering import filters
-from api.filtering.parser import *
+
 from api import models
+from api.filtering.parser import (parse_filter_expression, ComparisonNode,
+                                  AndNode, OrNode, SimpleTagNode)
 
 
 class FilterParsingTestCase(TestCase):
-    def setUp(self):
-        pass
-
+    """Test correct parsing"""
     def test_simple_tags(self):
         expr = parse_filter_expression(
             "@unassigned @assigned @open @closed @unstaged "
@@ -48,6 +53,7 @@ class FilterParsingTestCase(TestCase):
 
 
 class FilteringTestCase(TestCase):
+    """Test correct filtering"""
     def setUp(self):
         user = models.User.objects.create(username="user", password="pass")
         workspace = models.Workspace.objects.create(owner=user, name="workspace")
@@ -55,37 +61,38 @@ class FilteringTestCase(TestCase):
                                                     name="S",
                                                     color="FF0000",
                                                     is_end=False)
-        task1 = models.Task.objects.create(workspace=workspace, creator=user,
-                                           name="A", description="?",
-                                           folder="X",
-                                           stage=stage,
-                                           tags="M")
-        task2 = models.Task.objects.create(workspace=workspace, creator=user,
-                                           name="B", description="?",
-                                           assignee=user,
-                                           folder="X",
-                                           tags="N M")
-        task3 = models.Task.objects.create(workspace=workspace, creator=user,
-                                           name="C", description="?",
-                                           assignee=user,
-                                           folder="Y",
-                                           tags="N M")
-        task4 = models.Task.objects.create(workspace=workspace, creator=user,
-                                           name="D", description="?",
-                                           is_open=False,
-                                           folder="Y",
-                                           stage=stage,
-                                           tags="N")
-        task5 = models.Task.objects.create(workspace=workspace, creator=user,
-                                           name="E", description="?",
-                                           is_open=False,
-                                           folder="Y",
-                                           stage=stage)
+        models.Task.objects.create(workspace=workspace, creator=user,
+                                   name="A", description="?",
+                                   folder="X",
+                                   stage=stage,
+                                   tags="M")
+        models.Task.objects.create(workspace=workspace, creator=user,
+                                   name="B", description="?",
+                                   assignee=user,
+                                   folder="X",
+                                   tags="N M")
+        models.Task.objects.create(workspace=workspace, creator=user,
+                                   name="C", description="?",
+                                   assignee=user,
+                                   folder="Y",
+                                   tags="N M")
+        models.Task.objects.create(workspace=workspace, creator=user,
+                                   name="D", description="?",
+                                   is_open=False,
+                                   folder="Y",
+                                   stage=stage,
+                                   tags="N")
+        models.Task.objects.create(workspace=workspace, creator=user,
+                                   name="E", description="?",
+                                   is_open=False,
+                                   folder="Y",
+                                   stage=stage)
         self._user = user
         self._workspace = workspace
         self._stage = stage
 
-    def _filter_names(self, filter_rule):
+    def _filter_names(self, filter_rule: str) -> list[str]:
+        """Get names of tasks that are applicable to given filter"""
         return [obj.name for obj in models.Task.objects.all()
                 if filters.applies_to_filter(obj, self._user, parse_filter_expression(filter_rule))]
 

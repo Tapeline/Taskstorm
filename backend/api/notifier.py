@@ -9,10 +9,12 @@ from pywebpush import webpush, WebPushException
 from taskstorm import settings
 
 
-def notify(task, user, rule):
+def notify(task, user) -> None:
     """Notify user w/ all possible methods"""
 
+    # pylint: disable=import-outside-toplevel
     from api.models import Notification
+
     Notification.objects.create(
         workspace=task.workspace,
         recipient=user,
@@ -21,7 +23,6 @@ def notify(task, user, rule):
     )
 
     if user.settings["wp_sub"] is not None:
-        print(user.settings["wp_sub"], settings.VAPID_PRIVATE)
         try:
             webpush(
                 subscription_info=user.settings["wp_sub"],
@@ -30,4 +31,4 @@ def notify(task, user, rule):
                 vapid_claims={"sub": "mailto:mail@example.com"}
             )
         except WebPushException as wpe:
-            logging.error(f"Error sending webpush: {wpe}")
+            logging.error(f"Error sending webpush: %s", wpe)

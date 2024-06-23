@@ -1,9 +1,22 @@
+"""
+Tests custom business logic (any apart from CRUD) of tasks:
+    - closing behaviour, more specifically:
+        - closing unstaged
+        - closing staged, not completed
+        - closing staged, completed
+        - auto-closing
+    - filtering
+"""
+# pylint: disable=missing-function-docstring
+
 from rest_framework.test import APITestCase
 
-from api.tests.utils import Dummy, AuthMixin
+from api.tests.utils.classes import AuthMixin
+from api.tests.utils.dummy import Dummy
 
 
 class APITasksTestCase(APITestCase, AuthMixin):
+    """Test tasks closing logic"""
     def setUp(self):
         self.user = Dummy.user()
         self.workspace = Dummy.workspace(self.user)
@@ -42,45 +55,51 @@ class APITasksTestCase(APITestCase, AuthMixin):
         self.client.patch(f"/api/workspaces/{self.workspace.id}/tasks/{task.id}/", {
             "stage": stage.id
         })
-        response = self.client.get(f"/api/workspaces/{self.workspace.id}/tasks/{task.id}/", format="json")
+        response = self.client.get(
+            f"/api/workspaces/{self.workspace.id}/tasks/{task.id}/", format="json"
+        )
         self.assertEqual(response.data["is_open"], False)
 
 
 class APITasksFilterTestCase(APITestCase, AuthMixin):
+    """Test tasks filter logic"""
     def setUp(self):
         self.user = Dummy.user("user")
         self.workspace = Dummy.workspace(self.user)
         stage = Dummy.stage(self.workspace, name="S")
-        task1 = Dummy.task(self.user, self.workspace,
-                           name="A",
-                           folder="X",
-                           stage=stage,
-                           tags="M")
-        task2 = Dummy.task(self.user, self.workspace,
-                           name="B",
-                           assignee=self.user,
-                           folder="X",
-                           tags="N M")
-        task3 = Dummy.task(self.user, self.workspace,
-                           name="C",
-                           assignee=self.user,
-                           folder="Y",
-                           tags="N M")
-        task4 = Dummy.task(self.user, self.workspace,
-                           name="D",
-                           is_open=False,
-                           folder="Y",
-                           stage=stage,
-                           tags="N")
-        task5 = Dummy.task(self.user, self.workspace,
-                           name="E",
-                           is_open=False,
-                           folder="Y",
-                           stage=stage)
+        Dummy.task(self.user, self.workspace,
+                   name="A",
+                   folder="X",
+                   stage=stage,
+                   tags="M")
+        Dummy.task(self.user, self.workspace,
+                   name="B",
+                   assignee=self.user,
+                   folder="X",
+                   tags="N M")
+        Dummy.task(self.user, self.workspace,
+                   name="C",
+                   assignee=self.user,
+                   folder="Y",
+                   tags="N M")
+        Dummy.task(self.user, self.workspace,
+                   name="D",
+                   is_open=False,
+                   folder="Y",
+                   stage=stage,
+                   tags="N")
+        Dummy.task(self.user, self.workspace,
+                   name="E",
+                   is_open=False,
+                   folder="Y",
+                   stage=stage)
         self.set_user(self.user.username, Dummy.PASSWORD)
 
-    def _get_task_names(self, filter_rule):
-        response = self.client.get(f"/api/workspaces/{self.workspace.id}/tasks/?filters={filter_rule}")
+    def _get_task_names(self, filter_rule: str) -> set[str]:
+        """Get task names by filter"""
+        response = self.client.get(
+            f"/api/workspaces/{self.workspace.id}/tasks/?filters={filter_rule}"
+        )
         return set(x["name"] for x in response.data)
 
     def test_filter_assignee(self):

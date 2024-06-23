@@ -1,16 +1,17 @@
 """
 Utils for pagination
 """
+from django.db.models import QuerySet
 
 from api.exceptions import APIBadRequestException
 
 
 class LimitOffsetPaginationMixin:
     """Mixin for limit-offset pagination"""
-    default_pagination_limit = 10
-    default_pagination_offset = 0
+    default_pagination_limit: int = 10
+    default_pagination_offset: int = 0
 
-    def get_pagination_params(self):
+    def _get_pagination_params(self) -> tuple[int, int]:
         """Get limit and offset from query params"""
         try:
             p_limit = int(self.request.GET.get("limit", self.default_pagination_limit))
@@ -19,9 +20,9 @@ class LimitOffsetPaginationMixin:
         except ValueError as err:
             raise APIBadRequestException("Bad pagination params") from err
 
-    def cut_by_pagination(self, queryset):
+    def cut_by_pagination(self, queryset: QuerySet) -> QuerySet:
         """Apply pagination"""
-        p_limit, p_offset = self.get_pagination_params()
+        p_limit, p_offset = self._get_pagination_params()
         all_objects = queryset.all()
         if p_limit == -1:
             return queryset

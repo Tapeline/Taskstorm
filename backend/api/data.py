@@ -12,7 +12,7 @@ class ObjDict(dict):
         self[key] = value
 
 
-def crop_list(target: list, count: int):
+def crop_list(target: list, count: int) -> list:
     """
     Try to shrink list down to given length
     If list is shorter than given length, leave it as is

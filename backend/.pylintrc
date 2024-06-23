@@ -1,8 +1,9 @@
 [MASTER]
 ignore=
     migrations,
-    tests,
     urls
 
 [MESSAGES CONTROL]
-disable=R0903
+disable=
+    R0903,
+    W1309

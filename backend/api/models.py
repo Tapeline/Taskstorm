@@ -5,13 +5,21 @@ Describes ORM models
 import re
 import uuid
 from datetime import timedelta
+from typing import Type
 
 from PIL import Image
 from django.contrib.auth.models import AbstractUser
 from django.db import models
+from django.db.models import QuerySet
 
 
-def transform_to_queryset(model, obj_list):
+# TODO: verify that objects belong to one workspace
+#       e.g when stage is set to task, ensure that stage
+#       belongs to the same workspace as the task
+
+
+def transform_to_queryset(model: Type[models.Model],
+                          obj_list: list[models.Model]) -> QuerySet:
     """
     Transform list of ORM object to Django queryset
     Does not guarantee preservation of order!
@@ -19,7 +27,7 @@ def transform_to_queryset(model, obj_list):
     return model.objects.filter(id__in=[x.id for x in obj_list])
 
 
-def get_default_user_settings():
+def get_default_user_settings() -> dict:
     """
     Default settings for user
     wp_sub - webpush notification subscription
@@ -27,7 +35,8 @@ def get_default_user_settings():
     return {"wp_sub": None}
 
 
-def upload_pfp_to(instance, filename):
+def upload_pfp_to(instance, filename) -> str:
+    # pylint: disable=unused-argument
     """Get path for profile picture"""
     return f"pfp/{uuid.uuid4()}.{filename.split('.')[-1]}"
 
