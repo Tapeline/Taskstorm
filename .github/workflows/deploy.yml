@@ -23,6 +23,8 @@ jobs:
         run: |
           cd backend
           USE_DB=local python -m manage test api.tests.unit
+      - name: Start redis (for integration testing)
+        run: docker compose up -d redis_service
       - name: Integration testing
         run: |
           cd backend
