@@ -134,7 +134,7 @@ class RetrieveUpdateDestroyTaskView(RetrieveUpdateDestroyAPIView, WorkspaceMixin
         response = super().update(request, *args, **kwargs)
         new_object = self.get_object()
         self._log_actions(old_object, new_object)
-        if "is_open" in request.data:
+        if "stage" in request.data:
             self._try_to_auto_open_or_close(new_object)
         self._try_to_reschedule(new_object)
         return response
