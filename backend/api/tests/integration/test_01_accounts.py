@@ -54,5 +54,5 @@ class APILoginTestCase(APITestCase, SchemaCheckerMixin):
         self.assertEqual(response.status_code, 401)
         self.assert_schema(
             response.data,
-            {"error_message": str}
+            {"code": "authentication_failed"}
         )
