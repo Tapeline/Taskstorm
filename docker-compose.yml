@@ -62,7 +62,8 @@ services:
       DEBUG: 0
       SECRET_KEY: ${SECRET_KEY}
     volumes:
-      - media:/app/mediafiles
+      # TODO: fix: PFPs disappear after restart
+      - media:/app/mediafiles/
     ports:
       - "8080:8080"
     expose:
