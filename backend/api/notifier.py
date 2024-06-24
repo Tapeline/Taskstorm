@@ -14,6 +14,7 @@ def notify(task, user) -> None:
 
     # pylint: disable=import-outside-toplevel
     from api.models import Notification
+    from api.cache.notifications import NotificationCache
 
     Notification.objects.create(
         workspace=task.workspace,
@@ -32,3 +33,5 @@ def notify(task, user) -> None:
             )
         except WebPushException as wpe:
             logging.error(f"Error sending webpush: %s", wpe)
+
+    NotificationCache.invalidate_for_user(user.username)

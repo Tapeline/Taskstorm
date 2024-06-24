@@ -194,3 +194,10 @@ if not isinstance(VAPID_PRIVATE, str):
 
 MEDIA_ROOT = os.path.join(os.path.dirname(BASE_DIR), 'mediafiles')
 MEDIA_URL = '/media/'
+
+CACHES = {
+    "default": {
+        "BACKEND": "django.core.cache.backends.redis.RedisCache",
+        "LOCATION": f"redis://default:{REDIS_CONFIG['PASS']}@{REDIS_CONFIG['HOST']}:{REDIS_CONFIG['PORT']}/2",
+    }
+}

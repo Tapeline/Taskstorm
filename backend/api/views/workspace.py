@@ -8,9 +8,9 @@ from rest_framework.permissions import IsAuthenticated
 
 from api import serializers, models, permissions
 from api.accessor import get_object_or_null
+from api.cache.notifications import NotificationCache
 from api.exceptions.exception_classes import SimultaneouslySetOwnerAndMemberListException, \
     OwnershipTransferToNonMemberException, NotAnOwnerException
-from api.views.notifications import NotificationReaderMixin
 from api.views.pagination import LimitOffsetPaginationMixin
 
 
@@ -83,8 +83,7 @@ class RetrieveUpdateDestroyWorkspaceView(RetrieveUpdateDestroyAPIView):
 
 class GetNotificationsByWorkspaceView(ListAPIView,
                                       WorkspaceMixin,
-                                      LimitOffsetPaginationMixin,
-                                      NotificationReaderMixin):
+                                      LimitOffsetPaginationMixin):
     # pylint: disable=missing-class-docstring
     # pylint: disable=too-many-ancestors
 
@@ -102,6 +101,10 @@ class GetNotificationsByWorkspaceView(ListAPIView,
         return self.cut_by_pagination(qs).order_by("issue_time").reverse()
 
     def list(self, request, *args, **kwargs):
+        if NotificationCache.has_in_cache(request.user.username, "workspace"):
+            print(f"Using cached response for {request.user.username}")
+            return NotificationCache.get_response_from_cache(request.user.username, "workspace")
         response = super().list(request, *args, **kwargs)
-        self.mark_read_if_needed(request, self.get_queryset())
+        print(f"Caching response for {request.user.username}")
+        NotificationCache.cache_response(request.user.username, response, "workspace")
         return response

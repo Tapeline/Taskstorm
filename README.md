@@ -40,9 +40,9 @@
 - Calendar for user's tasks
 - Statistics in profile
 - Task recommendation
+- Notification caching (sort of)
 
 ### Upcoming:
-- [ ] Notification caching
 - [ ] Linked and child tasks
 
 ## Deploying
