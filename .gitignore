@@ -1,4 +1,4 @@
-/mediafiles/
+mediafiles/
 /credentials.txt
 /backend/celerybeat-schedule.bak
 /backend/celerybeat-schedule.dat
