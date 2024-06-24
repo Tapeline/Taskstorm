@@ -6,7 +6,7 @@ Task-related views and utils
 from typing import Type
 
 from django.db.models import Model
-from rest_framework.generics import ListCreateAPIView, RetrieveUpdateDestroyAPIView
+from rest_framework.generics import ListCreateAPIView, RetrieveUpdateDestroyAPIView, get_object_or_404
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.serializers import ModelSerializer
@@ -28,6 +28,30 @@ class TaskMixin(WorkspaceMixin):
         /api/workspaces/.../tasks/<int:task_id>/...
         """
         return get_object_or_null(models.Task, id=self.kwargs.get("task_id"))
+
+
+def _validate_closing_status(task_is_open: bool,
+                             stage_object: models.WorkflowStage) -> None:
+    """
+    Make sure that tasks with workflow stage without `is_end` flag
+    cannot be closed
+    """
+    if stage_object is None:
+        return
+    if not task_is_open and (not stage_object.is_end):
+        raise APIConflictException("Task cannot be closed until its stage is not at end")
+
+
+def _assert_stage_belongs_to_same_workspace(task_workspace: models.Workspace,
+                                            stage_object: models.WorkflowStage):
+    """
+    Validate that target workflow stage and task are from
+    the same workspace
+    """
+    if stage_object.workspace != task_workspace:
+        raise APIConflictException(
+            "Task cannot be set to a stage that does not belong to it's workspace"
+        )
 
 
 class ListCreateTaskView(ListCreateAPIView, WorkspaceMixin, LimitOffsetPaginationMixin):
@@ -55,10 +79,28 @@ class ListCreateTaskView(ListCreateAPIView, WorkspaceMixin, LimitOffsetPaginatio
         """Get filters from query param"""
         return self.request.GET.get("filters")
 
+    def _validate_request(self, request):
+        """Perform validation"""
+        if "stage" in request.data:
+            stage_object = get_object_or_404(
+                models.WorkflowStage,
+                id=int(request.data.get("stage"))
+            )
+            if "is_end" in request.data:
+                _validate_closing_status(
+                    bool(request.data.get("is_end")),
+                    stage_object
+                )
+            _assert_stage_belongs_to_same_workspace(
+                self.get_workspace(),
+                stage_object
+            )
+
     def create(self, request, *args, **kwargs):
         self.serializer_class = serializers.TaskSerializer
         request.data["workspace"] = self.get_workspace().id
         request.data["creator"] = self.request.user.id
+        self._validate_request(request)
         return super().create(request, *args, **kwargs)
 
 
@@ -73,8 +115,11 @@ class RetrieveUpdateDestroyTaskView(RetrieveUpdateDestroyAPIView, WorkspaceMixin
 
     def _assert_can_close_if_closing(self, old_object: models.Task) -> None:
         # pylint: disable=missing-function-docstring
-        if old_object.stage is not None and not old_object.stage.is_end:
-            raise APIConflictException("Task cannot be closed until its stage is not at end")
+        _validate_closing_status(task_is_open=False, stage_object=old_object.stage)
+
+    def _assert_stage_belongs_to_same_workspace(self, task_object, stage_object):
+        # pylint: disable=missing-function-docstring
+        _assert_stage_belongs_to_same_workspace(task_object.workspace, stage_object)
 
     def _log_actions(self, old_object: models.Task, new_object: models.Task) -> None:
         """Try to log actions performed with task"""
@@ -122,6 +167,19 @@ class RetrieveUpdateDestroyTaskView(RetrieveUpdateDestroyAPIView, WorkspaceMixin
                 or "arrangement_end" in self.request.data):
             models.TaskNotifiedWithRuleFact.objects.filter(task=new_object).delete()
 
+    def _validate_request(self, old_object) -> None:
+        """Perform all validations"""
+        if self.request.data.get("is_open") is False:
+            self._assert_can_close_if_closing(old_object)
+        if "stage" in self.request.data:
+            self._assert_stage_belongs_to_same_workspace(
+                old_object,
+                get_object_or_404(
+                    models.WorkflowStage,
+                    id=int(self.request.data.get("stage"))
+                )
+            )
+
     def update(self, request, *args, **kwargs):
         """
         Updates task and logs actions.
@@ -129,8 +187,7 @@ class RetrieveUpdateDestroyTaskView(RetrieveUpdateDestroyAPIView, WorkspaceMixin
         """
         self.serializer_class = serializers.TaskSerializer
         old_object = self.get_object()
-        if request.data.get("is_open") is False:
-            self._assert_can_close_if_closing(old_object)
+        self._validate_request(old_object)
         response = super().update(request, *args, **kwargs)
         new_object = self.get_object()
         self._log_actions(old_object, new_object)

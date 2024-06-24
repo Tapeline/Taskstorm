@@ -13,11 +13,6 @@ from django.db import models
 from django.db.models import QuerySet
 
 
-# TODO: verify that objects belong to one workspace
-#       e.g when stage is set to task, ensure that stage
-#       belongs to the same workspace as the task
-
-
 def transform_to_queryset(model: Type[models.Model],
                           obj_list: list[models.Model]) -> QuerySet:
     """

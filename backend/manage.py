@@ -2,6 +2,9 @@
 """Django's command-line utility for administrative tasks."""
 import os
 import sys
+# TODO: idempotency!
+# TODO: migrate pk to uuid?
+# TODO: machine-readable error codes
 
 
 def main():
