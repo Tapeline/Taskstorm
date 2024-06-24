@@ -3,3 +3,4 @@
 /backend/celerybeat-schedule.bak
 /backend/celerybeat-schedule.dat
 /backend/celerybeat-schedule.dir
+__pycache__/
