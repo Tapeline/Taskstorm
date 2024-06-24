@@ -6,7 +6,9 @@ Task-related views and utils
 from typing import Type
 
 from django.db.models import Model
-from rest_framework.generics import ListCreateAPIView, RetrieveUpdateDestroyAPIView, get_object_or_404
+from rest_framework.generics import (ListCreateAPIView,
+                                     RetrieveUpdateDestroyAPIView,
+                                     get_object_or_404)
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.serializers import ModelSerializer
@@ -14,7 +16,9 @@ from rest_framework.views import APIView
 
 from api import serializers, models, permissions
 from api.accessor import get_object_or_null
-from api.exceptions import APIConflictException
+from api.exceptions.exception_classes import TaskClosedButNotAtEndException, \
+    TaskAndStageAreInDifferentWorkspacesException
+from api.filtering.parser import FilterSyntaxError
 from api.views.pagination import LimitOffsetPaginationMixin
 from api.views.workspace import WorkspaceMixin
 from api.filtering import filters, parser as filter_parser
@@ -39,7 +43,7 @@ def _validate_closing_status(task_is_open: bool,
     if stage_object is None:
         return
     if not task_is_open and (not stage_object.is_end):
-        raise APIConflictException("Task cannot be closed until its stage is not at end")
+        raise TaskClosedButNotAtEndException
 
 
 def _assert_stage_belongs_to_same_workspace(task_workspace: models.Workspace,
@@ -49,9 +53,7 @@ def _assert_stage_belongs_to_same_workspace(task_workspace: models.Workspace,
     the same workspace
     """
     if stage_object.workspace != task_workspace:
-        raise APIConflictException(
-            "Task cannot be set to a stage that does not belong to it's workspace"
-        )
+        raise TaskAndStageAreInDifferentWorkspacesException
 
 
 class ListCreateTaskView(ListCreateAPIView, WorkspaceMixin, LimitOffsetPaginationMixin):
@@ -68,7 +70,7 @@ class ListCreateTaskView(ListCreateAPIView, WorkspaceMixin, LimitOffsetPaginatio
         if filter_string is not None:
             try:
                 filter_rule = filter_parser.parse_filter_expression(filter_string)
-            except ValueError:
+            except FilterSyntaxError:
                 return qs
             id_list = [obj.id for obj in qs.all()
                        if filters.applies_to_filter(obj, self.request.user, filter_rule)]

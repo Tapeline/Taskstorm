@@ -190,6 +190,10 @@ class ComparisonNode(Node):
         self.right = right
 
 
+class FilterSyntaxError(ValueError):
+    """Raised when there is a syntax error within a filter expression"""
+
+
 class Parser:
     """Creates AST from tokens"""
 
@@ -257,7 +261,7 @@ class Parser:
             expr = self._parse_expr()
             self.match(Token.R_PAR)
             return expr
-        raise ValueError("Syntax error")
+        raise FilterSyntaxError
 
 
 def parse_filter_expression(code: str) -> SequenceNode:

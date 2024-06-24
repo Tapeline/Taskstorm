@@ -4,7 +4,6 @@ import os
 import sys
 # TODO: idempotency!
 # TODO: migrate pk to uuid?
-# TODO: machine-readable error codes
 
 
 def main():

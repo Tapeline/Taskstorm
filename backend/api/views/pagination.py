@@ -3,7 +3,7 @@ Utils for pagination
 """
 from django.db.models import QuerySet
 
-from api.exceptions import APIBadRequestException
+from api.exceptions.exception_classes import BadPaginationParamsException
 
 
 class LimitOffsetPaginationMixin:
@@ -18,7 +18,7 @@ class LimitOffsetPaginationMixin:
             p_offset = int(self.request.GET.get("offset", self.default_pagination_offset))
             return p_limit, p_offset
         except ValueError as err:
-            raise APIBadRequestException("Bad pagination params") from err
+            raise BadPaginationParamsException from err
 
     def cut_by_pagination(self, queryset: QuerySet) -> QuerySet:
         """Apply pagination"""

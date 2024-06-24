@@ -13,6 +13,7 @@ from django.utils import timezone
 
 from api import notifier
 from api.filtering import filters, parser as filter_parser
+from api.filtering.parser import FilterSyntaxError
 
 
 def is_task_applicable(now: datetime, task, user, filter_rule, rule) -> bool:
@@ -29,8 +30,8 @@ def find_tasks_for_rule(now: datetime, workspace, user, rule) -> list:
     # pylint: disable=missing-function-docstring
     try:
         filter_rule = filter_parser.parse_filter_expression(rule.applicable_filter)
-    except ValueError:
-        return False
+    except FilterSyntaxError:
+        return []
     from api import models
     tasks = [(task, user, rule) for task in models.Task.objects.filter(workspace=workspace)
              if is_task_applicable(now, task, user, filter_rule, rule)]

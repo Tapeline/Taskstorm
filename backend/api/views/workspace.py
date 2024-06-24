@@ -8,7 +8,8 @@ from rest_framework.permissions import IsAuthenticated
 
 from api import serializers, models, permissions
 from api.accessor import get_object_or_null
-from api.exceptions import APIConflictException, APIBadRequestException, APIPermissionException
+from api.exceptions.exception_classes import SimultaneouslySetOwnerAndMemberListException, \
+    OwnershipTransferToNonMemberException, NotAnOwnerException
 from api.views.notifications import NotificationReaderMixin
 from api.views.pagination import LimitOffsetPaginationMixin
 
@@ -54,20 +55,16 @@ class RetrieveUpdateDestroyWorkspaceView(RetrieveUpdateDestroyAPIView):
     def _assert_owner_and_members_not_simultaneously_set(self) -> None:
         # pylint: disable=missing-function-docstring
         if "owner" in self.request.data and "members" in self.request.data:
-            raise APIBadRequestException(
-                "Cannot simultaneously set owner and members"
-            )
+            raise SimultaneouslySetOwnerAndMemberListException
 
     def _transfer_ownership(self, old_object) -> None:
         """Try to perform workspace ownership transfer"""
         if old_object.owner.id != self.request.user.id:
-            raise APIPermissionException("You don't own this workspace")
+            raise NotAnOwnerException
 
         all_member_ids = [m.id for m in old_object.members.all()]
         if self.request.data.get("owner") not in all_member_ids:
-            raise APIConflictException(
-                "Ownership transfer only available to members of workspace"
-            )
+            raise OwnershipTransferToNonMemberException
 
         new_members = [m.id for m in old_object.members.all()]
         new_members.append(old_object.owner.id)
