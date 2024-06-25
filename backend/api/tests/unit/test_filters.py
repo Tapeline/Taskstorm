@@ -56,37 +56,44 @@ class FilteringTestCase(TestCase):
     """Test correct filtering"""
     def setUp(self):
         user = models.User.objects.create(username="user", password="pass")
-        workspace = models.Workspace.objects.create(owner=user, name="workspace")
+        workspace = models.Workspace.objects.create(owner=user, name="workspace",
+                                                    is_drafted=False)
         stage = models.WorkflowStage.objects.create(workspace=workspace,
                                                     name="S",
                                                     color="FF0000",
-                                                    is_end=False)
+                                                    is_end=False,
+                                                    is_drafted=False)
         models.Task.objects.create(workspace=workspace, creator=user,
                                    name="A", description="?",
                                    folder="X",
                                    stage=stage,
-                                   tags="M")
+                                   tags="M",
+                                   is_drafted=False)
         models.Task.objects.create(workspace=workspace, creator=user,
                                    name="B", description="?",
                                    assignee=user,
                                    folder="X",
-                                   tags="N M")
+                                   tags="N M",
+                                   is_drafted=False)
         models.Task.objects.create(workspace=workspace, creator=user,
                                    name="C", description="?",
                                    assignee=user,
                                    folder="Y",
-                                   tags="N M")
+                                   tags="N M",
+                                   is_drafted=False)
         models.Task.objects.create(workspace=workspace, creator=user,
                                    name="D", description="?",
                                    is_open=False,
                                    folder="Y",
                                    stage=stage,
-                                   tags="N")
+                                   tags="N",
+                                   is_drafted=False)
         models.Task.objects.create(workspace=workspace, creator=user,
                                    name="E", description="?",
                                    is_open=False,
                                    folder="Y",
-                                   stage=stage)
+                                   stage=stage,
+                                   is_drafted=False)
         self._user = user
         self._workspace = workspace
         self._stage = stage
