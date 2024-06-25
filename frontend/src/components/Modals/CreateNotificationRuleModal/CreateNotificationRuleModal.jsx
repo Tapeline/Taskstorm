@@ -1,8 +1,9 @@
 import React, {useState} from "react";
-import {Button, Form, InputGroup, Modal} from "react-bootstrap";
+import {Button, Form, InputGroup, Modal, Spinner} from "react-bootstrap";
 import {toastError} from "../../../ui/toasts.jsx";
 import {useNavigate} from "react-router-dom";
 import {newRuleInWorkspace} from "../../../api/endpoints-notifications.jsx";
+import {confirmCreation} from "../../../api/common.jsx";
 
 export default function CreateNotificationRuleModal(props) {
     const [show, setShow] = useState(false);
@@ -10,11 +11,13 @@ export default function CreateNotificationRuleModal(props) {
     const [ruleDelta, setRuleDelta] = useState("");
     const navigate = useNavigate();
     const {workspace} = props;
+    const [isLoading, setIsLoading] = useState(false);
 
     const handleClose = () => setShow(false);
     const handleShow = () => setShow(true);
     const handleSubmit = (e) => {
         e.preventDefault();
+        setIsLoading(true);
         newRuleInWorkspace(
             localStorage.getItem("accessToken"),
             workspace.id,
@@ -23,14 +26,18 @@ export default function CreateNotificationRuleModal(props) {
                 time_delta: ruleDelta
             }
         ).then((response) => {
-            if (!response.success && response.status === 401) {
-                navigate("/login");
-            } else if (!response.success) {
-                toastError(response.reason);
-            } else {
-                handleClose();
-                window.location.href = "/workspaces/" + workspace.id + "/notifications";
-            }
+            if (!response.success) toastError(response.reason);
+            else confirmCreation(
+                localStorage.getItem("accessToken"),
+                "workspaces/" + workspace.id + "/notification-rules",
+                response.data.id
+            ).then(r => {
+                if (!r.success) toastError(r.reason)
+                else {
+                    handleClose();
+                    window.location.href = "/workspaces/" + workspace.id + "/notifications";
+                }
+            });
         });
     };
 
@@ -64,7 +71,13 @@ export default function CreateNotificationRuleModal(props) {
                         </InputGroup>
                     </Modal.Body>
                     <Modal.Footer>
-                        <Button variant="primary" type="submit">Create</Button>
+                        <Button variant="primary" type="submit" disabled={isLoading}>
+                            {isLoading
+                                ? <Spinner as="span" animation="border"
+                                    size="sm" role="status" aria-hidden="true"/>
+                                : "Create"
+                            }
+                        </Button>
                     </Modal.Footer>
                 </Form>
             </Modal>

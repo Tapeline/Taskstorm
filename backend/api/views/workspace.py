@@ -1,6 +1,7 @@
 """
 Workspace-related views and utils
 """
+# pylint: disable=too-many-ancestors
 
 from django.db.models import Q
 from rest_framework.generics import ListCreateAPIView, RetrieveUpdateDestroyAPIView, ListAPIView
@@ -11,7 +12,8 @@ from api.accessor import get_object_or_null
 from api.cache.notifications import NotificationCache
 from api.exceptions.exception_classes import SimultaneouslySetOwnerAndMemberListException, \
     OwnershipTransferToNonMemberException, NotAnOwnerException
-from api.views.pagination import LimitOffsetPaginationMixin
+from api.views.utils.pagination import LimitOffsetPaginationMixin
+from api.views.utils.idempotency import IdempotentCreationModelQuerySetProviderMixin
 
 
 class WorkspaceMixin:
@@ -25,7 +27,7 @@ class WorkspaceMixin:
 
 
 # pylint: disable=missing-class-docstring
-class ListCreateWorkspaceView(ListCreateAPIView):
+class ListCreateWorkspaceView(IdempotentCreationModelQuerySetProviderMixin, ListCreateAPIView):
     serializer_class = serializers.WorkspaceUnwrappedSerializer
     queryset = models.Workspace.objects.all()
     permission_classes = (IsAuthenticated,)
@@ -42,7 +44,8 @@ class ListCreateWorkspaceView(ListCreateAPIView):
 
 
 # pylint: disable=missing-class-docstring
-class RetrieveUpdateDestroyWorkspaceView(RetrieveUpdateDestroyAPIView):
+class RetrieveUpdateDestroyWorkspaceView(IdempotentCreationModelQuerySetProviderMixin,
+                                         RetrieveUpdateDestroyAPIView):
     serializer_class = serializers.WorkspaceUnwrappedSerializer
     queryset = models.Workspace.objects.all()
     permission_classes = (IsAuthenticated, permissions.CanInteractWithWorkspace)

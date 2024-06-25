@@ -63,6 +63,8 @@ def simple_tag_applies_to_task(task, user, tag: str):
 def applies_to_filter(task, user, filter_node: Node) -> bool:
     """Check if filter is true for given task and user"""
     # pylint: disable=too-many-return-statements
+    if task.is_drafted:
+        return False
     if isinstance(filter_node, parser.OrNode):
         return applies_to_filter(task, user, filter_node.left) \
             or applies_to_filter(task, user, filter_node.right)

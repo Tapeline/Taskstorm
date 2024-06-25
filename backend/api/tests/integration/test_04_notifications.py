@@ -67,7 +67,8 @@ class APINotificationsTestCase(CeleryTestCase, AuthMixin):
         models.NotificationRule.objects.create(
             workspace=self.workspace,
             applicable_filter="@my",
-            time_delta="-00:00"
+            time_delta="-00:00",
+            is_drafted=False
         )
         task.arrangement_start = timezone.now()
         task.save()
@@ -82,12 +83,14 @@ class APINotificationsTestCase(CeleryTestCase, AuthMixin):
         models.NotificationRule.objects.create(
             workspace=self.workspace,
             applicable_filter="@my",
-            time_delta="-00:00"
+            time_delta="-00:00",
+            is_drafted=False
         )
         models.NotificationRule.objects.create(
             workspace=self.workspace,
             applicable_filter="@my",
-            time_delta="-00:01"
+            time_delta="-00:01",
+            is_drafted=False
         )
         task.arrangement_start = timezone.now()
         task.save()
@@ -102,7 +105,8 @@ class APINotificationsTestCase(CeleryTestCase, AuthMixin):
         models.NotificationRule.objects.create(
             workspace=self.workspace,
             applicable_filter="@my",
-            time_delta="-00:00"
+            time_delta="-00:00",
+            is_drafted=False
         )
         task.arrangement_start = timezone.now()
         task.save()

@@ -16,7 +16,7 @@ from django.db.models import QuerySet
 def transform_to_queryset(model: Type[models.Model],
                           obj_list: list[models.Model]) -> QuerySet:
     """
-    Transform list of ORM object to Django queryset
+    Transform list of ORM objects to Django queryset
     Does not guarantee preservation of order!
     """
     return model.objects.filter(id__in=[x.id for x in obj_list])
@@ -65,7 +65,14 @@ def default_workspace_settings():
     return {"tag_coloring": {}, "views": []}
 
 
-class Workspace(models.Model):
+class IdempotentCreationModel(models.Model):
+    """Provides field for achieving idempotency on creation"""
+    class Meta:
+        abstract = True
+    is_drafted = models.BooleanField(default=True)
+
+
+class Workspace(IdempotentCreationModel):
     """Workspace model"""
     owner = models.ForeignKey(to=User, on_delete=models.CASCADE, related_name="owning_workspaces")
     members = models.ManyToManyField(to=User, blank=True,
@@ -79,7 +86,7 @@ class Workspace(models.Model):
         return user == self.owner or user in self.members.all()
 
 
-class Task(models.Model):
+class Task(IdempotentCreationModel):
     """Task model"""
     name = models.CharField(max_length=255)
     description = models.TextField()
@@ -108,7 +115,7 @@ class Task(models.Model):
     TASK_CLOSED = False
 
 
-class Comment(models.Model):
+class Comment(IdempotentCreationModel):
     """Task comment model"""
     task = models.ForeignKey(to=Task, on_delete=models.CASCADE)
     user = models.ForeignKey(to=User, on_delete=models.CASCADE)
@@ -116,14 +123,14 @@ class Comment(models.Model):
     posted_at = models.DateTimeField(auto_now_add=True)
 
 
-class Document(models.Model):
+class Document(IdempotentCreationModel):
     """Workspace document model"""
     workspace = models.ForeignKey(to=Workspace, on_delete=models.CASCADE)
     title = models.CharField(max_length=255)
     data = models.JSONField()
 
 
-class WorkflowStage(models.Model):
+class WorkflowStage(IdempotentCreationModel):
     """Workflow stage model"""
     workspace = models.ForeignKey(to=Workspace, on_delete=models.CASCADE)
     name = models.CharField(max_length=64)
@@ -131,7 +138,7 @@ class WorkflowStage(models.Model):
     is_end = models.BooleanField()
 
 
-class NotificationRule(models.Model):
+class NotificationRule(IdempotentCreationModel):
     """
     Notification rule model
     Describes under which circumstances a notification should be sent.

@@ -1,9 +1,10 @@
 import React, {useState} from "react";
-import {Button, Form, InputGroup, Modal} from "react-bootstrap";
+import {Button, Form, InputGroup, Modal, Spinner} from "react-bootstrap";
 import {toastError} from "../../../ui/toasts.jsx";
 import {useNavigate} from "react-router-dom";
 import {newTaskInWorkspace} from "../../../api/endpoints-tasks.jsx";
 import {localSettings} from "../../../utils/localSettings.jsx";
+import {confirmCreation} from "../../../api/common.jsx";
 
 export default function CreateTaskModal(props) {
     const [show, setShow] = useState(false);
@@ -13,11 +14,13 @@ export default function CreateTaskModal(props) {
     const [taskFolder, setTaskFolder] = useState("Public");
     const navigate = useNavigate();
     const {workspace} = props;
+    const [isLoading, setIsLoading] = useState(false);
 
     const handleClose = () => setShow(false);
     const handleShow = () => setShow(true);
     const handleSubmit = (e) => {
         e.preventDefault();
+        setIsLoading(true);
         const data = {
             "name": taskName,
             "description": taskDescription,
@@ -31,14 +34,18 @@ export default function CreateTaskModal(props) {
             workspace.id,
             data
         ).then((response) => {
-            if (!response.success && response.status === 401) {
-                navigate("/login");
-            } else if (!response.success) {
-                toastError(response.reason);
-            } else {
-                handleClose();
-                window.location.href = "/workspaces/" + workspace.id;
-            }
+            if (!response.success) toastError(response.reason);
+            else confirmCreation(
+                localStorage.getItem("accessToken"),
+                "workspaces/" + workspace.id + "/tasks",
+                response.data.id
+            ).then(r => {
+                if (!r.success) toastError(r.reason)
+                else {
+                    handleClose();
+                    window.location.href = "/workspaces/" + workspace.id;
+                }
+            });
         });
     };
 
@@ -84,7 +91,13 @@ export default function CreateTaskModal(props) {
                         </InputGroup>
                     </Modal.Body>
                     <Modal.Footer>
-                        <Button variant="primary" type="submit">Create</Button>
+                        <Button variant="primary" type="submit" disabled={isLoading}>
+                            {isLoading
+                                ? <Spinner as="span" animation="border"
+                                    size="sm" role="status" aria-hidden="true"/>
+                                : "Create"
+                            }
+                        </Button>
                     </Modal.Footer>
                 </Form>
             </Modal>

@@ -8,6 +8,7 @@ from asgiref.sync import sync_to_async
 from channels.generic.websocket import AsyncWebsocketConsumer
 from rest_framework_simplejwt.authentication import JWTAuthentication
 
+from api.accessor import filter_confirmed
 from api.models import Document, User
 
 
@@ -48,7 +49,7 @@ class EditorConsumer(AsyncWebsocketConsumer):
     def save_document(self, doc_id: int, data: dict, user: User) -> None:
         """Tries to save document as given user"""
 
-        if not Document.objects.filter(id=doc_id).exists():
+        if not filter_confirmed(Document, id=doc_id).exists():
             return
         doc = Document.objects.get(id=doc_id)
         if doc.workspace.owner == user or user in doc.workspace.members.all():
@@ -58,7 +59,7 @@ class EditorConsumer(AsyncWebsocketConsumer):
     def get_document(self, doc_id: int, user: User) -> dict:
         """Tries to get ocument as given user"""
 
-        if not Document.objects.filter(id=doc_id).exists():
+        if not filter_confirmed(Document, id=doc_id).exists():
             return {}
         doc = Document.objects.get(id=doc_id)
         if doc.workspace.owner == user or user in doc.workspace.members.all():

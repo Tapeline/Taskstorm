@@ -22,7 +22,8 @@ class Dummy:
         """Create dummy workspace"""
         return Workspace.objects.create(
             owner=user,
-            name=name
+            name=name,
+            is_drafted=False
         )
 
     @staticmethod
@@ -34,6 +35,7 @@ class Dummy:
             workspace=workspace,
             name=name,
             description=description,
+            is_drafted=False,
             **kwargs
         )
 
@@ -45,5 +47,6 @@ class Dummy:
             workspace=workspace,
             name=name,
             color="000000",
-            is_end=is_end
+            is_end=is_end,
+            is_drafted=False
         )

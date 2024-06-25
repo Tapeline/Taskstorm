@@ -8,10 +8,12 @@ from rest_framework.generics import ListCreateAPIView, RetrieveUpdateDestroyAPIV
 from rest_framework.permissions import IsAuthenticated
 
 from api import serializers, models, permissions
+from api.views.utils.idempotency import IdempotentCreationModelQuerySetProviderMixin
 from api.views.workspace import WorkspaceMixin
 
 
-class ListCreateDocumentView(ListCreateAPIView, WorkspaceMixin):
+class ListCreateDocumentView(IdempotentCreationModelQuerySetProviderMixin,
+                             ListCreateAPIView, WorkspaceMixin):
     serializer_class = serializers.DocumentSerializer
     queryset = models.Document.objects.all()
     permission_classes = (IsAuthenticated, permissions.CanInteractWithWorkspace)
@@ -25,7 +27,8 @@ class ListCreateDocumentView(ListCreateAPIView, WorkspaceMixin):
         return super().create(request, *args, **kwargs)
 
 
-class RetrieveUpdateDestroyDocumentView(RetrieveUpdateDestroyAPIView, WorkspaceMixin):
+class RetrieveUpdateDestroyDocumentView(IdempotentCreationModelQuerySetProviderMixin,
+                                        RetrieveUpdateDestroyAPIView, WorkspaceMixin):
     serializer_class = serializers.DocumentSerializer
     queryset = models.Document.objects.all()
     permission_classes = (IsAuthenticated, permissions.CanInteractWithWorkspace)

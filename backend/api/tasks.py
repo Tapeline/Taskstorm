@@ -33,7 +33,9 @@ def find_tasks_for_rule(now: datetime, workspace, user, rule) -> list:
     except FilterSyntaxError:
         return []
     from api import models
-    tasks = [(task, user, rule) for task in models.Task.objects.filter(workspace=workspace)
+    from api.accessor import filter_confirmed
+    all_tasks = filter_confirmed(models.Task, workspace=workspace)
+    tasks = [(task, user, rule) for task in all_tasks
              if is_task_applicable(now, task, user, filter_rule, rule)]
     logging.info(f"      Tasks found: %s", tasks)
     return tasks
@@ -43,7 +45,9 @@ def find_tasks_for_workspace(now: datetime, workspace, user):
     # pylint: disable=missing-function-docstring
     tasks = []
     from api import models
-    for rule in models.NotificationRule.objects.filter(workspace=workspace):
+    from api.accessor import filter_confirmed
+    rules = filter_confirmed(models.NotificationRule, workspace=workspace)
+    for rule in rules:
         logging.info(f"    Checking rule %s", rule.id)
         tasks.extend(find_tasks_for_rule(now, workspace, user, rule))
     return tasks
@@ -53,7 +57,9 @@ def find_tasks_for_user(now: datetime, user):
     # pylint: disable=missing-function-docstring
     tasks = []
     from api import models
-    for workspace in models.Workspace.objects.filter(Q(owner=user) | Q(members=user)):
+    from api.accessor import filter_confirmed
+    workspaces = filter_confirmed(models.Workspace, Q(owner=user) | Q(members=user))
+    for workspace in workspaces:
         logging.info(f"  Checking workspace %s", workspace.name)
         tasks.extend(find_tasks_for_workspace(now, workspace, user))
     return tasks

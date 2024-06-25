@@ -2,14 +2,7 @@
 """Django's command-line utility for administrative tasks."""
 import os
 import sys
-# TODO: idempotency for:
-#       - POST /api/workspaces
-#       - POST /api/workspaces/?/tasks/
-#       - POST /api/workspaces/?/stages/
-#       - POST /api/workspaces/?/tasks/?/comments/
-#       - POST /api/workspaces/?/documents/
-#       - POST /api/workspaces/?/notification-rules/
-# TODO: migrate pk to uuid?
+# TODO: proper logging instead of randomly placed prints
 
 
 def main():

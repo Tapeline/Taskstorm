@@ -8,10 +8,12 @@ from rest_framework.generics import ListCreateAPIView, RetrieveUpdateDestroyAPIV
 from rest_framework.permissions import IsAuthenticated
 
 from api import serializers, models, permissions
+from api.views.utils.idempotency import IdempotentCreationModelQuerySetProviderMixin
 from api.views.workspace import WorkspaceMixin
 
 
-class ListCreateWorkflowStageView(ListCreateAPIView, WorkspaceMixin):
+class ListCreateWorkflowStageView(IdempotentCreationModelQuerySetProviderMixin,
+                                  ListCreateAPIView, WorkspaceMixin):
     serializer_class = serializers.WorkflowStageSerializer
     queryset = models.WorkflowStage.objects.all()
     permission_classes = (IsAuthenticated, permissions.CanInteractWithWorkspace)
@@ -24,7 +26,8 @@ class ListCreateWorkflowStageView(ListCreateAPIView, WorkspaceMixin):
         return super().create(request, *args, **kwargs)
 
 
-class RetrieveUpdateDestroyWorkflowStageView(RetrieveUpdateDestroyAPIView, WorkspaceMixin):
+class RetrieveUpdateDestroyWorkflowStageView(IdempotentCreationModelQuerySetProviderMixin,
+                                             RetrieveUpdateDestroyAPIView, WorkspaceMixin):
     serializer_class = serializers.WorkflowStageSerializer
     queryset = models.WorkflowStage.objects.all()
     permission_classes = (IsAuthenticated, permissions.CanInteractWithWorkspace)

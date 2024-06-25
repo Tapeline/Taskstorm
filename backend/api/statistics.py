@@ -8,6 +8,7 @@ from itertools import groupby
 from django.utils import timezone
 
 from api import models
+from api.accessor import filter_confirmed
 from api.data import ObjDict
 
 TimeRange = tuple[datetime, datetime]
@@ -15,9 +16,10 @@ TimeRange = tuple[datetime, datetime]
 
 def get_tasks_created_during_range_count(time_range: TimeRange, user) -> int:
     # pylint: disable=missing-function-docstring
-    return len(models.Task.objects.filter(created_at__gte=time_range[0],
-                                          created_at__lte=time_range[1],
-                                          creator=user))
+    return len(filter_confirmed(models.Task,
+                                created_at__gte=time_range[0],
+                                created_at__lte=time_range[1],
+                                creator=user))
 
 
 def get_workflow_push_during_range_count(time_range: TimeRange, user) -> int:

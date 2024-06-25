@@ -15,11 +15,12 @@ from rest_framework.serializers import ModelSerializer
 from rest_framework.views import APIView
 
 from api import serializers, models, permissions
-from api.accessor import get_object_or_null
+from api.accessor import get_object_or_null, filter_confirmed
 from api.exceptions.exception_classes import TaskClosedButNotAtEndException, \
     TaskAndStageAreInDifferentWorkspacesException
 from api.filtering.parser import FilterSyntaxError
-from api.views.pagination import LimitOffsetPaginationMixin
+from api.views.utils.idempotency import IdempotentCreationModelQuerySetProviderMixin
+from api.views.utils.pagination import LimitOffsetPaginationMixin
 from api.views.workspace import WorkspaceMixin
 from api.filtering import filters, parser as filter_parser
 
@@ -56,7 +57,9 @@ def _assert_stage_belongs_to_same_workspace(task_workspace: models.Workspace,
         raise TaskAndStageAreInDifferentWorkspacesException
 
 
-class ListCreateTaskView(ListCreateAPIView, WorkspaceMixin, LimitOffsetPaginationMixin):
+class ListCreateTaskView(IdempotentCreationModelQuerySetProviderMixin,
+                         ListCreateAPIView, WorkspaceMixin,
+                         LimitOffsetPaginationMixin):
     # pylint: disable=missing-class-docstring
     serializer_class = serializers.TaskUnwrappedSerializer
     queryset = models.Task.objects.order_by("-is_open", "-created_at")
@@ -106,7 +109,8 @@ class ListCreateTaskView(ListCreateAPIView, WorkspaceMixin, LimitOffsetPaginatio
         return super().create(request, *args, **kwargs)
 
 
-class RetrieveUpdateDestroyTaskView(RetrieveUpdateDestroyAPIView, WorkspaceMixin):
+class RetrieveUpdateDestroyTaskView(IdempotentCreationModelQuerySetProviderMixin,
+                                    RetrieveUpdateDestroyAPIView, WorkspaceMixin):
     # pylint: disable=missing-class-docstring
     serializer_class = serializers.TaskUnwrappedSerializer
     queryset = models.Task.objects.all()
@@ -215,7 +219,7 @@ class GetActivityOnTask(APIView, TaskMixin):
                         x, context={'request': self.request}
                     ).data
                 }
-                for x in models.Comment.objects.filter(task=self.get_task())
+                for x in filter_confirmed(models.Comment, task=self.get_task())
             ]
         return []
 

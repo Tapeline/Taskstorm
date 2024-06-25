@@ -9,9 +9,11 @@ from rest_framework.permissions import IsAuthenticated
 
 from api import serializers, models, permissions
 from api.views.tasks import TaskMixin
+from api.views.utils.idempotency import IdempotentCreationModelQuerySetProviderMixin
 
 
-class ListCreateCommentView(ListCreateAPIView, TaskMixin):
+class ListCreateCommentView(IdempotentCreationModelQuerySetProviderMixin,
+                            ListCreateAPIView, TaskMixin):
     serializer_class = serializers.CommentUnwrappedSerializer
     queryset = models.Comment.objects.all()
     permission_classes = (IsAuthenticated, permissions.CanInteractWithWorkspace)
@@ -26,7 +28,8 @@ class ListCreateCommentView(ListCreateAPIView, TaskMixin):
         return super().create(request, *args, **kwargs)
 
 
-class RetrieveUpdateDestroyCommentView(RetrieveUpdateDestroyAPIView, TaskMixin):
+class RetrieveUpdateDestroyCommentView(IdempotentCreationModelQuerySetProviderMixin,
+                                       RetrieveUpdateDestroyAPIView, TaskMixin):
     serializer_class = serializers.CommentUnwrappedSerializer
     queryset = models.Comment.objects.all()
     permission_classes = (IsAuthenticated, permissions.CanInteractWithWorkspace,

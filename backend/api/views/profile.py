@@ -15,7 +15,7 @@ from rest_framework.views import APIView
 
 from api import serializers, models, statistics, recommendations
 from api.cache.notifications import NotificationCache
-from api.views.pagination import LimitOffsetPaginationMixin
+from api.views.utils.pagination import LimitOffsetPaginationMixin
 
 
 class ProfileView(RetrieveUpdateDestroyAPIView):

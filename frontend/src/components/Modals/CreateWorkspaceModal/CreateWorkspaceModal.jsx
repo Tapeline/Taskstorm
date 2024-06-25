@@ -1,27 +1,31 @@
 import React, {useState} from "react";
-import {Button, Form, Modal} from "react-bootstrap";
+import {Button, Form, Modal, Spinner} from "react-bootstrap";
 import {newWorkspace} from "../../../api/endpoints-workspaces.jsx";
 import {toastError} from "../../../ui/toasts.jsx";
 import {useNavigate} from "react-router-dom";
+import {confirmCreation} from "../../../api/common.jsx";
 
 export default function CreateWorkspaceModal(props) {
     const [show, setShow] = useState(false);
     const [workspaceName, setWorkspaceName] = useState("");
     const navigate = useNavigate();
+    const accessToken = localStorage.getItem("accessToken");
+    const [isLoading, setIsLoading] = useState(false);
 
     const handleClose = () => setShow(false);
     const handleShow = () => setShow(true);
     const handleSubmit = (e) => {
         e.preventDefault();
-        newWorkspace(localStorage.getItem("accessToken"), workspaceName).then((response) => {
-            if (!response.success && response.status === 401) {
-                navigate("/login");
-            } else if (!response.success) {
-                toastError(response.reason);
-            } else {
-                handleClose();
-                window.location.href = "/workspaces";
-            }
+        setIsLoading(true);
+        newWorkspace(accessToken, workspaceName).then((response) => {
+            if (!response.success) toastError(response.reason);
+            else confirmCreation(accessToken, "workspaces", response.data.id).then(r => {
+                if (!r.success) toastError(r.reason)
+                else {
+                    handleClose();
+                    window.location.href = "/workspaces";
+                }
+            });
         });
     };
 
@@ -40,7 +44,13 @@ export default function CreateWorkspaceModal(props) {
                                       className="mb-3"/>
                     </Modal.Body>
                     <Modal.Footer>
-                        <Button variant="primary" type="submit">Create</Button>
+                        <Button variant="primary" type="submit" disabled={isLoading}>
+                            {isLoading
+                                ? <Spinner as="span" animation="border"
+                                    size="sm" role="status" aria-hidden="true"/>
+                                : "Create"
+                            }
+                        </Button>
                     </Modal.Footer>
                 </Form>
             </Modal>

@@ -54,3 +54,15 @@ export async function sendRequest(method, url, data = null, headers = {}) {
         };
     }
 }
+
+
+export async function confirmCreation(token, url, id) {
+    return sendRequest(
+        "PATCH",
+        apiUrl(`${url}/${id}/`),
+        {
+            is_drafted: false
+        },
+        "Authorization: Bearer " + token
+    )
+}

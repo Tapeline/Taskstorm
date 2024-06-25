@@ -1,9 +1,11 @@
 import React, {useState} from "react";
-import {Button, Form, InputGroup, Modal} from "react-bootstrap";
+import {Button, Form, InputGroup, Modal, Spinner} from "react-bootstrap";
 import {toastError} from "../../../ui/toasts.jsx";
 import {useNavigate} from "react-router-dom";
 import {newStageInWorkspace} from "../../../api/endpoints-workflow.jsx";
 import {HexColorPicker} from "react-colorful";
+import {newWorkspace} from "../../../api/endpoints-workspaces.jsx";
+import {confirmCreation} from "../../../api/common.jsx";
 
 export default function CreateStageModal(props) {
     const [show, setShow] = useState(false);
@@ -12,13 +14,16 @@ export default function CreateStageModal(props) {
     const [stageIsEnd, setStageIsEnd] = useState(false);
     const navigate = useNavigate();
     const {workspace} = props;
+    const [isLoading, setIsLoading] = useState(false);
 
     const handleClose = () => setShow(false);
     const handleShow = () => setShow(true);
     const handleSubmit = (e) => {
         e.preventDefault();
+        setIsLoading(true);
+        const accessToken = localStorage.getItem("accessToken");
         newStageInWorkspace(
-            localStorage.getItem("accessToken"),
+            accessToken,
             workspace.id,
             {
                 name: stageName,
@@ -26,14 +31,16 @@ export default function CreateStageModal(props) {
                 is_end: stageIsEnd
             }
         ).then((response) => {
-            if (!response.success && response.status === 401) {
-                navigate("/login");
-            } else if (!response.success) {
-                toastError(response.reason);
-            } else {
-                handleClose();
-                window.location.href = "/workspaces/" + workspace.id + "/stages";
-            }
+            if (!response.success) toastError(response.reason);
+            else confirmCreation(
+                accessToken, "workspaces/" + workspace.id + "/stages", response.data.id
+            ).then(r => {
+                if (!r.success) toastError(r.reason)
+                else {
+                    handleClose();
+                    window.location.href = "/workspaces/" + workspace.id + "/stages";
+                }
+            });
         });
     };
 
@@ -63,7 +70,13 @@ export default function CreateStageModal(props) {
                         </InputGroup>
                     </Modal.Body>
                     <Modal.Footer>
-                        <Button variant="primary" type="submit">Create</Button>
+                        <Button variant="primary" type="submit" disabled={isLoading}>
+                            {isLoading
+                                ? <Spinner as="span" animation="border"
+                                    size="sm" role="status" aria-hidden="true"/>
+                                : "Create"
+                            }
+                        </Button>
                     </Modal.Footer>
                 </Form>
             </Modal>

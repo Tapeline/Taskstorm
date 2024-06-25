@@ -9,10 +9,12 @@ from rest_framework.generics import ListCreateAPIView, RetrieveUpdateDestroyAPIV
 from rest_framework.permissions import IsAuthenticated
 
 from api import serializers, models, permissions
+from api.views.utils.idempotency import IdempotentCreationModelQuerySetProviderMixin
 from api.views.workspace import WorkspaceMixin
 
 
-class ListCreateNotificationRuleView(ListCreateAPIView, WorkspaceMixin):
+class ListCreateNotificationRuleView(IdempotentCreationModelQuerySetProviderMixin,
+                                     ListCreateAPIView, WorkspaceMixin):
     serializer_class = serializers.NotificationRuleSerializer
     queryset = models.NotificationRule.objects.all()
     permission_classes = (IsAuthenticated, permissions.CanInteractWithWorkspace)
@@ -25,7 +27,8 @@ class ListCreateNotificationRuleView(ListCreateAPIView, WorkspaceMixin):
         return super().create(request, *args, **kwargs)
 
 
-class RetrieveUpdateDestroyNotificationRuleView(RetrieveUpdateDestroyAPIView, WorkspaceMixin):
+class RetrieveUpdateDestroyNotificationRuleView(IdempotentCreationModelQuerySetProviderMixin,
+                                                RetrieveUpdateDestroyAPIView, WorkspaceMixin):
     serializer_class = serializers.NotificationRuleSerializer
     queryset = models.NotificationRule.objects.all()
     permission_classes = (IsAuthenticated, permissions.CanInteractWithWorkspace)
