@@ -5,6 +5,8 @@
 ![GitHub License](https://img.shields.io/github/license/Tapeline/Taskstorm)
 ![GitHub Actions Workflow Status](https://img.shields.io/github/actions/workflow/status/Tapeline/Taskstorm/deploy.yml)
 ![GitHub Issues or Pull Requests](https://img.shields.io/github/issues/Tapeline/Taskstorm)
+![Website](https://img.shields.io/website?url=https%3A%2F%2Ftaskstorm.tapeline.dev%2F)
+
 
 <!-- TOC -->
   * [Features](#features)
@@ -60,10 +62,15 @@ docker compose up -d
 Except you should provide SSL certificate and then access web interface via standard 443
 browser port.
 
-Also do not forget to provide environment variables:
-- `VAPID_PUBLIC` and `VAPID_PRIVATE` - VAPID keys. They are
+Do not forget to provide environment variables:
+- `VAPID_PRIVATE` - VAPID private key. It is
   needed for webpush notifications to work properly.
 - `SECRET_KEY` - API secret key (signing JWT, etc.)
+
+Also head to `frontend/src/api/common.jsx` and change the return value
+of `getPublicVAPID()` to your public VAPID key. [*didn't figure out yet how
+to access environment variables on Vite build. I'm a backend developer, after
+all :(*]
 
 ### Providing SSL certificate
 SSL certificate files should be placed in `~/sslcert/` 
