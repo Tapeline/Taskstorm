@@ -14,7 +14,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from api import serializers, models, statistics, recommendations
-from api.cache.notifications import NotificationCache
+from api.views.notifications import NotificationCacheMixin
 from api.views.utils.pagination import LimitOffsetPaginationMixin
 
 
@@ -26,25 +26,18 @@ class ProfileView(RetrieveUpdateDestroyAPIView):
         return self.request.user
 
 
-class GetNotificationsView(ListAPIView, LimitOffsetPaginationMixin):
+class GetNotificationsView(NotificationCacheMixin, ListAPIView,
+                           LimitOffsetPaginationMixin):
     permission_classes = (IsAuthenticated, )
     serializer_class = serializers.NotificationSerializer
     queryset = models.Notification.objects.all().order_by("issue_time").reverse()
+    notification_cache_key = "profile"
 
     def get_queryset(self):
         qs = super().get_queryset().filter(recipient=self.request.user)
         if self.request.GET.get("only_unread") is not None:
             qs = qs.filter(is_read=False)
         return self.cut_by_pagination(qs)
-
-    def list(self, request, *args, **kwargs):
-        if NotificationCache.has_in_cache(request.user.username, "profile"):
-            print(f"Using cached response for {request.user.username}")
-            return NotificationCache.get_response_from_cache(request.user.username, "profile")
-        response = super().list(request, *args, **kwargs)
-        print(f"Caching response for {request.user.username}")
-        NotificationCache.cache_response(request.user.username, response, "profile")
-        return response
 
 
 class GetAllUsersView(ListAPIView):

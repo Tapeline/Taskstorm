@@ -9,9 +9,9 @@ from rest_framework.permissions import IsAuthenticated
 
 from api import serializers, models, permissions
 from api.accessor import get_object_or_null
-from api.cache.notifications import NotificationCache
 from api.exceptions.exception_classes import SimultaneouslySetOwnerAndMemberListException, \
     OwnershipTransferToNonMemberException, NotAnOwnerException
+from api.views.notifications import NotificationCacheMixin
 from api.views.utils.pagination import LimitOffsetPaginationMixin
 from api.views.utils.idempotency import IdempotentCreationModelQuerySetProviderMixin
 
@@ -84,7 +84,8 @@ class RetrieveUpdateDestroyWorkspaceView(IdempotentCreationModelQuerySetProvider
         return response
 
 
-class GetNotificationsByWorkspaceView(ListAPIView,
+class GetNotificationsByWorkspaceView(NotificationCacheMixin,
+                                      ListAPIView,
                                       WorkspaceMixin,
                                       LimitOffsetPaginationMixin):
     # pylint: disable=missing-class-docstring
@@ -93,6 +94,7 @@ class GetNotificationsByWorkspaceView(ListAPIView,
     permission_classes = (IsAuthenticated, )
     serializer_class = serializers.NotificationSerializer
     queryset = models.Notification.objects.all()
+    notification_cache_key = "workspace"
 
     def get_queryset(self):
         qs = super().get_queryset().filter(
@@ -102,12 +104,3 @@ class GetNotificationsByWorkspaceView(ListAPIView,
         if self.request.GET.get("only_unread") is not None:
             qs = qs.filter(is_read=False)
         return self.cut_by_pagination(qs).order_by("issue_time").reverse()
-
-    def list(self, request, *args, **kwargs):
-        if NotificationCache.has_in_cache(request.user.username, "workspace"):
-            print(f"Using cached response for {request.user.username}")
-            return NotificationCache.get_response_from_cache(request.user.username, "workspace")
-        response = super().list(request, *args, **kwargs)
-        print(f"Caching response for {request.user.username}")
-        NotificationCache.cache_response(request.user.username, response, "workspace")
-        return response

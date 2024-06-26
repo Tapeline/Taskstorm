@@ -3,6 +3,7 @@ Managing websocket connections
 """
 
 import json
+import logging
 
 from asgiref.sync import sync_to_async
 from channels.generic.websocket import AsyncWebsocketConsumer
@@ -28,8 +29,11 @@ class EditorConsumer(AsyncWebsocketConsumer):
         super().__init__(args, kwargs)
         self.room_name = None
         self.room_group_name = None
+        self.logger = logging.Logger(name=f"EditorConsumer-{id(self)}")
+        self.logger.info("Editor websocket consumer instantiated")
 
     async def connect(self):
+        self.logger.info("Connecting to %s", self.room_name)
         self.room_name = self.scope['url_route']['kwargs']['room_name']
         self.room_group_name = f'editor_{self.room_name}'
 
@@ -41,6 +45,7 @@ class EditorConsumer(AsyncWebsocketConsumer):
         await self.accept()
 
     async def disconnect(self, code):
+        self.logger.info("Disconnecting from %s", self.room_name)
         await self.channel_layer.group_discard(
             self.room_group_name,
             self.channel_name
@@ -48,11 +53,12 @@ class EditorConsumer(AsyncWebsocketConsumer):
 
     def save_document(self, doc_id: int, data: dict, user: User) -> None:
         """Tries to save document as given user"""
-
         if not filter_confirmed(Document, id=doc_id).exists():
+            self.logger.info("user %s: No such document %s", user.username, doc_id)
             return
         doc = Document.objects.get(id=doc_id)
         if doc.workspace.owner == user or user in doc.workspace.members.all():
+            self.logger.info("user %s: saving document %s", user.username, doc_id)
             doc.data = data
             doc.save()
 
@@ -60,9 +66,11 @@ class EditorConsumer(AsyncWebsocketConsumer):
         """Tries to get ocument as given user"""
 
         if not filter_confirmed(Document, id=doc_id).exists():
+            self.logger.info("user %s: No such document %s", user.username, doc_id)
             return {}
         doc = Document.objects.get(id=doc_id)
         if doc.workspace.owner == user or user in doc.workspace.members.all():
+            self.logger.info("user %s: getting document %s", user.username, doc_id)
             return doc.data
         return {}
 
@@ -71,7 +79,6 @@ class EditorConsumer(AsyncWebsocketConsumer):
         user = await get_user(data["token"])
         del data["token"]
         if data["command"] == "save-document":
-            print("SAVE", data, int(self.room_name))
             await sync_to_async(self.save_document)(int(data["documentId"]), data["data"], user)
         elif data["command"] == "get-document":
             data = await sync_to_async(self.get_document)(int(data["documentId"]), user)

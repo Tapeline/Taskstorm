@@ -2,7 +2,6 @@
 """Django's command-line utility for administrative tasks."""
 import os
 import sys
-# TODO: proper logging instead of randomly placed prints
 
 
 def main():

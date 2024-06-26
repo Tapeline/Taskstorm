@@ -14,7 +14,6 @@ app.autodiscover_tasks()
 
 @app.on_after_configure.connect
 def setup_periodic_tasks(sender, **kwargs):
-    print("Setting up")
     sender.add_periodic_task(20.0, tasks.check_and_send_notifications, name='check and send notifications')
 
 

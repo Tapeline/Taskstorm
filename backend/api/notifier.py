@@ -11,6 +11,7 @@ from taskstorm import settings
 
 def notify(task, user) -> None:
     """Notify user w/ all possible methods"""
+    logging.info("Notifying user %s about task %s", user.username, task.name)
 
     # pylint: disable=import-outside-toplevel
     from api.models import Notification
@@ -31,6 +32,7 @@ def notify(task, user) -> None:
                 vapid_private_key=settings.VAPID_PRIVATE,
                 vapid_claims={"sub": "mailto:mail@example.com"}
             )
+            logging.info("Successfully sent webpush to %s", user.username)
         except WebPushException as wpe:
             logging.error(f"Error sending webpush: %s", wpe)
 

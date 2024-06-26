@@ -9,6 +9,7 @@ https://docs.djangoproject.com/en/5.0/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.0/ref/settings/
 """
+import logging
 import os
 from datetime import timedelta
 from pathlib import Path
@@ -100,7 +101,7 @@ DATABASES = {
         "PORT": os.environ.get("PG_PORT") or "5432",
     }
 }
-print(os.environ.get("USE_DB") or "local")
+logging.info("Using database '%s'", os.environ.get("USE_DB") or "local")
 DATABASES["default"] = DATABASES[os.environ.get("USE_DB") or "local"]
 
 REDIS_CONFIGS = {
@@ -176,7 +177,6 @@ CORS_ALLOW_ALL_ORIGINS = True
 
 CELERY_BROKER_URL = f"redis://default:{REDIS_CONFIG['PASS']}@{REDIS_CONFIG['HOST']}:{REDIS_CONFIG['PORT']}/0"
 CELERY_RESULT_BACKEND = f"redis://default:{REDIS_CONFIG['PASS']}@{REDIS_CONFIG['HOST']}:{REDIS_CONFIG['PORT']}/0"
-print(DATABASES["default"], REDIS_CONFIG)
 
 ASGI_APPLICATION = "taskstorm.asgi.application"
 CHANNEL_LAYERS = {
@@ -190,7 +190,7 @@ CHANNEL_LAYERS = {
 
 VAPID_PRIVATE = os.getenv("VAPID_PRIVATE")
 if not isinstance(VAPID_PRIVATE, str):
-    print("Warning: Env $VAPID_PRIVATE is not a string")
+    logging.warning("Warning: Env $VAPID_PRIVATE is not a string")
 
 MEDIA_ROOT = os.path.join(os.path.dirname(BASE_DIR), 'mediafiles')
 MEDIA_URL = '/media/'

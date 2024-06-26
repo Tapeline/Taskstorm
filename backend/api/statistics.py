@@ -107,7 +107,6 @@ def get_actions_distributed_by_days(time_range: TimeRange, user) -> list[tuple[d
     actions = [x.created_at if isinstance(x, models.Task) else x.logged_at
                for x in actions]
     grouped = [list(x) for _, x in groupby(sorted([x.date() for x in actions]))]
-    print(grouped)
     return [(group[0], len(group)) for group in grouped]
 
 

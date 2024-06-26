@@ -59,7 +59,6 @@ class APINotificationsTestCase(CeleryTestCase, AuthMixin):
             "/api/profile/notifications/?only_unread=true&limit=-1",
             format="json"
         )
-        print(*(x["issue_time"] for x in response.data))
         return [task_name in x["message"] for x in response.data].count(True) == count
 
     def test_single_notify(self):

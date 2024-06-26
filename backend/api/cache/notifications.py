@@ -1,7 +1,7 @@
 """
 Provides caching functions for notifications
 """
-
+import logging
 from typing import Literal
 
 from django.core.cache import cache
@@ -10,6 +10,8 @@ from rest_framework.response import Response
 
 class NotificationCache:
     """Namespace for notification-cache-related methods"""
+    logger = logging.Logger(name="NotificationCache")
+
     @staticmethod
     def cache_response(username: str, response: Response,
                        key: Literal["workspace"] | Literal["profile"],
@@ -40,7 +42,7 @@ class NotificationCache:
     @staticmethod
     def invalidate_for_user(username: str):
         """Invalidate all notification caches for user"""
-        print(f"Invalidated cache for {username}")
+        NotificationCache.logger.info("Invalidated cache for %s", username)
         cache.delete_many([
             f"notification-profile-cache-{username}",
             f"notification-workspace-cache-{username}"

@@ -1,10 +1,13 @@
 """
 Provides notification-related views
 """
+from typing import Literal
+
 from rest_framework.views import APIView
 
 from api import models
 from api.accessor import get_object_or_null
+from api.cache.notifications import NotificationCache
 from api.exceptions.base_classes import APIBadRequestException, APIPermissionException
 
 
@@ -31,3 +34,23 @@ class MarkNotificationsReadView(APIView):
                 raise APIPermissionException(f"{notification_id} is not your notification")
             notification.is_read = True
             notification.save()
+
+
+class NotificationCacheMixin:
+    """Provides way of interacting with notification cache"""
+    notification_cache_key: Literal["workspace"] | Literal["profile"]
+
+    def list(self, request, *args, **kwargs):
+        """Override DRF list method from ListModelMixin"""
+        username = request.user.username
+        if NotificationCache.has_in_cache(username, self.notification_cache_key):
+            NotificationCache.logger.info("Using cached response for %s", username)
+            return NotificationCache.get_response_from_cache(
+                username, self.notification_cache_key
+            )
+        response = super().list(request, *args, **kwargs)
+        NotificationCache.logger.info("Caching response for %s", username)
+        NotificationCache.cache_response(
+            username, response, self.notification_cache_key
+        )
+        return response
