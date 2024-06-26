@@ -5,8 +5,7 @@
 ![GitHub License](https://img.shields.io/github/license/Tapeline/Taskstorm)
 ![GitHub Actions Workflow Status](https://img.shields.io/github/actions/workflow/status/Tapeline/Taskstorm/deploy.yml)
 ![GitHub Issues or Pull Requests](https://img.shields.io/github/issues/Tapeline/Taskstorm)
-![Website](https://img.shields.io/website?url=https%3A%2F%2Ftaskstorm.tapeline.dev%2F)
-
+![Website](https://img.shields.io/website?url=https%3A%2F%2Ftaskstorm.tapeline.dev%2F&link=https%3A%2F%2Ftaskstorm.tapeline.dev%2F)
 
 <!-- TOC -->
   * [Features](#features)
