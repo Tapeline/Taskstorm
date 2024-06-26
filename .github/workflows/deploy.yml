@@ -18,13 +18,13 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
       - name: Start database
-        run: docker compose up -d db_service
+        run: docker compose up -d --wait db_service
       - name: Unit testing
         run: |
           cd backend
           USE_DB=local python -m manage test api.tests.unit
       - name: Start redis (for integration testing)
-        run: docker compose up -d redis_service
+        run: docker compose up -d --wait redis_service
       - name: Integration testing
         run: |
           cd backend
