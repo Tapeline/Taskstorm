@@ -59,7 +59,7 @@ services:
       REDIS_HOST: redis
       VAPID_PUBLIC: ${VAPID_PUBLIC}
       VAPID_PRIVATE: ${VAPID_PRIVATE}
-      DEBUG: 0
+      DEBUG: false
       SECRET_KEY: ${SECRET_KEY}
     volumes:
       # TODO: fix: PFPs disappear after restart
