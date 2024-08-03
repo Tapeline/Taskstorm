@@ -1,6 +1,6 @@
 ![Taskstorm Logo](.assets/taskstorm-color-plate.png)
 
-**Taskstorm** - A universal and collaborative task-tracker. ([Deployed application](https://taskstorm.tapeline.dev/))
+**Taskstorm** - A universal and collaborative task-tracker. ([Deployed application](https://taskstorm.tapeline.dev/), currently down)
 
 ![GitHub License](https://img.shields.io/github/license/Tapeline/Taskstorm)
 ![GitHub Actions Workflow Status](https://img.shields.io/github/actions/workflow/status/Tapeline/Taskstorm/deploy.yml)
