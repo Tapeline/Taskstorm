@@ -106,8 +106,8 @@ services:
     restart: on-failure
     volumes:
       - ./nginx.conf:/etc/nginx/nginx.conf
-      - ~server/sslcert/fullchain.pem:/etc/nginx/server.crt
-      - ~server/sslcert/privkey.pem:/etc/nginx/server.key
+      - /home/server/sslcert/fullchain.pem:/etc/nginx/server.crt
+      - /home/server/sslcert/privkey.pem:/etc/nginx/server.key
     ports:
       - "443:443"
     networks:
