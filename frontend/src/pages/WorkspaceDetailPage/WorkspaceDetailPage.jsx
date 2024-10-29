@@ -62,7 +62,10 @@ export default function WorkspaceDetailPage() {
             }
         });
         getAllTasksInWorkspace(accessToken, workspaceId, taskFilter).then(response => {
-            setTaskList(response.data);
+            if (response.success)
+                setTaskList(response.data);
+            else
+                setTaskList([]);
         });
         getStagesInWorkspace(accessToken, workspaceId).then(response => {
             setWorkspaceStages(response.data);
@@ -89,6 +92,8 @@ export default function WorkspaceDetailPage() {
 
     if (isWorkspaceNotFound)
         return <h1>Workspace not found</h1>;
+
+    console.log(taskList);
 
     return (
         !isFullyLoaded()?
@@ -170,7 +175,7 @@ export default function WorkspaceDetailPage() {
                                       onChange={e => setTaskFilter(e.target.value)}/>
                     </div>
                     {
-                        taskList.map(function (data, id) {
+                        taskList?.map(function (data, id) {
                             return <TaskCard data={data} workspace={workspaceData} key={id}/>
                         })
                     }
