@@ -75,6 +75,11 @@ class RetrieveUpdateDestroyWorkspaceView(IdempotentCreationModelQuerySetProvider
         new_members.remove(self.request.data.get("owner"))
         self.request.data["members"] = new_members
 
+    def delete(self, request, *args, **kwargs):
+        if request.user != self.get_object().owner:
+            raise NotAnOwnerException
+        return super().delete(request, *args, **kwargs)
+
     def update(self, request, *args, **kwargs):
         self.serializer_class = serializers.WorkspaceSerializer
         old_object = self.get_object()

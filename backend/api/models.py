@@ -88,6 +88,10 @@ class Workspace(IdempotentCreationModel):
         """Check if user can interact with workspace"""
         return user == self.owner or user in self.members.all()
 
+    def user_can_administer(self, user):
+        """Check if user can perform administrative actions within workspace"""
+        return user == self.owner
+
 
 class Task(IdempotentCreationModel):
     """Task model"""

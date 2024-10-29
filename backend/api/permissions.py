@@ -19,7 +19,7 @@ class CanInteractWithWorkspace(BasePermission):
         workspace = get_object_or_null(models.Workspace, id=w_id)
         if workspace is None:
             return True
-        return workspace.can_interact(request.user)
+        return workspace.user_can_interact(request.user)
 
 
 class CanInteractWithCommentObject(BasePermission):
