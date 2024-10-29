@@ -34,8 +34,8 @@ class ListCreateWorkspaceView(IdempotentCreationModelQuerySetProviderMixin, List
 
     def get_queryset(self):
         return super().get_queryset().filter(
-            Q(owner=self.request.user) | Q(members__contains=self.request.user)
-        )
+            Q(owner=self.request.user) | Q(members=self.request.user)
+        ).distinct("id")
 
     def create(self, request, *args, **kwargs):
         self.serializer_class = serializers.WorkspaceSerializer
@@ -51,9 +51,10 @@ class RetrieveUpdateDestroyWorkspaceView(IdempotentCreationModelQuerySetProvider
     permission_classes = (IsAuthenticated, permissions.CanInteractWithWorkspace)
 
     def get_queryset(self):
-        return super().get_queryset().filter(
-            Q(owner=self.request.user) | Q(members__contains=self.request.user)
-        )
+        qs = super().get_queryset().filter(
+            Q(owner=self.request.user) | Q(members=self.request.user)
+        ).distinct("id")
+        return qs
 
     def _assert_owner_and_members_not_simultaneously_set(self) -> None:
         # pylint: disable=missing-function-docstring
