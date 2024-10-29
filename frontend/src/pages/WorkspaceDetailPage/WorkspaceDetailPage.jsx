@@ -147,7 +147,7 @@ export default function WorkspaceDetailPage() {
                             <br/>
                             <VWhitespace/>
                             <WorkspaceTagColorTable workspace={workspaceData}
-                                                    tags={workspaceData.settings.tag_coloring}/>
+                                                    tags={workspaceData?.settings?.tag_coloring}/>
                         </CategoryPanel>
                         <CategoryPanel name="Ownership" tabId="#ownership">
                             <h6>Current owner: {workspaceData.owner.username}</h6>

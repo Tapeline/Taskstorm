@@ -34,7 +34,7 @@ class ListCreateWorkspaceView(IdempotentCreationModelQuerySetProviderMixin, List
 
     def get_queryset(self):
         return super().get_queryset().filter(
-            Q(owner=self.request.user) | Q(members=self.request.user)
+            Q(owner=self.request.user) | Q(members__contains=self.request.user)
         )
 
     def create(self, request, *args, **kwargs):
@@ -52,7 +52,7 @@ class RetrieveUpdateDestroyWorkspaceView(IdempotentCreationModelQuerySetProvider
 
     def get_queryset(self):
         return super().get_queryset().filter(
-            Q(owner=self.request.user) | Q(members=self.request.user)
+            Q(owner=self.request.user) | Q(members__contains=self.request.user)
         )
 
     def _assert_owner_and_members_not_simultaneously_set(self) -> None:
