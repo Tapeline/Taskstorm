@@ -44,6 +44,7 @@ jobs:
           host: ${{secrets.HOST}}
           username: ${{secrets.USERNAME}}
           password: ${{secrets.PASSWORD}}
+          port: 22002
           script: |
             rm -rf Taskstorm > /dev/null || echo > /dev/null
             git clone https://github.com/Tapeline/Taskstorm.git
