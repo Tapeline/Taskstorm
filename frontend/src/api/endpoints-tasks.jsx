@@ -4,13 +4,13 @@ export function getAllTasksInWorkspace(token, workspaceId, filter) {
     if (filter !== null)
         return sendRequest(
             "GET",
-            apiUrl("workspaces/" + workspaceId + "/tasks/?filters=" + filter),
+            apiUrl("workspaces/" + workspaceId + "/tasks/?limit=-1&filters=" + filter),
             {},
             "Authorization: Bearer " + token
         )
     return sendRequest(
         "GET",
-        apiUrl("workspaces/" + workspaceId + "/tasks/"),
+        apiUrl("workspaces/" + workspaceId + "/tasks/?limit=-1"),
         {},
         "Authorization: Bearer " + token
     )
